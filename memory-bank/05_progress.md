@@ -13,6 +13,10 @@
 - GitHub Actions CI pipeline
 - Memory bank with SessionStart hook auto-loading
 - CLAUDE.md
+- Production deployment via Podman pod + Cloudflare Named Tunnel
+  - Public URL: https://cdg.meyis.work
+  - Script: `./deploy.sh`
+  - Pod: API + PostgreSQL + cloudflared containers
 
 ## What's Left to Build
 - PostgreSQL repository implementation (actual SQL)
@@ -23,5 +27,4 @@
 - AI agent adapter (future)
 
 ## Known Issues
-- PostgreSQL adapter methods are stubs (return nil/ErrNotFound)
-- No database migrations yet
+_(none)_

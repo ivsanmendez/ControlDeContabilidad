@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/ivsanmendez/ControlDeGastos/internal/domain/expense"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/expense"
 )
 
 // ExpenseRepo implements expense.Repository.

@@ -10,12 +10,13 @@ import (
 )
 
 // RegisterRoutes wires all HTTP routes onto the given mux.
-func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc port.AuthService, contribSvc port.ContributionService, contributorSvc port.ContributorService, jwtIssuer *jwtadapter.Issuer, signer port.ReceiptSigner, tr *i18n.Translator) {
+func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc port.AuthService, contribSvc port.ContributionService, contributorSvc port.ContributorService, categorySvc port.CategoryService, jwtIssuer *jwtadapter.Issuer, signer port.ReceiptSigner, tr *i18n.Translator) {
 	auth := RequireAuth(jwtIssuer, tr)
 	expH := &ExpenseHandler{svc: expenseSvc, tr: tr}
 	authH := &AuthHandler{svc: authSvc, tr: tr}
 	contribH := &ContributionHandler{svc: contribSvc, tr: tr}
 	contributorH := &ContributorHandler{svc: contributorSvc, tr: tr}
+	categoryH := &CategoryHandler{svc: categorySvc, tr: tr}
 	receiptH := &ReceiptHandler{contribSvc: contribSvc, contributorSvc: contributorSvc, signer: signer, tr: tr}
 
 	// Public routes
@@ -66,6 +67,28 @@ func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc 
 	mux.Handle("DELETE /contributors/{id}", Chain(
 		http.HandlerFunc(contributorH.Delete),
 		auth, RequirePermission(user.PermContributorDelete, tr),
+	))
+
+	// Protected contribution category routes
+	mux.Handle("POST /contribution-categories", Chain(
+		http.HandlerFunc(categoryH.Create),
+		auth, RequirePermission(user.PermCategoryCreate, tr),
+	))
+	mux.Handle("GET /contribution-categories", Chain(
+		http.HandlerFunc(categoryH.List),
+		auth, RequirePermission(user.PermCategoryRead, tr),
+	))
+	mux.Handle("GET /contribution-categories/{id}", Chain(
+		http.HandlerFunc(categoryH.GetByID),
+		auth, RequirePermission(user.PermCategoryRead, tr),
+	))
+	mux.Handle("PUT /contribution-categories/{id}", Chain(
+		http.HandlerFunc(categoryH.Update),
+		auth, RequirePermission(user.PermCategoryUpdate, tr),
+	))
+	mux.Handle("DELETE /contribution-categories/{id}", Chain(
+		http.HandlerFunc(categoryH.Delete),
+		auth, RequirePermission(user.PermCategoryDelete, tr),
 	))
 
 	// Protected contribution routes

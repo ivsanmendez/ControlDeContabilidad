@@ -3,6 +3,7 @@ package port
 import (
 	"context"
 
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/category"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contribution"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contributor"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/expense"
@@ -37,6 +38,9 @@ type ContributorRepository = contributor.Repository
 
 // ContributionRepository is the driven port for contribution persistence.
 type ContributionRepository = contribution.Repository
+
+// CategoryRepository is the driven port for contribution category persistence.
+type CategoryRepository = category.Repository
 
 // ReceiptSigner is the driven port for digitally signing receipt data.
 // The password is required per-call to decrypt the private key (SAT format).

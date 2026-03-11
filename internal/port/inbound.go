@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/category"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contribution"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contributor"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/expense"
@@ -30,8 +31,18 @@ type ContributorService interface {
 
 // ContributionService is the driving port for contribution use cases.
 type ContributionService interface {
-	CreateContribution(ctx context.Context, callerID int64, contributorID int64, amount float64, month, year int, paymentDate time.Time, paymentMethod contribution.PaymentMethod) (*contribution.Contribution, error)
+	CreateContribution(ctx context.Context, callerID int64, contributorID int64, categoryID int64, amount float64, month, year int, paymentDate time.Time, paymentMethod contribution.PaymentMethod) (*contribution.Contribution, error)
 	GetContribution(ctx context.Context, id int64) (*contribution.ContributionDetail, error)
 	ListContributions(ctx context.Context, contributorID int64, year int) ([]contribution.ContributionDetail, error)
 	DeleteContribution(ctx context.Context, id int64) error
+}
+
+// CategoryService is the driving port for contribution category use cases.
+type CategoryService interface {
+	CreateCategory(ctx context.Context, callerID int64, name, description string) (*category.Category, error)
+	GetCategory(ctx context.Context, id int64) (*category.Category, error)
+	ListCategories(ctx context.Context) ([]category.Category, error)
+	ListActiveCategories(ctx context.Context) ([]category.Category, error)
+	UpdateCategory(ctx context.Context, id int64, name, description string, isActive bool) (*category.Category, error)
+	DeleteCategory(ctx context.Context, id int64) error
 }

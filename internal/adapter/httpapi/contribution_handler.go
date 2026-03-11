@@ -19,6 +19,7 @@ type ContributionHandler struct {
 
 type createContributionRequest struct {
 	ContributorID int64                      `json:"contributor_id"`
+	CategoryID    int64                      `json:"category_id"`
 	Amount        float64                    `json:"amount"`
 	Month         int                        `json:"month"`
 	Year          int                        `json:"year"`
@@ -49,6 +50,7 @@ func (h *ContributionHandler) Create(w http.ResponseWriter, r *http.Request) {
 		r.Context(),
 		claims.UserID,
 		req.ContributorID,
+		req.CategoryID,
 		req.Amount,
 		req.Month,
 		req.Year,

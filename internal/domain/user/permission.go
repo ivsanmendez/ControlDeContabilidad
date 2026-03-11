@@ -17,6 +17,11 @@ const (
 	PermContributorRead   Permission = "contributor:read"
 	PermContributorUpdate Permission = "contributor:update"
 	PermContributorDelete Permission = "contributor:delete"
+
+	PermCategoryCreate Permission = "category:create"
+	PermCategoryRead   Permission = "category:read"
+	PermCategoryUpdate Permission = "category:update"
+	PermCategoryDelete Permission = "category:delete"
 )
 
 var rolePermissions = map[Role][]Permission{
@@ -31,6 +36,10 @@ var rolePermissions = map[Role][]Permission{
 		PermContributorRead,
 		PermContributorUpdate,
 		PermContributorDelete,
+		PermCategoryCreate,
+		PermCategoryRead,
+		PermCategoryUpdate,
+		PermCategoryDelete,
 	},
 	RoleAdmin: {
 		PermExpenseCreate,
@@ -45,6 +54,10 @@ var rolePermissions = map[Role][]Permission{
 		PermContributorRead,
 		PermContributorUpdate,
 		PermContributorDelete,
+		PermCategoryCreate,
+		PermCategoryRead,
+		PermCategoryUpdate,
+		PermCategoryDelete,
 	},
 }
 

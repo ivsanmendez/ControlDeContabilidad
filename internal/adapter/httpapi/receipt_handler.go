@@ -27,8 +27,9 @@ type receiptSignRequest struct {
 }
 
 type receiptPayment struct {
-	Month  int     `json:"month"`
-	Amount float64 `json:"amount"`
+	Month        int     `json:"month"`
+	Amount       float64 `json:"amount"`
+	CategoryName string  `json:"category_name"`
 }
 
 type receiptData struct {
@@ -92,7 +93,7 @@ func (h *ReceiptHandler) ReceiptSignature(w http.ResponseWriter, r *http.Request
 	var payments []receiptPayment
 	var total float64
 	for _, c := range contributions {
-		payments = append(payments, receiptPayment{Month: c.Month, Amount: c.Amount})
+		payments = append(payments, receiptPayment{Month: c.Month, Amount: c.Amount, CategoryName: c.CategoryName})
 		total += c.Amount
 	}
 

@@ -32,13 +32,14 @@ func (s *Service) CreateContribution(
 	ctx context.Context,
 	callerID int64,
 	contributorID int64,
+	categoryID int64,
 	amount float64,
 	month int,
 	year int,
 	paymentDate time.Time,
 	paymentMethod PaymentMethod,
 ) (*Contribution, error) {
-	c, err := New(callerID, contributorID, amount, month, year, paymentDate, paymentMethod)
+	c, err := New(callerID, contributorID, categoryID, amount, month, year, paymentDate, paymentMethod)
 	if err != nil {
 		return nil, err
 	}

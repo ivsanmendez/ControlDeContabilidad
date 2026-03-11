@@ -22,12 +22,13 @@ func NewContributionRepo(db *sql.DB) *ContributionRepo {
 
 func (r *ContributionRepo) Save(ctx context.Context, c *contribution.Contribution) error {
 	const q = `
-		INSERT INTO contributions (contributor_id, amount, month, year, payment_date, payment_method, user_id, created_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		INSERT INTO contributions (contributor_id, category_id, amount, month, year, payment_date, payment_method, user_id, created_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 		RETURNING id`
 
 	err := r.db.QueryRowContext(ctx, q,
 		c.ContributorID,
+		c.CategoryID,
 		c.Amount,
 		c.Month,
 		c.Year,
@@ -48,7 +49,7 @@ func (r *ContributionRepo) Save(ctx context.Context, c *contribution.Contributio
 
 func (r *ContributionRepo) FindByID(ctx context.Context, id int64) (*contribution.Contribution, error) {
 	const q = `
-		SELECT id, contributor_id, amount, month, year, payment_date, payment_method, user_id, created_at
+		SELECT id, contributor_id, category_id, amount, month, year, payment_date, payment_method, user_id, created_at
 		FROM contributions
 		WHERE id = $1`
 
@@ -64,7 +65,7 @@ func (r *ContributionRepo) FindByID(ctx context.Context, id int64) (*contributio
 
 func (r *ContributionRepo) FindAll(ctx context.Context) ([]contribution.Contribution, error) {
 	const q = `
-		SELECT id, contributor_id, amount, month, year, payment_date, payment_method, user_id, created_at
+		SELECT id, contributor_id, category_id, amount, month, year, payment_date, payment_method, user_id, created_at
 		FROM contributions
 		ORDER BY year DESC, month DESC`
 
@@ -73,7 +74,7 @@ func (r *ContributionRepo) FindAll(ctx context.Context) ([]contribution.Contribu
 
 func (r *ContributionRepo) FindByContributorAndYear(ctx context.Context, contributorID int64, year int) ([]contribution.Contribution, error) {
 	const q = `
-		SELECT id, contributor_id, amount, month, year, payment_date, payment_method, user_id, created_at
+		SELECT id, contributor_id, category_id, amount, month, year, payment_date, payment_method, user_id, created_at
 		FROM contributions
 		WHERE contributor_id = $1 AND year = $2
 		ORDER BY month`
@@ -102,10 +103,12 @@ func (r *ContributionRepo) Delete(ctx context.Context, id int64) error {
 // --- Detailed (JOIN) queries ---
 
 const detailSelect = `
-	SELECT c.id, c.contributor_id, c.amount, c.month, c.year, c.payment_date, c.payment_method, c.user_id, c.created_at,
-	       ct.house_number, ct.name, ct.phone
+	SELECT c.id, c.contributor_id, c.category_id, c.amount, c.month, c.year, c.payment_date, c.payment_method, c.user_id, c.created_at,
+	       ct.house_number, ct.name, ct.phone,
+	       cc.name
 	FROM contributions c
-	JOIN contributors ct ON ct.id = c.contributor_id`
+	JOIN contributors ct ON ct.id = c.contributor_id
+	JOIN contribution_categories cc ON cc.id = c.category_id`
 
 func (r *ContributionRepo) FindDetailedByID(ctx context.Context, id int64) (*contribution.ContributionDetail, error) {
 	q := detailSelect + ` WHERE c.id = $1`
@@ -139,6 +142,7 @@ func (r *ContributionRepo) scanOne(ctx context.Context, query string, args ...an
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(
 		&c.ID,
 		&c.ContributorID,
+		&c.CategoryID,
 		&c.Amount,
 		&c.Month,
 		&c.Year,
@@ -169,6 +173,7 @@ func (r *ContributionRepo) scanMany(ctx context.Context, query string, args ...a
 		if err := rows.Scan(
 			&c.ID,
 			&c.ContributorID,
+			&c.CategoryID,
 			&c.Amount,
 			&c.Month,
 			&c.Year,
@@ -195,6 +200,7 @@ func (r *ContributionRepo) scanDetail(ctx context.Context, query string, args ..
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(
 		&d.ID,
 		&d.ContributorID,
+		&d.CategoryID,
 		&d.Amount,
 		&d.Month,
 		&d.Year,
@@ -205,6 +211,7 @@ func (r *ContributionRepo) scanDetail(ctx context.Context, query string, args ..
 		&d.HouseNumber,
 		&d.ContributorName,
 		&d.Phone,
+		&d.CategoryName,
 	)
 	if err != nil {
 		return nil, err
@@ -228,6 +235,7 @@ func (r *ContributionRepo) scanDetails(ctx context.Context, query string, args .
 		if err := rows.Scan(
 			&d.ID,
 			&d.ContributorID,
+			&d.CategoryID,
 			&d.Amount,
 			&d.Month,
 			&d.Year,
@@ -238,6 +246,7 @@ func (r *ContributionRepo) scanDetails(ctx context.Context, query string, args .
 			&d.HouseNumber,
 			&d.ContributorName,
 			&d.Phone,
+			&d.CategoryName,
 		); err != nil {
 			return nil, fmt.Errorf("scan contribution detail: %w", err)
 		}

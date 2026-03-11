@@ -1,7 +1,7 @@
 # Active Context
 
 ## Current Phase
-Security Folio for Receipts feature completed. Each receipt signing event now generates a unique persistent folio (`REC-YYYY-NNNNNN-XXXXXXXX`), included in signed data, stored in the database, and displayed on printed receipts. A verification endpoint allows folio lookup.
+Monthly Balance Report feature completed. A read-only report aggregates contributions (income) and expenses by month for a given year, displaying income vs expenses, monthly net balance, and running cumulative balance.
 
 ## Recent Decisions
 - Hexagonal architecture (ports & adapters) for the Go backend
@@ -32,6 +32,7 @@ Security Folio for Receipts feature completed. Each receipt signing event now ge
 - [x] SAT certificate signing + print-sign dialog
 - [x] Contribution category catalog
 - [x] Security Folio for receipts
+- [x] Monthly Balance Report
 - [ ] Build React UI for expense management — #4
 
 ## Open Questions

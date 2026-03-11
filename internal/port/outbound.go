@@ -8,6 +8,7 @@ import (
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contributor"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/expense"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/receipt"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/report"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/user"
 )
 
@@ -45,6 +46,9 @@ type CategoryRepository = category.Repository
 
 // ReceiptFolioRepository is the driven port for receipt folio persistence.
 type ReceiptFolioRepository = receipt.Repository
+
+// ReportRepository is the driven port for report aggregation queries.
+type ReportRepository = report.Repository
 
 // ReceiptSigner is the driven port for digitally signing receipt data.
 // The password is required per-call to decrypt the private key (SAT format).

@@ -9,6 +9,7 @@ import (
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contributor"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/expense"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/receipt"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/report"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/user"
 )
 
@@ -53,4 +54,9 @@ type ReceiptFolioService interface {
 	GenerateNewFolio(ctx context.Context, year int) (folio string, seq int, suffix string, err error)
 	SaveFolio(ctx context.Context, rf *receipt.ReceiptFolio) error
 	VerifyFolio(ctx context.Context, folio string) (*receipt.ReceiptFolio, error)
+}
+
+// ReportService is the driving port for report use cases.
+type ReportService interface {
+	GetMonthlyBalance(ctx context.Context, year int) (*report.MonthlyBalanceReport, error)
 }

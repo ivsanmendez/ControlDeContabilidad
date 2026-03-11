@@ -24,8 +24,26 @@
 - Receipt digital signature system (certsigner adapter, SAT certificate support)
 - Contribution category catalog (migration 008, domain/category, CRUD API + UI)
 - Security Folio for receipts (see below)
+- Monthly Balance Report (see below)
 
-## Recently Completed — Security Folio for Receipts
+## Recently Completed — Monthly Balance Report
+Read-only aggregation report showing income vs expenses by month for a given year.
+
+### What Was Built
+- **Domain** (`internal/domain/report/`):
+  - `report.go` — `MonthAggregate`, `MonthSummary`, `MonthlyBalanceReport` DTOs, `ErrInvalidYear`
+  - `service.go` — `Repository` interface, `Service` (`GetMonthlyBalance`)
+  - `service_test.go` — 4 unit tests (invalid year, empty year, computation, repo error)
+- **Postgres adapter** (`report_repo.go`): `AggregateIncomeByMonth` (SUM contributions), `AggregateExpensesByMonth` (SUM expenses)
+- **Ports**: `ReportService` (inbound), `ReportRepository` (outbound)
+- **Permission**: `report:read` added to both roles
+- **New endpoint**: `GET /reports/monthly-balance?year=YYYY` — returns 12-month report
+- **i18n**: `report_query_failed` key (ES + EN)
+- **Frontend**: Monthly balance page at `/reports/monthly-balance` with year selector, print support, totals row, negative balances in red
+- **Vite proxy**: `/reports` → `http://localhost:8080`
+- **Nav**: "Reporte Mensual" / "Monthly Report" link in header
+
+## Previously Completed — Security Folio for Receipts
 Persistent, unique folio numbers for every signed receipt. Provides audit trail and verification capability.
 
 ### What Was Built

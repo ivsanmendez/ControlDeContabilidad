@@ -46,4 +46,7 @@ var MessagesEN = map[string]string{
 	"receipt_folio_not_found":          "receipt folio not found",
 	"failed_to_generate_folio":         "failed to generate folio",
 	"failed_to_save_receipt":           "failed to save receipt",
+
+	// Reports
+	"report_query_failed": "report query failed",
 }

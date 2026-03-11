@@ -46,4 +46,7 @@ var MessagesES = map[string]string{
 	"receipt_folio_not_found":          "folio de recibo no encontrado",
 	"failed_to_generate_folio":         "no se pudo generar el folio",
 	"failed_to_save_receipt":           "no se pudo guardar el recibo",
+
+	// Reports
+	"report_query_failed": "error al generar el reporte",
 }

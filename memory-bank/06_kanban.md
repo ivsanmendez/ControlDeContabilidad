@@ -34,11 +34,14 @@
 _(none)_
 
 ### Review
-- #9 Rename project from ControlDeGastos to ControlDeContabilidad [`backend`, `infrastructure`] → PR #8
-- SAT certificate signing + print-sign dialog [`backend`, `frontend`] — not yet a GitHub issue
+_(none)_
 
 ### Done
 - #1 Implement PostgreSQL expense repository [`backend`, `domain`]
 - #2 Set up database migrations [`backend`, `infrastructure`]
 - #3 Add domain unit tests with fake adapters [`backend`, `domain`]
 - #5 Design and implement authentication [`backend`] — AAA framework (all 8 phases)
+- #9 Rename project from ControlDeGastos to ControlDeContabilidad [`backend`, `infrastructure`]
+- SAT certificate signing + print-sign dialog [`backend`, `frontend`]
+- Contribution category catalog [`backend`, `frontend`, `domain`] — migration 008, CRUD API + UI
+- Security Folio for receipts [`backend`, `frontend`, `domain`] — migration 009, persistent folios, verification endpoint

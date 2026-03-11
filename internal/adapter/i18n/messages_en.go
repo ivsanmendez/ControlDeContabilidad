@@ -42,4 +42,8 @@ var MessagesEN = map[string]string{
 	"failed_to_serialize_receipt_data":  "failed to serialize receipt data",
 	"invalid_certificate_password":     "invalid certificate password",
 	"failed_to_sign_receipt":           "failed to sign receipt",
+	"folio_required":                   "folio is required",
+	"receipt_folio_not_found":          "receipt folio not found",
+	"failed_to_generate_folio":         "failed to generate folio",
+	"failed_to_save_receipt":           "failed to save receipt",
 }

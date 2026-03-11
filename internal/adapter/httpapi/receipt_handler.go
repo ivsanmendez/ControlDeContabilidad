@@ -3,11 +3,14 @@ package httpapi
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
+	"log"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/i18n"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/receipt"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/port"
 )
 
@@ -15,6 +18,7 @@ import (
 type ReceiptHandler struct {
 	contribSvc     port.ContributionService
 	contributorSvc port.ContributorService
+	receiptSvc     port.ReceiptFolioService
 	signer         port.ReceiptSigner
 	tr             *i18n.Translator
 }
@@ -33,6 +37,7 @@ type receiptPayment struct {
 }
 
 type receiptData struct {
+	Folio           string           `json:"folio"`
 	ContributorID   int64            `json:"contributor_id"`
 	HouseNumber     string           `json:"house_number"`
 	ContributorName string           `json:"contributor_name"`
@@ -44,6 +49,7 @@ type receiptData struct {
 }
 
 type receiptSignatureResponse struct {
+	Folio       string      `json:"folio"`
 	Data        receiptData `json:"data"`
 	Signature   string      `json:"signature"`
 	Certificate string      `json:"certificate"`
@@ -75,6 +81,12 @@ func (h *ReceiptHandler) ReceiptSignature(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	claims, ok := ClaimsFromContext(r.Context())
+	if !ok {
+		writeErrorT(w, r, h.tr, http.StatusUnauthorized, "no_claims_in_context")
+		return
+	}
+
 	// Fetch contributor info
 	contrib, err := h.contributorSvc.GetContributor(r.Context(), req.ContributorID)
 	if err != nil {
@@ -89,7 +101,15 @@ func (h *ReceiptHandler) ReceiptSignature(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Build receipt data
+	// Generate security folio
+	now := time.Now().UTC()
+	folio, seq, suffix, err := h.receiptSvc.GenerateNewFolio(r.Context(), now.Year())
+	if err != nil {
+		writeErrorT(w, r, h.tr, http.StatusInternalServerError, "failed_to_generate_folio")
+		return
+	}
+
+	// Build receipt data (folio included in canonical JSON)
 	var payments []receiptPayment
 	var total float64
 	for _, c := range contributions {
@@ -98,6 +118,7 @@ func (h *ReceiptHandler) ReceiptSignature(w http.ResponseWriter, r *http.Request
 	}
 
 	data := receiptData{
+		Folio:           folio,
 		ContributorID:   req.ContributorID,
 		HouseNumber:     contrib.HouseNumber,
 		ContributorName: contrib.Name,
@@ -105,7 +126,7 @@ func (h *ReceiptHandler) ReceiptSignature(w http.ResponseWriter, r *http.Request
 		Payments:        payments,
 		Total:           total,
 		SignerName:      req.SignerName,
-		GeneratedAt:     time.Now().UTC(),
+		GeneratedAt:     now,
 	}
 
 	// Build canonical JSON for signing
@@ -125,11 +146,63 @@ func (h *ReceiptHandler) ReceiptSignature(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Persist the signed receipt folio
+	rf := receipt.ReceiptFolio{
+		Folio:         folio,
+		YearIssued:    now.Year(),
+		SeqNumber:     seq,
+		UUIDSuffix:    suffix,
+		ContributorID: req.ContributorID,
+		ReceiptYear:   req.Year,
+		SignerName:    req.SignerName,
+		UserID:        claims.UserID,
+		CanonicalJSON: canonical,
+		Signature:     sig,
+		Certificate:   h.signer.Certificate(),
+		SignedAt:      now,
+	}
+	if err := h.receiptSvc.SaveFolio(r.Context(), &rf); err != nil {
+		log.Printf("WARNING: receipt signed but failed to persist folio %s: %v", folio, err)
+		writeErrorT(w, r, h.tr, http.StatusInternalServerError, "failed_to_save_receipt")
+		return
+	}
+
 	resp := receiptSignatureResponse{
+		Folio:       folio,
 		Data:        data,
 		Signature:   base64.StdEncoding.EncodeToString(sig),
 		Certificate: base64.StdEncoding.EncodeToString(h.signer.Certificate()),
 	}
 
 	writeJSON(w, http.StatusOK, resp)
+}
+
+// VerifyReceipt handles GET /receipts/verify/{folio}.
+func (h *ReceiptHandler) VerifyReceipt(w http.ResponseWriter, r *http.Request) {
+	folio := r.PathValue("folio")
+	if folio == "" {
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "folio_required")
+		return
+	}
+
+	rf, err := h.receiptSvc.VerifyFolio(r.Context(), folio)
+	if err != nil {
+		if errors.Is(err, receipt.ErrNotFound) {
+			writeErrorT(w, r, h.tr, http.StatusNotFound, "receipt_folio_not_found")
+			return
+		}
+		writeErrorT(w, r, h.tr, http.StatusInternalServerError, "receipt_folio_not_found")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{
+		"folio":          rf.Folio,
+		"contributor_id": rf.ContributorID,
+		"receipt_year":   rf.ReceiptYear,
+		"signer_name":   rf.SignerName,
+		"signed_at":     rf.SignedAt,
+		"canonical_json": base64.StdEncoding.EncodeToString(rf.CanonicalJSON),
+		"signature":      base64.StdEncoding.EncodeToString(rf.Signature),
+		"certificate":    base64.StdEncoding.EncodeToString(rf.Certificate),
+	})
 }

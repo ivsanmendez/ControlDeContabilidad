@@ -46,13 +46,27 @@ The Go backend follows hexagonal architecture to support future AI agent adapter
 ControlDeContabilidad/
 ├── cmd/api/main.go              # Composition root (wires all adapters)
 ├── internal/
-│   ├── domain/expense/          # Core hexagon (zero external deps)
+│   ├── domain/expense/          # Expense hexagon (zero external deps)
 │   │   ├── expense.go           # Entity, factory, domain errors
 │   │   ├── event.go             # Domain events
 │   │   └── service.go           # Service + outbound port interfaces
+│   ├── domain/contribution/     # Contribution hexagon
+│   │   ├── contribution.go      # Entity (CategoryID), factory, errors, ContributionDetail DTO
+│   │   └── service.go           # Repository interface + Service (CRUD use cases)
+│   ├── domain/contributor/      # Contributor hexagon
+│   │   ├── contributor.go       # Entity, factory, errors
+│   │   └── service.go           # Repository interface + Service
+│   ├── domain/category/         # Contribution category catalog hexagon
+│   │   ├── category.go          # Entity (Name, Description, IsActive), factory, errors
+│   │   └── service.go           # Repository interface + Service (CRUD + ListActive)
+│   ├── domain/receipt/          # Receipt folio hexagon (security folios)
+│   │   ├── receipt.go           # Entity (ReceiptFolio), folio generation, errors
+│   │   └── service.go           # Repository interface + Service (GenerateNewFolio, SaveFolio, VerifyFolio)
+│   ├── domain/user/             # User/auth hexagon
+│   │   └── ...                  # Entity, tokens, permissions, audit, service
 │   ├── port/
-│   │   ├── inbound.go           # Driving port (ExpenseService interface)
-│   │   └── outbound.go          # EventSubscriber + type aliases
+│   │   ├── inbound.go           # Driving ports (ExpenseService, AuthService, ContributionService, ContributorService, CategoryService, ReceiptFolioService)
+│   │   └── outbound.go          # Type aliases for driven ports (repos) + EventSubscriber, ReceiptSigner, ReceiptFolioRepository
 │   └── adapter/
 │       ├── httpapi/             # HTTP driving adapter
 │       ├── postgres/            # PostgreSQL driven adapter

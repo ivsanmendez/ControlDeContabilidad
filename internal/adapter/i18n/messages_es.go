@@ -42,4 +42,8 @@ var MessagesES = map[string]string{
 	"failed_to_serialize_receipt_data":  "no se pudieron serializar los datos del recibo",
 	"invalid_certificate_password":     "contraseña de certificado inválida",
 	"failed_to_sign_receipt":           "no se pudo firmar el recibo",
+	"folio_required":                   "el folio es requerido",
+	"receipt_folio_not_found":          "folio de recibo no encontrado",
+	"failed_to_generate_folio":         "no se pudo generar el folio",
+	"failed_to_save_receipt":           "no se pudo guardar el recibo",
 }

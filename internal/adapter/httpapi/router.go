@@ -10,14 +10,14 @@ import (
 )
 
 // RegisterRoutes wires all HTTP routes onto the given mux.
-func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc port.AuthService, contribSvc port.ContributionService, contributorSvc port.ContributorService, categorySvc port.CategoryService, jwtIssuer *jwtadapter.Issuer, signer port.ReceiptSigner, tr *i18n.Translator) {
+func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc port.AuthService, contribSvc port.ContributionService, contributorSvc port.ContributorService, categorySvc port.CategoryService, receiptSvc port.ReceiptFolioService, jwtIssuer *jwtadapter.Issuer, signer port.ReceiptSigner, tr *i18n.Translator) {
 	auth := RequireAuth(jwtIssuer, tr)
 	expH := &ExpenseHandler{svc: expenseSvc, tr: tr}
 	authH := &AuthHandler{svc: authSvc, tr: tr}
 	contribH := &ContributionHandler{svc: contribSvc, tr: tr}
 	contributorH := &ContributorHandler{svc: contributorSvc, tr: tr}
 	categoryH := &CategoryHandler{svc: categorySvc, tr: tr}
-	receiptH := &ReceiptHandler{contribSvc: contribSvc, contributorSvc: contributorSvc, signer: signer, tr: tr}
+	receiptH := &ReceiptHandler{contribSvc: contribSvc, contributorSvc: contributorSvc, receiptSvc: receiptSvc, signer: signer, tr: tr}
 
 	// Public routes
 	mux.HandleFunc("GET /health", Health)
@@ -113,5 +113,11 @@ func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc 
 	mux.Handle("POST /contributions/receipt-signature", Chain(
 		http.HandlerFunc(receiptH.ReceiptSignature),
 		auth, RequirePermission(user.PermContributionRead, tr),
+	))
+
+	// Receipt folio verification
+	mux.Handle("GET /receipts/verify/{folio}", Chain(
+		http.HandlerFunc(receiptH.VerifyReceipt),
+		auth, RequirePermission(user.PermReceiptVerify, tr),
 	))
 }

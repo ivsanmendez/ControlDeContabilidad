@@ -18,6 +18,7 @@ import (
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contribution"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contributor"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/expense"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/receipt"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/user"
 )
 
@@ -46,6 +47,7 @@ func main() {
 	contributorRepo := postgres.NewContributorRepo(db)
 	contribRepo := postgres.NewContributionRepo(db)
 	categoryRepo := postgres.NewCategoryRepo(db)
+	receiptFolioRepo := postgres.NewReceiptFolioRepo(db)
 	bus := eventbus.New()
 	hasher := bcryptadapter.New()
 	jwtIssuer := jwtadapter.NewIssuer(jwtSecret)
@@ -65,13 +67,14 @@ func main() {
 	contributorSvc := contributor.NewService(contributorRepo)
 	contribSvc := contribution.NewService(contribRepo)
 	categorySvc := category.NewService(categoryRepo)
+	receiptSvc := receipt.NewService(receiptFolioRepo)
 
 	// i18n translator
 	tr := i18n.New()
 
 	// Inbound adapters
 	mux := http.NewServeMux()
-	httpapi.RegisterRoutes(mux, expenseSvc, authSvc, contribSvc, contributorSvc, categorySvc, jwtIssuer, signer, tr)
+	httpapi.RegisterRoutes(mux, expenseSvc, authSvc, contribSvc, contributorSvc, categorySvc, receiptSvc, jwtIssuer, signer, tr)
 
 	// Serve static files (production React build)
 	staticDir := os.Getenv("STATIC_DIR")

@@ -22,6 +22,8 @@ const (
 	PermCategoryRead   Permission = "category:read"
 	PermCategoryUpdate Permission = "category:update"
 	PermCategoryDelete Permission = "category:delete"
+
+	PermReceiptVerify Permission = "receipt:verify"
 )
 
 var rolePermissions = map[Role][]Permission{
@@ -40,6 +42,7 @@ var rolePermissions = map[Role][]Permission{
 		PermCategoryRead,
 		PermCategoryUpdate,
 		PermCategoryDelete,
+		PermReceiptVerify,
 	},
 	RoleAdmin: {
 		PermExpenseCreate,
@@ -58,6 +61,7 @@ var rolePermissions = map[Role][]Permission{
 		PermCategoryRead,
 		PermCategoryUpdate,
 		PermCategoryDelete,
+		PermReceiptVerify,
 	},
 }
 

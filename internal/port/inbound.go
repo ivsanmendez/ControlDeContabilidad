@@ -8,6 +8,7 @@ import (
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contribution"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contributor"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/expense"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/receipt"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/user"
 )
 
@@ -45,4 +46,11 @@ type CategoryService interface {
 	ListActiveCategories(ctx context.Context) ([]category.Category, error)
 	UpdateCategory(ctx context.Context, id int64, name, description string, isActive bool) (*category.Category, error)
 	DeleteCategory(ctx context.Context, id int64) error
+}
+
+// ReceiptFolioService is the driving port for receipt folio use cases.
+type ReceiptFolioService interface {
+	GenerateNewFolio(ctx context.Context, year int) (folio string, seq int, suffix string, err error)
+	SaveFolio(ctx context.Context, rf *receipt.ReceiptFolio) error
+	VerifyFolio(ctx context.Context, folio string) (*receipt.ReceiptFolio, error)
 }

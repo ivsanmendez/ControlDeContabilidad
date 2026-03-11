@@ -22,32 +22,49 @@
   - Pod: API + PostgreSQL + cloudflared containers
 - Contributor + contribution management (CRUD endpoints + React UI)
 - Receipt digital signature system (certsigner adapter, SAT certificate support)
+- Contribution category catalog (migration 008, domain/category, CRUD API + UI)
+- Security Folio for receipts (see below)
 
-## Recently Completed — SAT Certificate Signing + Print-Sign Dialog
-- **certsigner adapter** rewritten for SAT format:
-  - Supports DER-encoded encrypted PKCS#8 (`.key`), PEM encrypted PKCS#8, and unencrypted PKCS#8/PKCS#1 fallback
-  - Private key stored as raw encrypted bytes, decrypted per `Sign()` call with password
-  - Added `github.com/youmark/pkcs8` dependency
-- **ReceiptSigner port** updated: `Sign(data []byte, password string) ([]byte, error)`
-- **Receipt endpoint** changed from `GET` to `POST /contributions/receipt-signature`:
-  - Request body: `{ contributor_id, year, password, signer_name }`
-  - `signer_name` included in signed data
-  - Returns 401 on wrong password, 503 if signer not configured
-- **Frontend print-sign dialog** (`receipt-sign-dialog.tsx`):
-  - Dialog with Signer Name + Certificate Password fields
-  - Uses `useMutation` (was `useQuery`) — triggered on demand
-  - On success: renders signer name on signature line + QR code with signed payload, then `window.print()`
+## Recently Completed — Security Folio for Receipts
+Persistent, unique folio numbers for every signed receipt. Provides audit trail and verification capability.
+
+### What Was Built
+- **Migration 009**: `receipt_folio_counters` (per-year atomic sequence) + `receipt_folios` tables
+- **Domain** (`internal/domain/receipt/`):
+  - `receipt.go` — `ReceiptFolio` entity, `GenerateFolio()`, `GenerateUUIDSuffix()`, `ErrNotFound`
+  - `service.go` — `Repository` interface, `Service` (`GenerateNewFolio`, `SaveFolio`, `VerifyFolio`)
+- **Postgres adapter** (`receipt_folio_repo.go`): atomic `NextSequence`, `Save`, `FindByFolio`
+- **Ports**: `ReceiptFolioService` (inbound), `ReceiptFolioRepository` (outbound)
+- **Permission**: `receipt:verify` added to both roles
+- **Updated receipt handler**: folio generation → included in canonical JSON → signed → persisted
+- **New endpoint**: `GET /receipts/verify/{folio}` — authenticated folio verification
+- **i18n**: 4 new error keys (ES + EN)
+- **Frontend**: folio in receipt header, QR encodes folio string, folio text below QR
+- **Vite proxy**: `/receipts` → `http://localhost:8080`
+
+### Folio Format
+```
+REC-{YYYY}-{NNNNNN}-{XXXXXXXX}
+```
+Example: `REC-2026-000001-A3F7B2C1`
+
+## Previously Completed — Contribution Category Catalog
+- Migration 008: `contribution_categories` table, "General" seed, backfill, composite unique constraint
+- Domain: `internal/domain/category/` with entity, service, repository
+- Full CRUD API + frontend page at `/contribution-categories`
+- Contribution form category selector, receipt multi-category cells
+
+## Previously Completed — SAT Certificate Signing + Print-Sign Dialog
+- certsigner adapter (SAT format: DER/PEM encrypted PKCS#8, per-request decryption)
+- ReceiptSigner port: `Sign(data, password)`
+- Receipt endpoint: `POST /contributions/receipt-signature`
+- Frontend print-sign dialog flow
 
 ## Previously Completed — AAA Framework (#5)
 - User domain: entity, tokens, permissions, audit, ports, service + 24 tests
 - Expense domain updated: `UserID` field, caller params, ownership checks + 18 tests
-- Port interfaces: `AuthService` driving port, updated `ExpenseService`
-- Database migrations: users, refresh_tokens, audit_logs, expenses.user_id
-- Driven adapters: postgres user/audit repos, bcrypt hasher, JWT issuer, updated expense repo
-- HTTP adapter: auth handlers, middleware (RequireAuth, RequirePermission), updated routes
-- Composition root wires all new services
-- Config: JWT_SECRET in mise, docker-compose, CI
-- Go upgraded 1.23 → 1.24, Dockerfile + CI + mise updated
+- Port interfaces, DB migrations, driven adapters, HTTP middleware
+- Go upgraded 1.23 → 1.24
 
 ## What's Left to Build
 - React expense management UI (#4)

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/i18n"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/jwt"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/user"
 )
@@ -20,19 +21,19 @@ func ClaimsFromContext(ctx context.Context) (*jwt.Claims, bool) {
 }
 
 // RequireAuth returns middleware that validates the Bearer token and injects claims.
-func RequireAuth(issuer *jwt.Issuer) func(http.Handler) http.Handler {
+func RequireAuth(issuer *jwt.Issuer, tr *i18n.Translator) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			auth := r.Header.Get("Authorization")
 			if !strings.HasPrefix(auth, "Bearer ") {
-				writeError(w, http.StatusUnauthorized, "missing or invalid authorization header")
+				writeErrorT(w, r, tr, http.StatusUnauthorized, "missing_or_invalid_auth_header")
 				return
 			}
 
 			tokenStr := strings.TrimPrefix(auth, "Bearer ")
 			claims, err := issuer.Parse(tokenStr)
 			if err != nil {
-				writeError(w, http.StatusUnauthorized, "invalid or expired token")
+				writeErrorT(w, r, tr, http.StatusUnauthorized, "invalid_or_expired_token")
 				return
 			}
 
@@ -43,16 +44,16 @@ func RequireAuth(issuer *jwt.Issuer) func(http.Handler) http.Handler {
 }
 
 // RequirePermission returns middleware that checks role-based permissions.
-func RequirePermission(perm user.Permission) func(http.Handler) http.Handler {
+func RequirePermission(perm user.Permission, tr *i18n.Translator) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			claims, ok := ClaimsFromContext(r.Context())
 			if !ok {
-				writeError(w, http.StatusUnauthorized, "no claims in context")
+				writeErrorT(w, r, tr, http.StatusUnauthorized, "no_claims_in_context")
 				return
 			}
 			if !user.RoleHasPermission(claims.Role, perm) {
-				writeError(w, http.StatusForbidden, "insufficient permissions")
+				writeErrorT(w, r, tr, http.StatusForbidden, "insufficient_permissions")
 				return
 			}
 			next.ServeHTTP(w, r)

@@ -11,6 +11,7 @@ import (
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/certsigner"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/eventbus"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/httpapi"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/i18n"
 	jwtadapter "github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/jwt"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/postgres"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contribution"
@@ -62,9 +63,12 @@ func main() {
 	contributorSvc := contributor.NewService(contributorRepo)
 	contribSvc := contribution.NewService(contribRepo)
 
+	// i18n translator
+	tr := i18n.New()
+
 	// Inbound adapters
 	mux := http.NewServeMux()
-	httpapi.RegisterRoutes(mux, expenseSvc, authSvc, contribSvc, contributorSvc, jwtIssuer, signer)
+	httpapi.RegisterRoutes(mux, expenseSvc, authSvc, contribSvc, contributorSvc, jwtIssuer, signer, tr)
 
 	// Serve static files (production React build)
 	staticDir := os.Getenv("STATIC_DIR")

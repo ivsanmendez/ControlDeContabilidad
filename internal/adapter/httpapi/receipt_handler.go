@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/i18n"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/port"
 )
 
@@ -15,6 +16,7 @@ type ReceiptHandler struct {
 	contribSvc     port.ContributionService
 	contributorSvc port.ContributorService
 	signer         port.ReceiptSigner
+	tr             *i18n.Translator
 }
 
 type receiptSignRequest struct {
@@ -49,40 +51,40 @@ type receiptSignatureResponse struct {
 // ReceiptSignature handles POST /contributions/receipt-signature.
 func (h *ReceiptHandler) ReceiptSignature(w http.ResponseWriter, r *http.Request) {
 	if !h.signer.Available() {
-		writeError(w, http.StatusServiceUnavailable, "receipt signing is not configured")
+		writeErrorT(w, r, h.tr, http.StatusServiceUnavailable, "receipt_signing_not_configured")
 		return
 	}
 
 	var req receiptSignRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request body")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_request_body")
 		return
 	}
 
 	if req.ContributorID == 0 || req.Year == 0 {
-		writeError(w, http.StatusBadRequest, "contributor_id and year are required")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "contributor_id_and_year_required")
 		return
 	}
 	if req.Password == "" {
-		writeError(w, http.StatusBadRequest, "password is required")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "password_required")
 		return
 	}
 	if req.SignerName == "" {
-		writeError(w, http.StatusBadRequest, "signer_name is required")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "signer_name_required")
 		return
 	}
 
 	// Fetch contributor info
 	contrib, err := h.contributorSvc.GetContributor(r.Context(), req.ContributorID)
 	if err != nil {
-		writeError(w, http.StatusNotFound, "contributor not found")
+		writeErrorT(w, r, h.tr, http.StatusNotFound, "contributor_not_found")
 		return
 	}
 
 	// Fetch contributions for that year
 	contributions, err := h.contribSvc.ListContributions(r.Context(), req.ContributorID, req.Year)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to load contributions")
+		writeErrorT(w, r, h.tr, http.StatusInternalServerError, "failed_to_load_contributions")
 		return
 	}
 
@@ -108,17 +110,17 @@ func (h *ReceiptHandler) ReceiptSignature(w http.ResponseWriter, r *http.Request
 	// Build canonical JSON for signing
 	canonical, err := json.Marshal(data)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to serialize receipt data")
+		writeErrorT(w, r, h.tr, http.StatusInternalServerError, "failed_to_serialize_receipt_data")
 		return
 	}
 
 	sig, err := h.signer.Sign(canonical, req.Password)
 	if err != nil {
 		if strings.Contains(err.Error(), "decrypt") {
-			writeError(w, http.StatusUnauthorized, "invalid certificate password")
+			writeErrorT(w, r, h.tr, http.StatusUnauthorized, "invalid_certificate_password")
 			return
 		}
-		writeError(w, http.StatusInternalServerError, "failed to sign receipt")
+		writeErrorT(w, r, h.tr, http.StatusInternalServerError, "failed_to_sign_receipt")
 		return
 	}
 

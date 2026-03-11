@@ -7,7 +7,8 @@ PORT = "8080"
 APP_NAME = "ControlDeContabilidad"
 DATABASE_URL = { required = true }
 JWT_SECRET = { required = true }
-LOG_LEVEL = { required = true }
+SIGN_CERT_PATH = { required = true }
+SIGN_KEY_PATH = { required = true }
 
 [tasks.build]
 description = "Build the Go API binary"

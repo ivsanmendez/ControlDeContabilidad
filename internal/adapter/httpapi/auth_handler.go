@@ -7,12 +7,14 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/i18n"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/user"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/port"
 )
 
 type AuthHandler struct {
 	svc port.AuthService
+	tr  *i18n.Translator
 }
 
 type registerRequest struct {
@@ -47,7 +49,7 @@ type tokenResponse struct {
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req registerRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request body")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_request_body")
 		return
 	}
 
@@ -59,7 +61,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		case errors.Is(err, user.ErrInvalidEmail), errors.Is(err, user.ErrWeakPassword):
 			writeError(w, http.StatusUnprocessableEntity, err.Error())
 		default:
-			writeError(w, http.StatusInternalServerError, "registration failed")
+			writeErrorT(w, r, h.tr, http.StatusInternalServerError, "registration_failed")
 		}
 		return
 	}
@@ -70,7 +72,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req loginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request body")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_request_body")
 		return
 	}
 
@@ -79,7 +81,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, user.ErrInvalidCredentials) {
 			writeError(w, http.StatusUnauthorized, err.Error())
 		} else {
-			writeError(w, http.StatusInternalServerError, "login failed")
+			writeErrorT(w, r, h.tr, http.StatusInternalServerError, "login_failed")
 		}
 		return
 	}
@@ -93,7 +95,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 	var req refreshRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request body")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_request_body")
 		return
 	}
 
@@ -103,9 +105,9 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 		case errors.Is(err, user.ErrTokenRevoked):
 			writeError(w, http.StatusForbidden, err.Error())
 		case errors.Is(err, user.ErrTokenExpired), errors.Is(err, user.ErrTokenNotFound):
-			writeError(w, http.StatusUnauthorized, "invalid or expired refresh token")
+			writeErrorT(w, r, h.tr, http.StatusUnauthorized, "invalid_or_expired_refresh_token")
 		default:
-			writeError(w, http.StatusInternalServerError, "token refresh failed")
+			writeErrorT(w, r, h.tr, http.StatusInternalServerError, "token_refresh_failed")
 		}
 		return
 	}
@@ -119,15 +121,15 @@ func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	var req logoutRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request body")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_request_body")
 		return
 	}
 
 	if err := h.svc.Logout(r.Context(), req.RefreshToken, auditInfoFromRequest(r)); err != nil {
 		if errors.Is(err, user.ErrTokenNotFound) {
-			writeError(w, http.StatusUnauthorized, "invalid refresh token")
+			writeErrorT(w, r, h.tr, http.StatusUnauthorized, "invalid_refresh_token")
 		} else {
-			writeError(w, http.StatusInternalServerError, "logout failed")
+			writeErrorT(w, r, h.tr, http.StatusInternalServerError, "logout_failed")
 		}
 		return
 	}
@@ -138,13 +140,13 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
 	claims, ok := ClaimsFromContext(r.Context())
 	if !ok {
-		writeError(w, http.StatusUnauthorized, "no claims in context")
+		writeErrorT(w, r, h.tr, http.StatusUnauthorized, "no_claims_in_context")
 		return
 	}
 
 	u, err := h.svc.GetUser(r.Context(), claims.UserID)
 	if err != nil {
-		writeError(w, http.StatusNotFound, "user not found")
+		writeErrorT(w, r, h.tr, http.StatusNotFound, "user_not_found")
 		return
 	}
 

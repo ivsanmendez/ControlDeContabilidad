@@ -6,12 +6,14 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/i18n"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contributor"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/port"
 )
 
 type ContributorHandler struct {
 	svc port.ContributorService
+	tr  *i18n.Translator
 }
 
 type createContributorRequest struct {
@@ -28,13 +30,13 @@ type updateContributorRequest struct {
 func (h *ContributorHandler) Create(w http.ResponseWriter, r *http.Request) {
 	claims, ok := ClaimsFromContext(r.Context())
 	if !ok {
-		writeError(w, http.StatusUnauthorized, "no claims in context")
+		writeErrorT(w, r, h.tr, http.StatusUnauthorized, "no_claims_in_context")
 		return
 	}
 
 	var req createContributorRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request body")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_request_body")
 		return
 	}
 
@@ -62,14 +64,14 @@ func (h *ContributorHandler) List(w http.ResponseWriter, r *http.Request) {
 func (h *ContributorHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid id")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
 		return
 	}
 
 	c, err := h.svc.GetContributor(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, contributor.ErrNotFound) {
-			writeError(w, http.StatusNotFound, err.Error())
+			writeErrorT(w, r, h.tr, http.StatusNotFound, "contributor_not_found")
 		} else {
 			writeError(w, http.StatusInternalServerError, err.Error())
 		}
@@ -81,20 +83,20 @@ func (h *ContributorHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 func (h *ContributorHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid id")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
 		return
 	}
 
 	var req updateContributorRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request body")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_request_body")
 		return
 	}
 
 	c, err := h.svc.UpdateContributor(r.Context(), id, req.Name, req.Phone)
 	if err != nil {
 		if errors.Is(err, contributor.ErrNotFound) {
-			writeError(w, http.StatusNotFound, err.Error())
+			writeErrorT(w, r, h.tr, http.StatusNotFound, "contributor_not_found")
 		} else {
 			writeError(w, http.StatusUnprocessableEntity, err.Error())
 		}
@@ -106,13 +108,13 @@ func (h *ContributorHandler) Update(w http.ResponseWriter, r *http.Request) {
 func (h *ContributorHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid id")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
 		return
 	}
 
 	if err := h.svc.DeleteContributor(r.Context(), id); err != nil {
 		if errors.Is(err, contributor.ErrNotFound) {
-			writeError(w, http.StatusNotFound, err.Error())
+			writeErrorT(w, r, h.tr, http.StatusNotFound, "contributor_not_found")
 		} else {
 			writeError(w, http.StatusInternalServerError, err.Error())
 		}

@@ -7,12 +7,14 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/i18n"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contribution"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/port"
 )
 
 type ContributionHandler struct {
 	svc port.ContributionService
+	tr  *i18n.Translator
 }
 
 type createContributionRequest struct {
@@ -27,19 +29,19 @@ type createContributionRequest struct {
 func (h *ContributionHandler) Create(w http.ResponseWriter, r *http.Request) {
 	claims, ok := ClaimsFromContext(r.Context())
 	if !ok {
-		writeError(w, http.StatusUnauthorized, "no claims in context")
+		writeErrorT(w, r, h.tr, http.StatusUnauthorized, "no_claims_in_context")
 		return
 	}
 
 	var req createContributionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request body")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_request_body")
 		return
 	}
 
 	paymentDate, err := time.Parse("2006-01-02", req.PaymentDate)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid payment_date format, expected YYYY-MM-DD")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_payment_date_format")
 		return
 	}
 
@@ -73,7 +75,7 @@ func (h *ContributionHandler) List(w http.ResponseWriter, r *http.Request) {
 		var err error
 		contributorID, err = strconv.ParseInt(contributorIDStr, 10, 64)
 		if err != nil {
-			writeError(w, http.StatusBadRequest, "invalid contributor_id")
+			writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_contributor_id")
 			return
 		}
 	}
@@ -83,7 +85,7 @@ func (h *ContributionHandler) List(w http.ResponseWriter, r *http.Request) {
 		var err error
 		year, err = strconv.Atoi(yearStr)
 		if err != nil {
-			writeError(w, http.StatusBadRequest, "invalid year")
+			writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_year")
 			return
 		}
 	}
@@ -99,14 +101,14 @@ func (h *ContributionHandler) List(w http.ResponseWriter, r *http.Request) {
 func (h *ContributionHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid id")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
 		return
 	}
 
 	c, err := h.svc.GetContribution(r.Context(), id)
 	if err != nil {
 		if errors.Is(err, contribution.ErrNotFound) {
-			writeError(w, http.StatusNotFound, err.Error())
+			writeErrorT(w, r, h.tr, http.StatusNotFound, "contribution_not_found")
 		} else {
 			writeError(w, http.StatusInternalServerError, err.Error())
 		}
@@ -118,13 +120,13 @@ func (h *ContributionHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 func (h *ContributionHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid id")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
 		return
 	}
 
 	if err := h.svc.DeleteContribution(r.Context(), id); err != nil {
 		if errors.Is(err, contribution.ErrNotFound) {
-			writeError(w, http.StatusNotFound, err.Error())
+			writeErrorT(w, r, h.tr, http.StatusNotFound, "contribution_not_found")
 		} else {
 			writeError(w, http.StatusInternalServerError, err.Error())
 		}

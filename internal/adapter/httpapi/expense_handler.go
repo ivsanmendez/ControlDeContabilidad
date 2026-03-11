@@ -7,12 +7,14 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/i18n"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/expense"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/port"
 )
 
 type ExpenseHandler struct {
 	svc port.ExpenseService
+	tr  *i18n.Translator
 }
 
 type createExpenseRequest struct {
@@ -25,13 +27,13 @@ type createExpenseRequest struct {
 func (h *ExpenseHandler) Create(w http.ResponseWriter, r *http.Request) {
 	claims, ok := ClaimsFromContext(r.Context())
 	if !ok {
-		writeError(w, http.StatusUnauthorized, "no claims in context")
+		writeErrorT(w, r, h.tr, http.StatusUnauthorized, "no_claims_in_context")
 		return
 	}
 
 	var req createExpenseRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "invalid request body")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_request_body")
 		return
 	}
 	e, err := h.svc.CreateExpense(r.Context(), claims.UserID, req.Description, req.Amount, req.Category, req.Date)
@@ -45,7 +47,7 @@ func (h *ExpenseHandler) Create(w http.ResponseWriter, r *http.Request) {
 func (h *ExpenseHandler) List(w http.ResponseWriter, r *http.Request) {
 	claims, ok := ClaimsFromContext(r.Context())
 	if !ok {
-		writeError(w, http.StatusUnauthorized, "no claims in context")
+		writeErrorT(w, r, h.tr, http.StatusUnauthorized, "no_claims_in_context")
 		return
 	}
 
@@ -60,13 +62,13 @@ func (h *ExpenseHandler) List(w http.ResponseWriter, r *http.Request) {
 func (h *ExpenseHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	claims, ok := ClaimsFromContext(r.Context())
 	if !ok {
-		writeError(w, http.StatusUnauthorized, "no claims in context")
+		writeErrorT(w, r, h.tr, http.StatusUnauthorized, "no_claims_in_context")
 		return
 	}
 
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid id")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
 		return
 	}
 	e, err := h.svc.GetExpense(r.Context(), claims.UserID, claims.Role, id)
@@ -84,13 +86,13 @@ func (h *ExpenseHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 func (h *ExpenseHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	claims, ok := ClaimsFromContext(r.Context())
 	if !ok {
-		writeError(w, http.StatusUnauthorized, "no claims in context")
+		writeErrorT(w, r, h.tr, http.StatusUnauthorized, "no_claims_in_context")
 		return
 	}
 
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid id")
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
 		return
 	}
 	if err := h.svc.DeleteExpense(r.Context(), claims.UserID, claims.Role, id); err != nil {

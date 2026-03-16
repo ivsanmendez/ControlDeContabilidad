@@ -11,15 +11,22 @@ CREATE TABLE expense_categories (
     updated_at  TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
 
--- 2. Seed the 4 legacy categories (using first user as owner)
-INSERT INTO expense_categories (name, description, is_active, user_id)
-SELECT name, description, TRUE, (SELECT id FROM users ORDER BY id LIMIT 1)
-FROM (VALUES
-    ('Comida', 'Gastos de comida'),
-    ('Transporte', 'Gastos de transporte'),
-    ('Vivienda', 'Gastos de vivienda'),
-    ('Otro', 'Gastos varios')
-) AS v(name, description);
+-- 2. Seed the 4 legacy categories (only if a user already exists)
+-- +goose StatementBegin
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM users LIMIT 1) THEN
+    INSERT INTO expense_categories (name, description, is_active, user_id)
+    SELECT name, description, TRUE, (SELECT id FROM users ORDER BY id LIMIT 1)
+    FROM (VALUES
+        ('Comida', 'Gastos de comida'),
+        ('Transporte', 'Gastos de transporte'),
+        ('Vivienda', 'Gastos de vivienda'),
+        ('Otro', 'Gastos varios')
+    ) AS v(name, description);
+  END IF;
+END $$;
+-- +goose StatementEnd
 
 -- 3. Add category_id column to expenses
 ALTER TABLE expenses ADD COLUMN category_id BIGINT;

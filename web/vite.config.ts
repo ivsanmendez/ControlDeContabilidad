@@ -5,10 +5,16 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    rollupOptions: {
+      maxParallelFileOps: 20,
+    },
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    conditions: ['import', 'browser', 'module', 'default'],
   },
   server: {
     proxy: {

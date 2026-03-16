@@ -5,7 +5,7 @@
 
 set -e
 
-PUBLIC_URL="https://cdg.meyis.work"
+PUBLIC_URL="https://cdc.meyis.work"
 
 echo "🚀 ControlDeContabilidad Deployment (Cloudflare Tunnel)"
 echo "   Public: $PUBLIC_URL"
@@ -36,11 +36,12 @@ cleanup() {
 # Function to deploy
 deploy() {
     echo "📦 Building application image..."
-    podman build -t controldecontabilidad:latest -f Dockerfile .
+    podman build --no-cache -t controldecontabilidad:latest -f Dockerfile .
 
     echo "🔧 Creating pod..."
     podman pod create --name controldecontabilidad \
-        -p 8080:8080
+        -p 8080:8080 \
+        -p 5432:5432
 
     echo "🐘 Starting PostgreSQL..."
     podman run -d --pod controldecontabilidad --name controldecontabilidad-db \
@@ -54,7 +55,7 @@ deploy() {
     echo "🚀 Starting API..."
     podman run -d --pod controldecontabilidad --name controldecontabilidad-api \
         --env-file .env.production \
-        -e STATIC_DIR=/web/dist \
+        -v /home/ism/scripts/keys:/home/ism/scripts/keys:ro \
         controldecontabilidad:latest
 
     echo "🌐 Starting Cloudflare Tunnel..."
@@ -70,7 +71,7 @@ deploy() {
     podman ps --pod --filter pod=controldecontabilidad
     echo
     echo "🌐 Application: $PUBLIC_URL"
-    echo "   Local:       http://localhost:8080"
+    echo "   Local: http://localhost:8080"
     echo
     echo "📝 Useful commands:"
     echo "  View API logs:    podman logs -f controldecontabilidad-api"

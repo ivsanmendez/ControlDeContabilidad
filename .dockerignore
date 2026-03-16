@@ -1,0 +1,9 @@
+web/node_modules
+web/dist
+web/.vite
+node_modules
+bin/
+.env
+.env.local
+.env.production
+*.log

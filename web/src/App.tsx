@@ -1,18 +1,21 @@
+import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { AppLayout } from '@/components/layout/app-layout'
-import { LoginPage } from '@/pages/login-page'
-import { RegisterPage } from '@/pages/register-page'
-import { ExpensesPage } from '@/pages/expenses-page'
-import { ContributorsPage } from '@/pages/contributors-page'
-import { ContributionsPage } from '@/pages/contributions-page'
-import { ContributionCategoriesPage } from '@/pages/contribution-categories-page'
-import { ExpenseCategoriesPage } from '@/pages/expense-categories-page'
-import { ContributionReceiptPage } from '@/pages/contribution-receipt-page'
-import { MonthlyBalancePage } from '@/pages/monthly-balance-page'
+
+const LoginPage = lazy(() => import('@/pages/login-page').then(m => ({ default: m.LoginPage })))
+const RegisterPage = lazy(() => import('@/pages/register-page').then(m => ({ default: m.RegisterPage })))
+const ExpensesPage = lazy(() => import('@/pages/expenses-page').then(m => ({ default: m.ExpensesPage })))
+const ContributorsPage = lazy(() => import('@/pages/contributors-page').then(m => ({ default: m.ContributorsPage })))
+const ContributionsPage = lazy(() => import('@/pages/contributions-page').then(m => ({ default: m.ContributionsPage })))
+const ContributionCategoriesPage = lazy(() => import('@/pages/contribution-categories-page').then(m => ({ default: m.ContributionCategoriesPage })))
+const ExpenseCategoriesPage = lazy(() => import('@/pages/expense-categories-page').then(m => ({ default: m.ExpenseCategoriesPage })))
+const ContributionReceiptPage = lazy(() => import('@/pages/contribution-receipt-page').then(m => ({ default: m.ContributionReceiptPage })))
+const MonthlyBalancePage = lazy(() => import('@/pages/monthly-balance-page').then(m => ({ default: m.MonthlyBalancePage })))
 
 function App() {
   return (
+    <Suspense fallback={null}>
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
@@ -29,6 +32,7 @@ function App() {
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </Suspense>
   )
 }
 

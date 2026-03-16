@@ -8,6 +8,28 @@ export default defineConfig({
   build: {
     rollupOptions: {
       maxParallelFileOps: 20,
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+            return 'vendor-react'
+          }
+          if (id.includes('node_modules/react-router-dom/') || id.includes('node_modules/@remix-run/')) {
+            return 'vendor-router'
+          }
+          if (id.includes('node_modules/@tanstack/')) {
+            return 'vendor-query'
+          }
+          if (id.includes('node_modules/i18next') || id.includes('node_modules/react-i18next')) {
+            return 'vendor-i18n'
+          }
+          if (id.includes('node_modules/lucide-react/')) {
+            return 'vendor-icons'
+          }
+          if (id.includes('node_modules/')) {
+            return 'vendor-misc'
+          }
+        },
+      },
     },
   },
   resolve: {

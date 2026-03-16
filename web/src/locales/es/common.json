@@ -1,0 +1,50 @@
+{
+  "nav": {
+    "expenses": "Gastos",
+    "contributors": "Contribuyentes",
+    "contributions": "Contribuciones",
+    "categories": "Categorias",
+    "expenseCategories": "Cat. Gastos",
+    "monthlyBalance": "Reporte Mensual"
+  },
+  "auth": {
+    "logout": "Cerrar sesión"
+  },
+  "buttons": {
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "clear": "Limpiar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "print": "Imprimir"
+  },
+  "loading": "Cargando...",
+  "paymentMethods": {
+    "cash": "Efectivo",
+    "transfer": "Transferencia",
+    "other": "Otro"
+  },
+  "months": {
+    "1": "Ene",
+    "2": "Feb",
+    "3": "Mar",
+    "4": "Abr",
+    "5": "May",
+    "6": "Jun",
+    "7": "Jul",
+    "8": "Ago",
+    "9": "Sep",
+    "10": "Oct",
+    "11": "Nov",
+    "12": "Dic"
+  },
+  "errors": {
+    "unexpected": "Ocurrió un error inesperado",
+    "sessionExpired": "Sesión expirada",
+    "requestFailed": "La solicitud falló"
+  },
+  "language": {
+    "es": "ES",
+    "en": "EN"
+  }
+}

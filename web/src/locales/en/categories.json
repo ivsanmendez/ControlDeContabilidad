@@ -1,0 +1,37 @@
+{
+  "title": "Contribution Categories",
+  "newCategory": "New Category",
+  "empty": "No categories yet",
+  "addFirst": "Add your first category",
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "form": {
+    "titleNew": "New Category",
+    "titleEdit": "Edit Category",
+    "name": "Name",
+    "namePlaceholder": "e.g. Vigilance",
+    "description": "Description",
+    "descriptionPlaceholder": "e.g. Monthly vigilance fee",
+    "status": "Status",
+    "submitCreate": "Create category",
+    "submittingCreate": "Creating...",
+    "submitEdit": "Save changes",
+    "submittingEdit": "Saving...",
+    "errorCreate": "Failed to create category",
+    "errorUpdate": "Failed to update category"
+  },
+  "table": {
+    "name": "Name",
+    "description": "Description",
+    "status": "Status"
+  },
+  "toast": {
+    "created": "Category created",
+    "updated": "Category updated",
+    "deleted": "Category deleted",
+    "errorDelete": "Failed to delete category",
+    "errorLoad": "Failed to load categories"
+  }
+}

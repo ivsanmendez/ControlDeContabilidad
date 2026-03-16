@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/ivsanmendez/ControlDeContabilidad/db/migrations"
 	bcryptadapter "github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/bcrypt"
@@ -96,9 +97,33 @@ func main() {
 	}
 	log.Printf("API listening on :%s", listenPort)
 	log.Printf("Serving static files from: %s", staticDir)
-	if err := http.ListenAndServe(":"+listenPort, mux); err != nil {
+	handler := spaContentNegotiation(mux, staticDir)
+	if err := http.ListenAndServe(":"+listenPort, handler); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// spaContentNegotiation wraps the mux to serve index.html for browser
+// navigation requests (GET + Accept: text/html + no file extension). This
+// prevents API wildcard routes like GET /contributions/{id} from catching
+// SPA client-side routes like /contributions/receipt when opened in a new tab.
+// Mirrors the Vite proxy bypass logic used in development.
+func spaContentNegotiation(next http.Handler, staticDir string) http.Handler {
+	indexPath := filepath.Join(staticDir, "index.html")
+	if _, err := os.Stat(indexPath); os.IsNotExist(err) {
+		return next
+	}
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet &&
+			r.URL.Path != "/health" &&
+			strings.Contains(r.Header.Get("Accept"), "text/html") &&
+			filepath.Ext(r.URL.Path) == "" {
+			http.ServeFile(w, r, indexPath)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 // serveSPA serves the React SPA and handles client-side routing

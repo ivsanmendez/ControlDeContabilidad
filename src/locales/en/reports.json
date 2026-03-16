@@ -1,0 +1,19 @@
+{
+  "title": "Monthly Balance Report",
+  "yearSelector": "Select Year",
+  "printHeader": "Monthly Balance Report — ARI",
+  "columns": {
+    "month": "Month",
+    "income": "Income",
+    "expenses": "Expenses",
+    "balance": "Monthly Balance",
+    "cumulative": "Cumulative Balance"
+  },
+  "rows": {
+    "totals": "TOTALS"
+  },
+  "toast": {
+    "errorLoad": "Failed to load report"
+  },
+  "empty": "No data for the selected year"
+}

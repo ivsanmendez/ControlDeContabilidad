@@ -1,0 +1,28 @@
+{
+  "title": "Expenses",
+  "newExpense": "New Expense",
+  "empty": "No expenses yet",
+  "addFirst": "Add your first expense",
+  "form": {
+    "title": "New Expense",
+    "description": "Description",
+    "amount": "Amount",
+    "category": "Category",
+    "date": "Date",
+    "submit": "Create expense",
+    "submitting": "Creating...",
+    "errorCreate": "Failed to create expense"
+  },
+  "table": {
+    "date": "Date",
+    "description": "Description",
+    "category": "Category",
+    "amount": "Amount"
+  },
+  "toast": {
+    "created": "Expense created",
+    "deleted": "Expense deleted",
+    "errorDelete": "Failed to delete expense",
+    "errorLoad": "Failed to load expenses"
+  }
+}

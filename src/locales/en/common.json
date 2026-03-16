@@ -1,0 +1,50 @@
+{
+  "nav": {
+    "expenses": "Expenses",
+    "contributors": "Contributors",
+    "contributions": "Contributions",
+    "categories": "Categories",
+    "expenseCategories": "Expense Cat.",
+    "monthlyBalance": "Monthly Report"
+  },
+  "auth": {
+    "logout": "Log out"
+  },
+  "buttons": {
+    "delete": "Delete",
+    "edit": "Edit",
+    "clear": "Clear",
+    "cancel": "Cancel",
+    "save": "Save",
+    "print": "Print"
+  },
+  "loading": "Loading...",
+  "paymentMethods": {
+    "cash": "Cash",
+    "transfer": "Transfer",
+    "other": "Other"
+  },
+  "months": {
+    "1": "Jan",
+    "2": "Feb",
+    "3": "Mar",
+    "4": "Apr",
+    "5": "May",
+    "6": "Jun",
+    "7": "Jul",
+    "8": "Aug",
+    "9": "Sep",
+    "10": "Oct",
+    "11": "Nov",
+    "12": "Dec"
+  },
+  "errors": {
+    "unexpected": "An unexpected error occurred",
+    "sessionExpired": "Session expired",
+    "requestFailed": "Request failed"
+  },
+  "language": {
+    "es": "ES",
+    "en": "EN"
+  }
+}

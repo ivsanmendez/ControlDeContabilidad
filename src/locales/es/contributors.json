@@ -1,0 +1,32 @@
+{
+  "title": "Contribuyentes",
+  "newContributor": "Nuevo Contribuyente",
+  "empty": "Aún no hay contribuyentes",
+  "addFirst": "Agrega tu primer contribuyente",
+  "form": {
+    "titleNew": "Nuevo Contribuyente",
+    "titleEdit": "Editar Contribuyente",
+    "houseNumber": "Número de Casa",
+    "houseNumberPlaceholder": "ej. 12A",
+    "name": "Nombre",
+    "phone": "Teléfono (opcional)",
+    "submitCreate": "Crear contribuyente",
+    "submitEdit": "Guardar cambios",
+    "submittingCreate": "Creando...",
+    "submittingEdit": "Guardando...",
+    "errorCreate": "No se pudo crear el contribuyente",
+    "errorUpdate": "No se pudo actualizar el contribuyente"
+  },
+  "table": {
+    "house": "Casa",
+    "name": "Nombre",
+    "phone": "Teléfono"
+  },
+  "toast": {
+    "created": "Contribuyente creado",
+    "updated": "Contribuyente actualizado",
+    "deleted": "Contribuyente eliminado",
+    "errorDelete": "No se pudo eliminar el contribuyente",
+    "errorLoad": "No se pudieron cargar los contribuyentes"
+  }
+}

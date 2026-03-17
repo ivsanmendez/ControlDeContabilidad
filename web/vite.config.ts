@@ -3,6 +3,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
+const apiBase = process.env.VITE_API_BASE ?? 'http://localhost:8080'
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
@@ -25,9 +27,6 @@ export default defineConfig({
           if (id.includes('node_modules/lucide-react/')) {
             return 'vendor-icons'
           }
-          if (id.includes('node_modules/')) {
-            return 'vendor-misc'
-          }
         },
       },
     },
@@ -40,10 +39,10 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/auth': 'http://localhost:8080',
-      '/expenses': 'http://localhost:8080',
+      '/auth': apiBase,
+      '/expenses': apiBase,
       '/contributors': {
-        target: 'http://localhost:8080',
+        target: apiBase,
         bypass(req) {
           if (req.headers.accept?.includes('text/html')) {
             return req.url
@@ -51,18 +50,18 @@ export default defineConfig({
         },
       },
       '/contributions': {
-        target: 'http://localhost:8080',
+        target: apiBase,
         bypass(req) {
           if (req.headers.accept?.includes('text/html')) {
             return req.url
           }
         },
       },
-      '/contribution-categories': 'http://localhost:8080',
-      '/expense-categories': 'http://localhost:8080',
-      '/receipts': 'http://localhost:8080',
-      '/reports': 'http://localhost:8080',
-      '/health': 'http://localhost:8080',
+      '/contribution-categories': apiBase,
+      '/expense-categories': apiBase,
+      '/receipts': apiBase,
+      '/reports': apiBase,
+      '/health': apiBase,
     },
   },
 })

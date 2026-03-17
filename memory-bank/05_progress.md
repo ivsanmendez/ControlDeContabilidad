@@ -25,8 +25,32 @@
 - Contribution category catalog (migration 008, domain/category, CRUD API + UI)
 - Security Folio for receipts (see below)
 - Monthly Balance Report (see below)
+- SPA content negotiation middleware (see below)
 
-## Recently Completed — Monthly Balance Report
+## Recently Completed — SPA Content Negotiation Fix
+Fixed production bug where browser navigation to SPA client-side routes was intercepted by API wildcard routes, causing auth errors.
+
+### Problem
+`window.open('/contributions/receipt?...', '_blank')` in a new tab sends a GET request to the server. Go's mux matched `GET /contributions/{id}` (with `id=receipt`) instead of serving the SPA. The auth middleware rejected the request because there was no JWT token in the browser navigation.
+
+### What Was Built
+- **`spaContentNegotiation()` middleware** (`cmd/api/main.go:106-127`): wraps the entire mux handler
+  - Intercepts GET requests where `Accept` header contains `text/html` and path has no file extension
+  - Serves `index.html` for browser navigation, letting React Router handle client-side routes
+  - Passes all other requests (API fetch calls, static files) through to the mux
+  - Excludes `/health` so monitoring tools always get JSON
+  - Gracefully disabled when `index.html` doesn't exist (dev mode without build)
+- Mirrors the Vite proxy `bypass` logic in `web/vite.config.ts` (lines 26, 34)
+
+### How It Works
+| Request Type | Accept Header | Result |
+|---|---|---|
+| Browser navigation (new tab, refresh) | `text/html,...` | Serves `index.html` → React Router |
+| SPA `fetch()` API calls | `*/*` | Passes to mux → API routes |
+| Static files (`.js`, `.css`, `.svg`) | varies, has extension | Passes to mux → file server |
+| Health check | any | Excluded → always returns JSON |
+
+## Previously Completed — Monthly Balance Report
 Read-only aggregation report showing income vs expenses by month for a given year.
 
 ### What Was Built

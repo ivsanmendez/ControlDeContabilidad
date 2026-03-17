@@ -1,7 +1,7 @@
 # Active Context
 
 ## Current Phase
-Monthly Balance Report feature completed. A read-only report aggregates contributions (income) and expenses by month for a given year, displaying income vs expenses, monthly net balance, and running cumulative balance.
+SPA content negotiation fix deployed. Resolved production bug where browser navigation to SPA routes (e.g., `/contributions/receipt`) was intercepted by API wildcard routes (`GET /contributions/{id}`), causing auth errors when opening pages in new tabs.
 
 ## Recent Decisions
 - Hexagonal architecture (ports & adapters) for the Go backend
@@ -23,6 +23,10 @@ Monthly Balance Report feature completed. A read-only report aggregates contribu
   - New permission: `receipt:verify` (both roles)
   - Verification endpoint: `GET /receipts/verify/{folio}`
   - Frontend: folio in receipt header, QR encodes folio string
+- SPA content negotiation middleware in `cmd/api/main.go`:
+  - `spaContentNegotiation()` wraps the mux, checks `Accept: text/html` for browser navigation
+  - Prevents API wildcard routes from catching SPA client-side routes in production
+  - Mirrors Vite proxy `bypass` logic used in development
 
 ## Next Steps
 - [x] Implement PostgreSQL repository (actual SQL queries) — #1

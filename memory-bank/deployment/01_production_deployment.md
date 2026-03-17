@@ -147,7 +147,14 @@ grep DATABASE_URL .env.production
 
 ### SPA routes not working
 
-The Go API serves `index.html` for all non-API routes. If broken:
-1. Verify React build: `podman exec controldecontabilidad-api ls /web/dist/`
-2. Verify `STATIC_DIR=/web/dist` is set
-3. Rebuild: `./deploy.sh deploy`
+The Go API uses two mechanisms to serve the React SPA in production:
+
+1. **`spaContentNegotiation` middleware** (`cmd/api/main.go`): intercepts browser navigation requests (GET + `Accept: text/html` + no file extension) and serves `index.html` before the mux can match API routes. This prevents wildcard API routes (e.g., `GET /contributions/{id}`) from catching SPA client-side routes (e.g., `/contributions/receipt`).
+
+2. **`serveSPA` catch-all**: the mux `/` handler serves static files from `STATIC_DIR` and falls back to `index.html` for unknown paths.
+
+If SPA routes return API errors (like `{"error":"...authorization..."}`) instead of the page:
+- The content negotiation middleware may not be active — check that `index.html` exists in `STATIC_DIR`
+- Verify React build: `podman exec controldecontabilidad-api ls /web/dist/`
+- Verify `STATIC_DIR=/web/dist` is set
+- Rebuild: `./deploy.sh deploy`

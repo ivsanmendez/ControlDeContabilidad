@@ -82,9 +82,9 @@ export function ContributionsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">{t('title')}</h1>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button variant="outline" onClick={handleViewReceipt}>
             {t('viewReceipt')}
           </Button>
@@ -102,7 +102,7 @@ export function ContributionsPage() {
         </div>
       </div>
 
-      <div className="flex items-end gap-4">
+      <div className="flex flex-wrap items-end gap-4">
         <div className="flex flex-col gap-1">
           <Label htmlFor="filterContributor" className="text-sm">{t('filter.contributor')}</Label>
           <Select value={filterContributorId} onValueChange={(v) => v && setFilterContributorId(v)}>

@@ -68,69 +68,107 @@ export function ContributionTable({ contributions, onEdit, onDelete }: Contribut
   const headClass = 'cursor-pointer select-none'
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className={headClass} onClick={() => toggleSort('house')}>
-            {t('table.house')} <SortIcon columnKey="house" sort={sort} />
-          </TableHead>
-          <TableHead className={headClass} onClick={() => toggleSort('contributor')}>
-            {t('table.contributor')} <SortIcon columnKey="contributor" sort={sort} />
-          </TableHead>
-          <TableHead className={headClass} onClick={() => toggleSort('phone')}>
-            {t('table.phone')} <SortIcon columnKey="phone" sort={sort} />
-          </TableHead>
-          <TableHead className={headClass} onClick={() => toggleSort('category')}>
-            {t('table.category')} <SortIcon columnKey="category" sort={sort} />
-          </TableHead>
-          <TableHead className={headClass} onClick={() => toggleSort('monthYear')}>
-            {t('table.monthYear')} <SortIcon columnKey="monthYear" sort={sort} />
-          </TableHead>
-          <TableHead className={`text-right ${headClass}`} onClick={() => toggleSort('amount')}>
-            {t('table.amount')} <SortIcon columnKey="amount" sort={sort} />
-          </TableHead>
-          <TableHead className={headClass} onClick={() => toggleSort('method')}>
-            {t('table.method')} <SortIcon columnKey="method" sort={sort} />
-          </TableHead>
-          <TableHead className={headClass} onClick={() => toggleSort('paymentDate')}>
-            {t('table.paymentDate')} <SortIcon columnKey="paymentDate" sort={sort} />
-          </TableHead>
-          <TableHead className="w-20" />
-        </TableRow>
-      </TableHeader>
-      <TableBody>
+    <>
+      {/* Mobile cards */}
+      <div className="flex flex-col divide-y md:hidden">
         {(sorted ?? []).map((c) => (
-          <TableRow key={c.ID}>
-            <TableCell className="font-medium">{c.HouseNumber}</TableCell>
-            <TableCell>{c.ContributorName}</TableCell>
-            <TableCell>{c.Phone || '—'}</TableCell>
-            <TableCell>{c.CategoryName}</TableCell>
-            <TableCell>{getMonthLabel(t, c.Month)} {c.Year}</TableCell>
-            <TableCell className="text-right font-medium">{formatCurrency(c.Amount, i18n.language)}</TableCell>
-            <TableCell>
-              <PaymentMethodBadge method={c.PaymentMethod} />
-            </TableCell>
-            <TableCell>{formatDate(c.PaymentDate, i18n.language)}</TableCell>
-            <TableCell className="flex gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onEdit(c)}
-              >
-                {t('common:buttons.edit')}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:text-destructive"
-                onClick={() => onDelete(c.ID)}
-              >
-                {t('common:buttons.delete')}
-              </Button>
-            </TableCell>
-          </TableRow>
+          <div key={c.ID} className="py-3 flex flex-col gap-2">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="font-medium">{c.HouseNumber} — {c.ContributorName}</div>
+                <div className="text-sm text-muted-foreground">{c.CategoryName}</div>
+              </div>
+              <div className="text-right shrink-0">
+                <div className="font-medium">{formatCurrency(c.Amount, i18n.language)}</div>
+                <div className="text-sm text-muted-foreground">{getMonthLabel(t, c.Month)} {c.Year}</div>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <PaymentMethodBadge method={c.PaymentMethod} />
+                <span className="text-sm text-muted-foreground">{formatDate(c.PaymentDate, i18n.language)}</span>
+              </div>
+              <div className="flex gap-1">
+                <Button variant="ghost" size="sm" onClick={() => onEdit(c)}>
+                  {t('common:buttons.edit')}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-destructive hover:text-destructive"
+                  onClick={() => onDelete(c.ID)}
+                >
+                  {t('common:buttons.delete')}
+                </Button>
+              </div>
+            </div>
+          </div>
         ))}
-      </TableBody>
-    </Table>
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className={headClass} onClick={() => toggleSort('house')}>
+                {t('table.house')} <SortIcon columnKey="house" sort={sort} />
+              </TableHead>
+              <TableHead className={headClass} onClick={() => toggleSort('contributor')}>
+                {t('table.contributor')} <SortIcon columnKey="contributor" sort={sort} />
+              </TableHead>
+              <TableHead className={headClass} onClick={() => toggleSort('phone')}>
+                {t('table.phone')} <SortIcon columnKey="phone" sort={sort} />
+              </TableHead>
+              <TableHead className={headClass} onClick={() => toggleSort('category')}>
+                {t('table.category')} <SortIcon columnKey="category" sort={sort} />
+              </TableHead>
+              <TableHead className={headClass} onClick={() => toggleSort('monthYear')}>
+                {t('table.monthYear')} <SortIcon columnKey="monthYear" sort={sort} />
+              </TableHead>
+              <TableHead className={`text-right ${headClass}`} onClick={() => toggleSort('amount')}>
+                {t('table.amount')} <SortIcon columnKey="amount" sort={sort} />
+              </TableHead>
+              <TableHead className={headClass} onClick={() => toggleSort('method')}>
+                {t('table.method')} <SortIcon columnKey="method" sort={sort} />
+              </TableHead>
+              <TableHead className={headClass} onClick={() => toggleSort('paymentDate')}>
+                {t('table.paymentDate')} <SortIcon columnKey="paymentDate" sort={sort} />
+              </TableHead>
+              <TableHead className="w-20" />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {(sorted ?? []).map((c) => (
+              <TableRow key={c.ID}>
+                <TableCell className="font-medium">{c.HouseNumber}</TableCell>
+                <TableCell>{c.ContributorName}</TableCell>
+                <TableCell>{c.Phone || '—'}</TableCell>
+                <TableCell>{c.CategoryName}</TableCell>
+                <TableCell>{getMonthLabel(t, c.Month)} {c.Year}</TableCell>
+                <TableCell className="text-right font-medium">{formatCurrency(c.Amount, i18n.language)}</TableCell>
+                <TableCell>
+                  <PaymentMethodBadge method={c.PaymentMethod} />
+                </TableCell>
+                <TableCell>{formatDate(c.PaymentDate, i18n.language)}</TableCell>
+                <TableCell className="flex gap-1">
+                  <Button variant="ghost" size="sm" onClick={() => onEdit(c)}>
+                    {t('common:buttons.edit')}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => onDelete(c.ID)}
+                  >
+                    {t('common:buttons.delete')}
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   )
 }

@@ -41,33 +41,17 @@ export function ContributorTable({ contributors, onEdit, onDelete }: Contributor
   const { sorted, sort, toggleSort } = useSortable(contributors, comparators)
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="cursor-pointer select-none" onClick={() => toggleSort('house')}>
-            {t('table.house')} <SortIcon columnKey="house" sort={sort} />
-          </TableHead>
-          <TableHead className="cursor-pointer select-none" onClick={() => toggleSort('name')}>
-            {t('table.name')} <SortIcon columnKey="name" sort={sort} />
-          </TableHead>
-          <TableHead className="cursor-pointer select-none" onClick={() => toggleSort('phone')}>
-            {t('table.phone')} <SortIcon columnKey="phone" sort={sort} />
-          </TableHead>
-          <TableHead className="w-32" />
-        </TableRow>
-      </TableHeader>
-      <TableBody>
+    <>
+      {/* Mobile cards */}
+      <div className="flex flex-col divide-y md:hidden">
         {(sorted ?? []).map((c) => (
-          <TableRow key={c.ID}>
-            <TableCell className="font-medium">{c.HouseNumber}</TableCell>
-            <TableCell>{c.Name}</TableCell>
-            <TableCell>{c.Phone || '—'}</TableCell>
-            <TableCell className="flex gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onEdit(c)}
-              >
+          <div key={c.ID} className="flex items-center justify-between py-3 gap-3">
+            <div className="min-w-0">
+              <div className="font-medium">{c.HouseNumber} — {c.Name}</div>
+              <div className="text-sm text-muted-foreground">{c.Phone || '—'}</div>
+            </div>
+            <div className="flex gap-1 shrink-0">
+              <Button variant="ghost" size="sm" onClick={() => onEdit(c)}>
                 {t('common:buttons.edit')}
               </Button>
               <Button
@@ -78,10 +62,52 @@ export function ContributorTable({ contributors, onEdit, onDelete }: Contributor
               >
                 {t('common:buttons.delete')}
               </Button>
-            </TableCell>
-          </TableRow>
+            </div>
+          </div>
         ))}
-      </TableBody>
-    </Table>
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="cursor-pointer select-none" onClick={() => toggleSort('house')}>
+                {t('table.house')} <SortIcon columnKey="house" sort={sort} />
+              </TableHead>
+              <TableHead className="cursor-pointer select-none" onClick={() => toggleSort('name')}>
+                {t('table.name')} <SortIcon columnKey="name" sort={sort} />
+              </TableHead>
+              <TableHead className="cursor-pointer select-none" onClick={() => toggleSort('phone')}>
+                {t('table.phone')} <SortIcon columnKey="phone" sort={sort} />
+              </TableHead>
+              <TableHead className="w-32" />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {(sorted ?? []).map((c) => (
+              <TableRow key={c.ID}>
+                <TableCell className="font-medium">{c.HouseNumber}</TableCell>
+                <TableCell>{c.Name}</TableCell>
+                <TableCell>{c.Phone || '—'}</TableCell>
+                <TableCell className="flex gap-1">
+                  <Button variant="ghost" size="sm" onClick={() => onEdit(c)}>
+                    {t('common:buttons.edit')}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => onDelete(c.ID)}
+                  >
+                    {t('common:buttons.delete')}
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   )
 }

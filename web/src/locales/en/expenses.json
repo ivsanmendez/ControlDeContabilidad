@@ -19,6 +19,20 @@
     "category": "Category",
     "amount": "Amount"
   },
+  "filter": {
+    "search": "Search",
+    "searchPlaceholder": "Search expenses...",
+    "dateFrom": "Date from",
+    "dateTo": "Date to",
+    "category": "Category",
+    "allCategories": "All categories",
+    "clear": "Clear"
+  },
+  "pagination": {
+    "showing": "Showing {{from}}-{{to}} of {{total}}",
+    "previous": "Previous",
+    "next": "Next"
+  },
   "toast": {
     "created": "Expense created",
     "deleted": "Expense deleted",

@@ -38,6 +38,42 @@ type ExpenseDetail struct {
 	UpdatedAt    time.Time
 }
 
+const (
+	DefaultPageSize = 20
+	MaxPageSize     = 100
+)
+
+// ListParams holds pagination and filtering options for listing expenses.
+type ListParams struct {
+	DateFrom   *time.Time
+	DateTo     *time.Time
+	CategoryID *int64
+	Search     string
+	Page       int
+	PageSize   int
+}
+
+// Normalize sets defaults and clamps values.
+func (p *ListParams) Normalize() {
+	if p.Page < 1 {
+		p.Page = 1
+	}
+	if p.PageSize < 1 {
+		p.PageSize = DefaultPageSize
+	}
+	if p.PageSize > MaxPageSize {
+		p.PageSize = MaxPageSize
+	}
+}
+
+// PaginatedResult wraps a page of expense details with total count.
+type PaginatedResult struct {
+	Items    []ExpenseDetail `json:"items"`
+	Total    int             `json:"total"`
+	Page     int             `json:"page"`
+	PageSize int             `json:"page_size"`
+}
+
 // New creates an Expense enforcing domain invariants.
 func New(userID int64, description string, amount float64, categoryID int64, date time.Time) (*Expense, error) {
 	if userID <= 0 {

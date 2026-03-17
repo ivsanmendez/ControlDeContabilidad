@@ -22,7 +22,12 @@ var MessagesES = map[string]string{
 	"insufficient_permissions":       "permisos insuficientes",
 
 	// Expenses
-	"expense_not_found": "gasto no encontrado",
+	"expense_not_found":    "gasto no encontrado",
+	"invalid_page":         "número de página inválido",
+	"invalid_page_size":    "tamaño de página inválido",
+	"invalid_date_from":    "fecha de inicio inválida, se esperaba YYYY-MM-DD",
+	"invalid_date_to":      "fecha de fin inválida, se esperaba YYYY-MM-DD",
+	"invalid_category_id":  "category_id inválido",
 
 	// Contributors
 	"contributor_not_found": "contribuyente no encontrado",

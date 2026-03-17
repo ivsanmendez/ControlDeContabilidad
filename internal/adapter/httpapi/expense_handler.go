@@ -51,12 +51,57 @@ func (h *ExpenseHandler) List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	expenses, err := h.svc.ListExpenses(r.Context(), claims.UserID, claims.Role)
+	q := r.URL.Query()
+	var params expense.ListParams
+
+	if v := q.Get("page"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 1 {
+			writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_page")
+			return
+		}
+		params.Page = n
+	}
+	if v := q.Get("page_size"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 1 {
+			writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_page_size")
+			return
+		}
+		params.PageSize = n
+	}
+	if v := q.Get("date_from"); v != "" {
+		t, err := time.Parse("2006-01-02", v)
+		if err != nil {
+			writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_date_from")
+			return
+		}
+		params.DateFrom = &t
+	}
+	if v := q.Get("date_to"); v != "" {
+		t, err := time.Parse("2006-01-02", v)
+		if err != nil {
+			writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_date_to")
+			return
+		}
+		params.DateTo = &t
+	}
+	if v := q.Get("category_id"); v != "" {
+		n, err := strconv.ParseInt(v, 10, 64)
+		if err != nil || n < 1 {
+			writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_category_id")
+			return
+		}
+		params.CategoryID = &n
+	}
+	params.Search = q.Get("search")
+
+	result, err := h.svc.ListExpenses(r.Context(), claims.UserID, claims.Role, params)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	writeJSON(w, http.StatusOK, expenses)
+	writeJSON(w, http.StatusOK, result)
 }
 
 func (h *ExpenseHandler) GetByID(w http.ResponseWriter, r *http.Request) {

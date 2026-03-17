@@ -16,6 +16,7 @@ type Repository interface {
 	FindAllByUser(ctx context.Context, userID int64) ([]Expense, error)
 	FindAllDetailed(ctx context.Context) ([]ExpenseDetail, error)
 	FindAllDetailedByUser(ctx context.Context, userID int64) ([]ExpenseDetail, error)
+	FindDetailedPaginated(ctx context.Context, userID *int64, params ListParams) (*PaginatedResult, error)
 	Delete(ctx context.Context, id int64) error
 }
 
@@ -61,11 +62,13 @@ func (s *Service) GetExpense(ctx context.Context, callerID int64, callerRole use
 	return e, nil
 }
 
-func (s *Service) ListExpenses(ctx context.Context, callerID int64, callerRole user.Role) ([]ExpenseDetail, error) {
-	if callerRole == user.RoleAdmin {
-		return s.repo.FindAllDetailed(ctx)
+func (s *Service) ListExpenses(ctx context.Context, callerID int64, callerRole user.Role, params ListParams) (*PaginatedResult, error) {
+	params.Normalize()
+	var userID *int64
+	if callerRole != user.RoleAdmin {
+		userID = &callerID
 	}
-	return s.repo.FindAllDetailedByUser(ctx, callerID)
+	return s.repo.FindDetailedPaginated(ctx, userID, params)
 }
 
 func (s *Service) UpdateExpense(ctx context.Context, callerID int64, callerRole user.Role, id int64, description string, amount float64, categoryID int64, date time.Time) (*Expense, error) {

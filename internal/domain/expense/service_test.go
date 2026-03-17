@@ -3,6 +3,7 @@ package expense_test
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -92,6 +93,47 @@ func (r *fakeRepo) FindAllDetailedByUser(_ context.Context, userID int64) ([]exp
 		}
 	}
 	return result, nil
+}
+
+func (r *fakeRepo) FindDetailedPaginated(_ context.Context, userID *int64, params expense.ListParams) (*expense.PaginatedResult, error) {
+	var all []expense.ExpenseDetail
+	for _, e := range r.data {
+		if userID != nil && e.UserID != *userID {
+			continue
+		}
+		if params.DateFrom != nil && e.Date.Before(*params.DateFrom) {
+			continue
+		}
+		if params.DateTo != nil && e.Date.After(*params.DateTo) {
+			continue
+		}
+		if params.CategoryID != nil && e.CategoryID != *params.CategoryID {
+			continue
+		}
+		if params.Search != "" && !strings.Contains(strings.ToLower(e.Description), strings.ToLower(params.Search)) {
+			continue
+		}
+		all = append(all, expense.ExpenseDetail{
+			ID: e.ID, UserID: e.UserID, Description: e.Description,
+			Amount: e.Amount, CategoryID: e.CategoryID, CategoryName: "Test",
+			Date: e.Date, CreatedAt: e.CreatedAt, UpdatedAt: e.UpdatedAt,
+		})
+	}
+	total := len(all)
+	offset := (params.Page - 1) * params.PageSize
+	if offset > total {
+		offset = total
+	}
+	end := offset + params.PageSize
+	if end > total {
+		end = total
+	}
+	return &expense.PaginatedResult{
+		Items:    all[offset:end],
+		Total:    total,
+		Page:     params.Page,
+		PageSize: params.PageSize,
+	}, nil
 }
 
 func (r *fakeRepo) Delete(_ context.Context, id int64) error {
@@ -235,12 +277,15 @@ func TestListExpenses_UserSeesOnlyOwn(t *testing.T) {
 	svc.CreateExpense(ctx, userID1, "Coffee", 3.00, categoryID, testDate)
 	svc.CreateExpense(ctx, userID2, "Metro", 1.50, categoryID, testDate)
 
-	list, err := svc.ListExpenses(ctx, userID1, user.RoleUser)
+	result, err := svc.ListExpenses(ctx, userID1, user.RoleUser, expense.ListParams{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if len(list) != 1 {
-		t.Errorf("expected 1 expense, got %d", len(list))
+	if len(result.Items) != 1 {
+		t.Errorf("expected 1 expense, got %d", len(result.Items))
+	}
+	if result.Total != 1 {
+		t.Errorf("expected total=1, got %d", result.Total)
 	}
 }
 
@@ -249,12 +294,53 @@ func TestListExpenses_AdminSeesAll(t *testing.T) {
 	svc.CreateExpense(ctx, userID1, "Coffee", 3.00, categoryID, testDate)
 	svc.CreateExpense(ctx, userID2, "Metro", 1.50, categoryID, testDate)
 
-	list, err := svc.ListExpenses(ctx, userID1, user.RoleAdmin)
+	result, err := svc.ListExpenses(ctx, userID1, user.RoleAdmin, expense.ListParams{})
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if len(list) != 2 {
-		t.Errorf("expected 2 expenses, got %d", len(list))
+	if len(result.Items) != 2 {
+		t.Errorf("expected 2 expenses, got %d", len(result.Items))
+	}
+	if result.Total != 2 {
+		t.Errorf("expected total=2, got %d", result.Total)
+	}
+}
+
+func TestListExpenses_Paginated(t *testing.T) {
+	svc, _, _ := newService()
+	for i := 0; i < 5; i++ {
+		svc.CreateExpense(ctx, userID1, "Item", 1.00, categoryID, testDate)
+	}
+
+	result, err := svc.ListExpenses(ctx, userID1, user.RoleUser, expense.ListParams{Page: 1, PageSize: 2})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(result.Items) != 2 {
+		t.Errorf("expected 2 items on page, got %d", len(result.Items))
+	}
+	if result.Total != 5 {
+		t.Errorf("expected total=5, got %d", result.Total)
+	}
+	if result.Page != 1 {
+		t.Errorf("expected page=1, got %d", result.Page)
+	}
+}
+
+func TestListExpenses_FilterBySearch(t *testing.T) {
+	svc, _, _ := newService()
+	svc.CreateExpense(ctx, userID1, "Coffee at Starbucks", 5.00, categoryID, testDate)
+	svc.CreateExpense(ctx, userID1, "Metro ticket", 1.50, categoryID, testDate)
+
+	result, err := svc.ListExpenses(ctx, userID1, user.RoleUser, expense.ListParams{Search: "coffee"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(result.Items) != 1 {
+		t.Errorf("expected 1 matching expense, got %d", len(result.Items))
+	}
+	if result.Total != 1 {
+		t.Errorf("expected total=1, got %d", result.Total)
 	}
 }
 

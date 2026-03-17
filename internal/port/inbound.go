@@ -19,7 +19,7 @@ import (
 type ExpenseService interface {
 	CreateExpense(ctx context.Context, callerID int64, description string, amount float64, categoryID int64, date time.Time) (*expense.Expense, error)
 	GetExpense(ctx context.Context, callerID int64, callerRole user.Role, id int64) (*expense.Expense, error)
-	ListExpenses(ctx context.Context, callerID int64, callerRole user.Role) ([]expense.ExpenseDetail, error)
+	ListExpenses(ctx context.Context, callerID int64, callerRole user.Role, params expense.ListParams) (*expense.PaginatedResult, error)
 	UpdateExpense(ctx context.Context, callerID int64, callerRole user.Role, id int64, description string, amount float64, categoryID int64, date time.Time) (*expense.Expense, error)
 	DeleteExpense(ctx context.Context, callerID int64, callerRole user.Role, id int64) error
 }

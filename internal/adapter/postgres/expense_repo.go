@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/expense"
 )
@@ -121,6 +122,71 @@ func (r *ExpenseRepo) FindAllDetailed(ctx context.Context) ([]expense.ExpenseDet
 func (r *ExpenseRepo) FindAllDetailedByUser(ctx context.Context, userID int64) ([]expense.ExpenseDetail, error) {
 	q := expenseDetailSelect + ` WHERE e.user_id = $1 ORDER BY e.date DESC, e.created_at DESC`
 	return r.scanDetails(ctx, q, userID)
+}
+
+func (r *ExpenseRepo) FindDetailedPaginated(ctx context.Context, userID *int64, params expense.ListParams) (*expense.PaginatedResult, error) {
+	var where []string
+	var args []any
+	n := 1
+
+	if userID != nil {
+		where = append(where, fmt.Sprintf("e.user_id = $%d", n))
+		args = append(args, *userID)
+		n++
+	}
+	if params.DateFrom != nil {
+		where = append(where, fmt.Sprintf("e.date >= $%d", n))
+		args = append(args, *params.DateFrom)
+		n++
+	}
+	if params.DateTo != nil {
+		where = append(where, fmt.Sprintf("e.date <= $%d", n))
+		args = append(args, *params.DateTo)
+		n++
+	}
+	if params.CategoryID != nil {
+		where = append(where, fmt.Sprintf("e.category_id = $%d", n))
+		args = append(args, *params.CategoryID)
+		n++
+	}
+	if params.Search != "" {
+		where = append(where, fmt.Sprintf("e.description ILIKE $%d", n))
+		args = append(args, "%"+params.Search+"%")
+		n++
+	}
+
+	whereClause := ""
+	if len(where) > 0 {
+		whereClause = " WHERE " + strings.Join(where, " AND ")
+	}
+
+	// Count total matching rows.
+	countQ := "SELECT COUNT(*) FROM expenses e" + whereClause
+	var total int
+	if err := r.db.QueryRowContext(ctx, countQ, args...).Scan(&total); err != nil {
+		return nil, fmt.Errorf("count expenses: %w", err)
+	}
+
+	// Fetch page of detailed rows.
+	offset := (params.Page - 1) * params.PageSize
+	dataQ := expenseDetailSelect + whereClause +
+		fmt.Sprintf(" ORDER BY e.date DESC, e.created_at DESC LIMIT $%d OFFSET $%d", n, n+1)
+	dataArgs := append(args, params.PageSize, offset)
+
+	items, err := r.scanDetails(ctx, dataQ, dataArgs...)
+	if err != nil {
+		return nil, err
+	}
+	if items == nil {
+		items = []expense.ExpenseDetail{}
+	}
+
+	return &expense.PaginatedResult{
+		Items:    items,
+		Total:    total,
+		Page:     params.Page,
+		PageSize: params.PageSize,
+	}, nil
 }
 
 func (r *ExpenseRepo) scanExpenses(ctx context.Context, query string, args ...any) ([]expense.Expense, error) {

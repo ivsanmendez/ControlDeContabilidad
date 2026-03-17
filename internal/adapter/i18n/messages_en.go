@@ -22,7 +22,12 @@ var MessagesEN = map[string]string{
 	"insufficient_permissions":       "insufficient permissions",
 
 	// Expenses
-	"expense_not_found": "expense not found",
+	"expense_not_found":    "expense not found",
+	"invalid_page":         "invalid page number",
+	"invalid_page_size":    "invalid page size",
+	"invalid_date_from":    "invalid date_from, expected YYYY-MM-DD",
+	"invalid_date_to":      "invalid date_to, expected YYYY-MM-DD",
+	"invalid_category_id":  "invalid category_id",
 
 	// Contributors
 	"contributor_not_found": "contributor not found",

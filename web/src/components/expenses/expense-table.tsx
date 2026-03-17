@@ -1,4 +1,6 @@
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -8,12 +10,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useSortable, type SortState } from '@/hooks/use-sortable'
 import type { Expense } from '@/types/expense'
 
 type ExpenseTableProps = {
   expenses: Expense[]
   onDelete: (id: number) => void
 }
+
+type SortKey = 'date' | 'description' | 'category' | 'amount'
 
 function formatCurrency(amount: number, lang: string) {
   const locale = lang.startsWith('es') ? 'es-MX' : 'en-US'
@@ -29,14 +34,36 @@ function formatDate(dateStr: string, lang: string) {
   })
 }
 
+const cmpStr = (a: string, b: string) => a.localeCompare(b)
+const cmpNum = (a: number, b: number) => a - b
+
+function SortIcon({ columnKey, sort }: { columnKey: SortKey; sort: SortState<SortKey> | null }) {
+  if (sort?.key !== columnKey) return <ArrowUpDown className="ml-1 inline h-3 w-3 text-muted-foreground/50" />
+  if (sort.direction === 'asc') return <ArrowUp className="ml-1 inline h-3 w-3" />
+  return <ArrowDown className="ml-1 inline h-3 w-3" />
+}
+
 export function ExpenseTable({ expenses, onDelete }: ExpenseTableProps) {
   const { t, i18n } = useTranslation('expenses')
+
+  const comparators = useMemo<Record<SortKey, (a: Expense, b: Expense) => number>>(
+    () => ({
+      date: (a, b) => cmpStr(a.Date, b.Date),
+      description: (a, b) => cmpStr(a.Description, b.Description),
+      category: (a, b) => cmpStr(a.CategoryName, b.CategoryName),
+      amount: (a, b) => cmpNum(a.Amount, b.Amount),
+    }),
+    [],
+  )
+
+  const { sorted, sort, toggleSort } = useSortable<Expense, SortKey>(expenses, comparators)
+  const items = sorted ?? expenses
 
   return (
     <>
       {/* Mobile cards */}
       <div className="flex flex-col divide-y md:hidden">
-        {expenses.map((expense) => (
+        {items.map((expense) => (
           <div key={expense.ID} className="flex items-start justify-between py-3 gap-3">
             <div className="flex flex-col gap-0.5 min-w-0">
               <span className="font-medium truncate">{expense.Description}</span>
@@ -63,15 +90,27 @@ export function ExpenseTable({ expenses, onDelete }: ExpenseTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t('table.date')}</TableHead>
-              <TableHead>{t('table.description')}</TableHead>
-              <TableHead>{t('table.category')}</TableHead>
-              <TableHead className="text-right">{t('table.amount')}</TableHead>
+              <TableHead className="cursor-pointer select-none" onClick={() => toggleSort('date')}>
+                {t('table.date')}
+                <SortIcon columnKey="date" sort={sort} />
+              </TableHead>
+              <TableHead className="cursor-pointer select-none" onClick={() => toggleSort('description')}>
+                {t('table.description')}
+                <SortIcon columnKey="description" sort={sort} />
+              </TableHead>
+              <TableHead className="cursor-pointer select-none" onClick={() => toggleSort('category')}>
+                {t('table.category')}
+                <SortIcon columnKey="category" sort={sort} />
+              </TableHead>
+              <TableHead className="cursor-pointer select-none text-right" onClick={() => toggleSort('amount')}>
+                {t('table.amount')}
+                <SortIcon columnKey="amount" sort={sort} />
+              </TableHead>
               <TableHead className="w-20" />
             </TableRow>
           </TableHeader>
           <TableBody>
-            {expenses.map((expense) => (
+            {items.map((expense) => (
               <TableRow key={expense.ID}>
                 <TableCell>{formatDate(expense.Date, i18n.language)}</TableCell>
                 <TableCell>{expense.Description}</TableCell>

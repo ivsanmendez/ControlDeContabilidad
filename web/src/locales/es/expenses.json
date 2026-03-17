@@ -19,6 +19,20 @@
     "category": "Categoría",
     "amount": "Monto"
   },
+  "filter": {
+    "search": "Buscar",
+    "searchPlaceholder": "Buscar gastos...",
+    "dateFrom": "Fecha desde",
+    "dateTo": "Fecha hasta",
+    "category": "Categoría",
+    "allCategories": "Todas las categorías",
+    "clear": "Limpiar"
+  },
+  "pagination": {
+    "showing": "Mostrando {{from}}-{{to}} de {{total}}",
+    "previous": "Anterior",
+    "next": "Siguiente"
+  },
   "toast": {
     "created": "Gasto creado",
     "deleted": "Gasto eliminado",

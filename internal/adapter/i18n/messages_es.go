@@ -52,6 +52,10 @@ var MessagesES = map[string]string{
 	"failed_to_generate_folio":         "no se pudo generar el folio",
 	"failed_to_save_receipt":           "no se pudo guardar el recibo",
 
+	// Expense receipts
+	"expense_not_found_for_receipt": "gasto no encontrado para el recibo",
+	"failed_to_load_expense":        "no se pudo cargar el gasto",
+
 	// Expense categories
 	"expense_category_not_found": "categoría de gasto no encontrada",
 

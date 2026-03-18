@@ -1,7 +1,7 @@
 # Active Context
 
 ## Current Phase
-SPA content negotiation fix deployed. Resolved production bug where browser navigation to SPA routes (e.g., `/contributions/receipt`) was intercepted by API wildcard routes (`GET /contributions/{id}`), causing auth errors when opening pages in new tabs.
+Per-expense receipt system with SAT digital signing implemented. Extended the existing receipt infrastructure to support individual expense receipts alongside contribution receipts.
 
 ## Recent Decisions
 - Hexagonal architecture (ports & adapters) for the Go backend
@@ -15,18 +15,19 @@ SPA content negotiation fix deployed. Resolved production bug where browser navi
 - AAA framework design (ADR-03)
 - SAT certificate signing (per-request password decryption)
 - Contribution categories (migration 008, domain/category, CRUD API + UI)
-- Security Folio system:
-  - New `receipt` domain package (`internal/domain/receipt/`) with entity, service, repository
-  - Migration 009: `receipt_folio_counters` (per-year atomic seq) + `receipt_folios` tables
+- Security Folio system (shared by contributions and expenses):
+  - `receipt` domain package (`internal/domain/receipt/`) with entity, service, repository
+  - Migration 009: `receipt_folio_counters` + `receipt_folios` tables
+  - Migration 013: extended `receipt_folios` for expenses (`receipt_type`, `expense_id`, nullable `contributor_id`, CHECK constraint)
   - Folio format: `REC-{YYYY}-{NNNNNN}-{XXXXXXXX}` (year + 6-digit seq + 8 hex chars)
-  - Folio included in canonical JSON before signing → part of signed data
-  - New permission: `receipt:verify` (both roles)
-  - Verification endpoint: `GET /receipts/verify/{folio}`
-  - Frontend: folio in receipt header, QR encodes folio string
-- SPA content negotiation middleware in `cmd/api/main.go`:
-  - `spaContentNegotiation()` wraps the mux, checks `Accept: text/html` for browser navigation
-  - Prevents API wildcard routes from catching SPA client-side routes in production
-  - Mirrors Vite proxy `bypass` logic used in development
+  - Folios shared globally — both receipt types use same counter sequence
+  - Verification endpoint: `GET /receipts/verify/{folio}` — returns `receipt_type` to distinguish
+- Per-expense receipts:
+  - `POST /expenses/{id}/receipt-signature` — signs individual expense with SAT certificate
+  - `GetExpenseDetail` service method (returns `CategoryName`) for receipt data
+  - Frontend: receipt page at `/expenses/:id/receipt`, sign dialog, receipt icon in expense table
+  - Vite proxy for `/expenses` now has `bypass` for `text/html` (browser navigation to receipt page)
+- SPA content negotiation middleware in `cmd/api/main.go`
 
 ## Next Steps
 - [x] Implement PostgreSQL repository (actual SQL queries) — #1
@@ -37,6 +38,7 @@ SPA content negotiation fix deployed. Resolved production bug where browser navi
 - [x] Contribution category catalog
 - [x] Security Folio for receipts
 - [x] Monthly Balance Report
+- [x] Per-expense receipts with SAT signing
 - [ ] Build React UI for expense management — #4
 
 ## Open Questions

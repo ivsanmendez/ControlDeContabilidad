@@ -59,8 +59,8 @@ ControlDeContabilidad/
 │   ├── domain/category/         # Contribution category catalog hexagon
 │   │   ├── category.go          # Entity (Name, Description, IsActive), factory, errors
 │   │   └── service.go           # Repository interface + Service (CRUD + ListActive)
-│   ├── domain/receipt/          # Receipt folio hexagon (security folios)
-│   │   ├── receipt.go           # Entity (ReceiptFolio), folio generation, errors
+│   ├── domain/receipt/          # Receipt folio hexagon (security folios for contributions + expenses)
+│   │   ├── receipt.go           # Entity (ReceiptFolio, TypeContribution/TypeExpense), folio generation, errors
 │   │   └── service.go           # Repository interface + Service (GenerateNewFolio, SaveFolio, VerifyFolio)
 │   ├── domain/report/           # Monthly balance report hexagon
 │   │   ├── report.go            # MonthSummary, MonthlyBalanceReport DTOs, errors

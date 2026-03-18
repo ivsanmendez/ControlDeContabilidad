@@ -74,3 +74,83 @@ Both must be set for signing to be available. If either is missing, endpoint ret
 ## SAT Key Format
 
 Mexican SAT certificates use DER-encoded encrypted PKCS#8 for private keys (`.key` files). The `youmark/pkcs8` library handles decryption. The key is decrypted per-request — the password is never stored server-side.
+
+---
+
+## Endpoint: Expense Receipt
+
+### `POST /expenses/{id}/receipt-signature`
+
+**Auth**: Required (Bearer JWT) + `expense:read_own` permission
+
+Signs a receipt for an individual expense. Enforces ownership (caller must own the expense, unless admin).
+
+### Request Body
+```json
+{
+  "password": "sat-certificate-password",
+  "signer_name": "Juan Perez"
+}
+```
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `password` | string | Yes | Password to decrypt SAT `.key` file |
+| `signer_name` | string | Yes | Name of the person signing the receipt |
+
+### Success Response (200)
+```json
+{
+  "folio": "REC-2026-000003-B4E8C1D2",
+  "data": {
+    "folio": "REC-2026-000003-B4E8C1D2",
+    "expense_id": 42,
+    "description": "Office supplies",
+    "category_name": "Materiales",
+    "amount": 350.00,
+    "date": "2026-03-15",
+    "signer_name": "Juan Perez",
+    "generated_at": "2026-03-17T12:00:00Z"
+  },
+  "signature": "<base64-encoded RSA-SHA256 signature>",
+  "certificate": "<base64-encoded DER X.509 certificate>"
+}
+```
+
+### Error Responses
+
+| Status | Condition |
+|--------|-----------|
+| 400 | Missing or invalid fields |
+| 401 | Invalid certificate password |
+| 403 | Caller does not own the expense |
+| 404 | Expense not found |
+| 503 | Signing not configured |
+
+---
+
+## Folio Verification
+
+### `GET /receipts/verify/{folio}`
+
+**Auth**: Required (Bearer JWT) + `receipt:verify` permission
+
+Returns the stored receipt data for any folio (contribution or expense).
+
+### Response (200)
+```json
+{
+  "folio": "REC-2026-000001-A3F7B2C1",
+  "receipt_type": "expense",
+  "contributor_id": null,
+  "expense_id": 42,
+  "receipt_year": 2026,
+  "signer_name": "Juan Perez",
+  "signed_at": "2026-03-17T12:00:00Z",
+  "canonical_json": "<base64>",
+  "signature": "<base64>",
+  "certificate": "<base64>"
+}
+```
+
+The `receipt_type` field distinguishes between `"contribution"` and `"expense"` receipts. Only the relevant ID field (`contributor_id` or `expense_id`) will be non-null.

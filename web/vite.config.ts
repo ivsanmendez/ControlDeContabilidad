@@ -40,7 +40,14 @@ export default defineConfig({
   server: {
     proxy: {
       '/auth': apiBase,
-      '/expenses': apiBase,
+      '/expenses': {
+        target: apiBase,
+        bypass(req) {
+          if (req.headers.accept?.includes('text/html')) {
+            return req.url
+          }
+        },
+      },
       '/contributors': {
         target: apiBase,
         bypass(req) {

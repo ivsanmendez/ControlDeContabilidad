@@ -11,6 +11,7 @@ const ContributionsPage = lazy(() => import('@/pages/contributions-page').then(m
 const ContributionCategoriesPage = lazy(() => import('@/pages/contribution-categories-page').then(m => ({ default: m.ContributionCategoriesPage })))
 const ExpenseCategoriesPage = lazy(() => import('@/pages/expense-categories-page').then(m => ({ default: m.ExpenseCategoriesPage })))
 const ContributionReceiptPage = lazy(() => import('@/pages/contribution-receipt-page').then(m => ({ default: m.ContributionReceiptPage })))
+const ExpenseReceiptPage = lazy(() => import('@/pages/expense-receipt-page').then(m => ({ default: m.ExpenseReceiptPage })))
 const MonthlyBalancePage = lazy(() => import('@/pages/monthly-balance-page').then(m => ({ default: m.MonthlyBalancePage })))
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
           <Route path="/reports/monthly-balance" element={<MonthlyBalancePage />} />
         </Route>
         <Route path="/contributions/receipt" element={<ContributionReceiptPage />} />
+        <Route path="/expenses/:id/receipt" element={<ExpenseReceiptPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -33,11 +33,18 @@ func (r *ReceiptFolioRepo) NextSequence(ctx context.Context, year int) (int, err
 	return seq, nil
 }
 
+func nullInt64(p *int64) sql.NullInt64 {
+	if p == nil {
+		return sql.NullInt64{}
+	}
+	return sql.NullInt64{Int64: *p, Valid: true}
+}
+
 // Save inserts a new receipt folio record.
 func (r *ReceiptFolioRepo) Save(ctx context.Context, rf *receipt.ReceiptFolio) error {
 	const q = `
-		INSERT INTO receipt_folios (folio, year_issued, seq_number, uuid_suffix, contributor_id, receipt_year, signer_name, user_id, canonical_json, signature, certificate, signed_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+		INSERT INTO receipt_folios (folio, year_issued, seq_number, uuid_suffix, receipt_type, contributor_id, expense_id, receipt_year, signer_name, user_id, canonical_json, signature, certificate, signed_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
 		RETURNING id`
 
 	err := r.db.QueryRowContext(ctx, q,
@@ -45,7 +52,9 @@ func (r *ReceiptFolioRepo) Save(ctx context.Context, rf *receipt.ReceiptFolio) e
 		rf.YearIssued,
 		rf.SeqNumber,
 		rf.UUIDSuffix,
-		rf.ContributorID,
+		rf.ReceiptType,
+		nullInt64(rf.ContributorID),
+		nullInt64(rf.ExpenseID),
 		rf.ReceiptYear,
 		rf.SignerName,
 		rf.UserID,
@@ -63,7 +72,7 @@ func (r *ReceiptFolioRepo) Save(ctx context.Context, rf *receipt.ReceiptFolio) e
 // FindByFolio looks up a receipt folio by its unique folio string.
 func (r *ReceiptFolioRepo) FindByFolio(ctx context.Context, folio string) (*receipt.ReceiptFolio, error) {
 	const q = `
-		SELECT id, folio, year_issued, seq_number, uuid_suffix, contributor_id, receipt_year, signer_name, user_id, canonical_json, signature, certificate, signed_at
+		SELECT id, folio, year_issued, seq_number, uuid_suffix, receipt_type, contributor_id, expense_id, receipt_year, signer_name, user_id, canonical_json, signature, certificate, signed_at
 		FROM receipt_folios
 		WHERE folio = $1`
 
@@ -79,13 +88,16 @@ func (r *ReceiptFolioRepo) FindByFolio(ctx context.Context, folio string) (*rece
 
 func (r *ReceiptFolioRepo) scanOne(ctx context.Context, query string, args ...any) (*receipt.ReceiptFolio, error) {
 	var rf receipt.ReceiptFolio
+	var contributorID, expenseID sql.NullInt64
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(
 		&rf.ID,
 		&rf.Folio,
 		&rf.YearIssued,
 		&rf.SeqNumber,
 		&rf.UUIDSuffix,
-		&rf.ContributorID,
+		&rf.ReceiptType,
+		&contributorID,
+		&expenseID,
 		&rf.ReceiptYear,
 		&rf.SignerName,
 		&rf.UserID,
@@ -96,6 +108,12 @@ func (r *ReceiptFolioRepo) scanOne(ctx context.Context, query string, args ...an
 	)
 	if err != nil {
 		return nil, err
+	}
+	if contributorID.Valid {
+		rf.ContributorID = &contributorID.Int64
+	}
+	if expenseID.Valid {
+		rf.ExpenseID = &expenseID.Int64
 	}
 	return &rf, nil
 }

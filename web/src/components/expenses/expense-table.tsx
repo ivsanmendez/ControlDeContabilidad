@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Link } from 'react-router-dom'
+import { ArrowUp, ArrowDown, ArrowUpDown, FileText } from 'lucide-react'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -72,14 +73,23 @@ export function ExpenseTable({ expenses, onDelete }: ExpenseTableProps) {
             </div>
             <div className="flex flex-col items-end gap-1 shrink-0">
               <span className="font-medium">{formatCurrency(expense.Amount, i18n.language)}</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:text-destructive h-7 px-2"
-                onClick={() => onDelete(expense.ID)}
-              >
-                {t('common:buttons.delete')}
-              </Button>
+              <div className="flex gap-1">
+                <Link
+                  to={`/expenses/${expense.ID}/receipt`}
+                  title={t('receipt.viewReceipt')}
+                  className={buttonVariants({ variant: 'ghost', size: 'sm' }) + ' h-7 px-2'}
+                >
+                  <FileText className="h-4 w-4" />
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-destructive hover:text-destructive h-7 px-2"
+                  onClick={() => onDelete(expense.ID)}
+                >
+                  {t('common:buttons.delete')}
+                </Button>
+              </div>
             </div>
           </div>
         ))}
@@ -119,14 +129,23 @@ export function ExpenseTable({ expenses, onDelete }: ExpenseTableProps) {
                   {formatCurrency(expense.Amount, i18n.language)}
                 </TableCell>
                 <TableCell>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-destructive hover:text-destructive"
-                    onClick={() => onDelete(expense.ID)}
-                  >
-                    {t('common:buttons.delete')}
-                  </Button>
+                  <div className="flex gap-1">
+                    <Link
+                      to={`/expenses/${expense.ID}/receipt`}
+                      title={t('receipt.viewReceipt')}
+                      className={buttonVariants({ variant: 'ghost', size: 'sm' })}
+                    >
+                      <FileText className="h-4 w-4" />
+                    </Link>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => onDelete(expense.ID)}
+                    >
+                      {t('common:buttons.delete')}
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

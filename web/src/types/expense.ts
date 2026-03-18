@@ -32,3 +32,21 @@ export type CreateExpenseRequest = {
   category_id: number
   date: string
 }
+
+export type ExpenseReceiptData = {
+  folio: string
+  expense_id: number
+  description: string
+  category_name: string
+  amount: number
+  date: string
+  signer_name: string
+  generated_at: string
+}
+
+export type ExpenseReceiptSignatureResponse = {
+  folio: string
+  data: ExpenseReceiptData
+  signature: string
+  certificate: string
+}

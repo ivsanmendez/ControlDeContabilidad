@@ -12,6 +12,7 @@ type Repository interface {
 	Save(ctx context.Context, e *Expense) error
 	Update(ctx context.Context, e *Expense) error
 	FindByID(ctx context.Context, id int64) (*Expense, error)
+	FindDetailedByID(ctx context.Context, id int64) (*ExpenseDetail, error)
 	FindAll(ctx context.Context) ([]Expense, error)
 	FindAllByUser(ctx context.Context, userID int64) ([]Expense, error)
 	FindAllDetailed(ctx context.Context) ([]ExpenseDetail, error)
@@ -105,6 +106,17 @@ func (s *Service) UpdateExpense(ctx context.Context, callerID int64, callerRole 
 		OccurredAt: time.Now(),
 	})
 	return existing, nil
+}
+
+func (s *Service) GetExpenseDetail(ctx context.Context, callerID int64, callerRole user.Role, id int64) (*ExpenseDetail, error) {
+	d, err := s.repo.FindDetailedByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	if callerRole != user.RoleAdmin && d.UserID != callerID {
+		return nil, ErrForbidden
+	}
+	return d, nil
 }
 
 func (s *Service) DeleteExpense(ctx context.Context, callerID int64, callerRole user.Role, id int64) error {

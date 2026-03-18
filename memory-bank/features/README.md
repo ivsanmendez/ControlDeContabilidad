@@ -9,6 +9,7 @@ Feature-specific design docs and requirements.
 | `02_sat_certificate_signing.md` | SAT certificate signing — print-sign dialog, encrypted PKCS#8, per-request decryption |
 | `03_contribution_categories.md` | Contribution category catalog — multi-concept contributions per month, CRUD API + UI |
 | `04_security_folio.md` | Security Folio — persistent folio numbers for signed receipts, verification endpoint |
+| `05_expense_receipts.md` | Per-expense receipts — SAT digital signing, receipt page, extended receipt_folios |
 
 ## Convention
 Use `NN_feature_name.md`. Include scope, acceptance criteria, and relevant API/UI details.

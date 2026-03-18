@@ -116,7 +116,7 @@ func (h *ExpenseHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
 		return
 	}
-	e, err := h.svc.GetExpense(r.Context(), claims.UserID, claims.Role, id)
+	e, err := h.svc.GetExpenseDetail(r.Context(), claims.UserID, claims.Role, id)
 	if err != nil {
 		if errors.Is(err, expense.ErrForbidden) {
 			writeError(w, http.StatusForbidden, err.Error())

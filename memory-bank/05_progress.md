@@ -26,8 +26,49 @@
 - Security Folio for receipts (see below)
 - Monthly Balance Report (see below)
 - SPA content negotiation middleware (see below)
+- Per-expense receipts with SAT digital signing (see below)
 
-## Recently Completed — SPA Content Negotiation Fix
+## Recently Completed — Per-Expense Receipts with SAT Digital Signing
+Extended the receipt infrastructure to support individual expense receipts alongside contribution receipts, reusing the existing folio counter, certsigner, and receipt domain.
+
+### What Was Built
+
+**Backend:**
+- **Migration 013** (`db/migrations/013_add_expense_receipts.sql`):
+  - `receipt_type VARCHAR(20)` column (default `'contribution'`)
+  - `expense_id BIGINT` FK to `expenses(id)`, nullable
+  - `contributor_id` made nullable
+  - CHECK constraint: contribution rows need `contributor_id`, expense rows need `expense_id`
+  - Partial index on `expense_id`
+- **Receipt entity** (`internal/domain/receipt/receipt.go`): `TypeContribution`/`TypeExpense` constants, `ReceiptType string`, `ContributorID *int64`, `ExpenseID *int64`
+- **Receipt repo** (`receipt_folio_repo.go`): `nullInt64` helper, updated Save/FindByFolio/scanOne for nullable fields and new columns
+- **Expense domain** (`service.go`): `FindDetailedByID` in `Repository` interface, `GetExpenseDetail` method (returns `ExpenseDetail` with `CategoryName`, enforces ownership)
+- **Expense postgres** (`expense_repo.go`): `FindDetailedByID` using `expenseDetailSelect + WHERE e.id = $1`
+- **Inbound port**: `GetExpenseDetail` added to `ExpenseService` interface
+- **Expense handler**: `GetByID` now calls `GetExpenseDetail` (response includes `CategoryName`)
+- **Receipt handler**: `expenseSvc` field, `ExpenseReceiptSignature` handler (`POST /expenses/{id}/receipt-signature`), updated `ReceiptSignature` (sets `ReceiptType: TypeContribution`), updated `VerifyReceipt` (returns `receipt_type`, `expense_id`)
+- **Router**: `POST /expenses/{id}/receipt-signature` with `PermExpenseReadOwn`
+- **i18n**: `expense_not_found_for_receipt`, `failed_to_load_expense` (ES + EN)
+- **Tests**: `FindDetailedByID` in fakeRepo, 3 new `TestGetExpenseDetail_*` tests (happy, forbidden, not found)
+
+**Frontend:**
+- **Vite proxy**: `/expenses` now has `bypass` for `text/html` (browser navigation to receipt page)
+- **Types** (`expense.ts`): `ExpenseReceiptData`, `ExpenseReceiptSignatureResponse`
+- **Hooks**: `useExpense(id)` query, `useExpenseReceiptSignature()` mutation
+- **Sign dialog** (`expense-receipt-sign-dialog.tsx`): same pattern as contribution receipt
+- **Receipt page** (`expense-receipt-page.tsx`): at `/expenses/:id/receipt`, shows expense details, sign & print flow, folio + QR
+- **Routing** (`App.tsx`): `/expenses/:id/receipt` outside `AppLayout`, inside `ProtectedRoute`
+- **Expense table**: `FileText` icon link per row (mobile + desktop) to receipt page
+- **i18n**: `receipt.*` keys in `expenses.json` (ES + EN)
+
+### Expense Receipt Signing Flow
+1. User clicks receipt icon on expense row → opens `/expenses/:id/receipt`
+2. Page loads expense via `GET /expenses/{id}` (now returns `CategoryName`)
+3. User clicks "Sign & Print" → dialog opens with signer name + SAT password
+4. `POST /expenses/{id}/receipt-signature` → generates folio, signs canonical JSON, persists to `receipt_folios`
+5. Response includes folio + signed data → QR code appears → auto-print
+
+## Previously Completed — SPA Content Negotiation Fix
 Fixed production bug where browser navigation to SPA client-side routes was intercepted by API wildcard routes, causing auth errors.
 
 ### Problem

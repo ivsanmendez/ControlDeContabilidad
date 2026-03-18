@@ -2,6 +2,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiFetch } from '@/lib/api-client'
 import type { Expense, PaginatedExpenses, ExpenseFilters, CreateExpenseRequest } from '@/types/expense'
 
+export function useExpense(id: number) {
+  return useQuery<Expense>({
+    queryKey: ['expense', id],
+    queryFn: () => apiFetch<Expense>(`/expenses/${id}`),
+    enabled: id > 0,
+  })
+}
+
 export function useExpenses(filters: ExpenseFilters = {}) {
   return useQuery<PaginatedExpenses>({
     queryKey: ['expenses', filters],

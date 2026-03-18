@@ -18,7 +18,7 @@ func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc 
 	contributorH := &ContributorHandler{svc: contributorSvc, tr: tr}
 	categoryH := &CategoryHandler{svc: categorySvc, tr: tr}
 	expCatH := &ExpenseCategoryHandler{svc: expCatSvc, tr: tr}
-	receiptH := &ReceiptHandler{contribSvc: contribSvc, contributorSvc: contributorSvc, receiptSvc: receiptSvc, signer: signer, tr: tr}
+	receiptH := &ReceiptHandler{contribSvc: contribSvc, contributorSvc: contributorSvc, expenseSvc: expenseSvc, receiptSvc: receiptSvc, signer: signer, tr: tr}
 	reportH := &ReportHandler{svc: reportSvc, tr: tr}
 
 	// Public routes
@@ -145,6 +145,10 @@ func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc 
 	mux.Handle("POST /contributions/receipt-signature", Chain(
 		http.HandlerFunc(receiptH.ReceiptSignature),
 		auth, RequirePermission(user.PermContributionRead, tr),
+	))
+	mux.Handle("POST /expenses/{id}/receipt-signature", Chain(
+		http.HandlerFunc(receiptH.ExpenseReceiptSignature),
+		auth, RequirePermission(user.PermExpenseReadOwn, tr),
 	))
 
 	// Receipt folio verification

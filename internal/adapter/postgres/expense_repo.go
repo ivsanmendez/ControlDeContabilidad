@@ -114,6 +114,21 @@ const expenseDetailSelect = `
 	FROM expenses e
 	JOIN expense_categories ec ON ec.id = e.category_id`
 
+func (r *ExpenseRepo) FindDetailedByID(ctx context.Context, id int64) (*expense.ExpenseDetail, error) {
+	q := expenseDetailSelect + ` WHERE e.id = $1`
+	var d expense.ExpenseDetail
+	err := r.db.QueryRowContext(ctx, q, id).Scan(
+		&d.ID, &d.UserID, &d.Description, &d.Amount, &d.CategoryID, &d.CategoryName, &d.Date, &d.CreatedAt, &d.UpdatedAt,
+	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, expense.ErrNotFound
+	}
+	if err != nil {
+		return nil, fmt.Errorf("find expense detail %d: %w", id, err)
+	}
+	return &d, nil
+}
+
 func (r *ExpenseRepo) FindAllDetailed(ctx context.Context) ([]expense.ExpenseDetail, error) {
 	q := expenseDetailSelect + ` ORDER BY e.date DESC, e.created_at DESC`
 	return r.scanDetails(ctx, q)

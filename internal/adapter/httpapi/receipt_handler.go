@@ -6,10 +6,12 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/i18n"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/expense"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/receipt"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/port"
 )
@@ -18,6 +20,7 @@ import (
 type ReceiptHandler struct {
 	contribSvc     port.ContributionService
 	contributorSvc port.ContributorService
+	expenseSvc     port.ExpenseService
 	receiptSvc     port.ReceiptFolioService
 	signer         port.ReceiptSigner
 	tr             *i18n.Translator
@@ -152,7 +155,8 @@ func (h *ReceiptHandler) ReceiptSignature(w http.ResponseWriter, r *http.Request
 		YearIssued:    now.Year(),
 		SeqNumber:     seq,
 		UUIDSuffix:    suffix,
-		ContributorID: req.ContributorID,
+		ReceiptType:   receipt.TypeContribution,
+		ContributorID: &req.ContributorID,
 		ReceiptYear:   req.Year,
 		SignerName:    req.SignerName,
 		UserID:        claims.UserID,
@@ -197,12 +201,149 @@ func (h *ReceiptHandler) VerifyReceipt(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, http.StatusOK, map[string]any{
 		"folio":          rf.Folio,
+		"receipt_type":   rf.ReceiptType,
 		"contributor_id": rf.ContributorID,
+		"expense_id":     rf.ExpenseID,
 		"receipt_year":   rf.ReceiptYear,
-		"signer_name":   rf.SignerName,
-		"signed_at":     rf.SignedAt,
-		"canonical_json": base64.StdEncoding.EncodeToString(rf.CanonicalJSON),
-		"signature":      base64.StdEncoding.EncodeToString(rf.Signature),
-		"certificate":    base64.StdEncoding.EncodeToString(rf.Certificate),
+		"signer_name":    rf.SignerName,
+		"signed_at":      rf.SignedAt,
+		"canonical_json":  base64.StdEncoding.EncodeToString(rf.CanonicalJSON),
+		"signature":       base64.StdEncoding.EncodeToString(rf.Signature),
+		"certificate":     base64.StdEncoding.EncodeToString(rf.Certificate),
 	})
+}
+
+// --- Expense receipt types ---
+
+type expenseReceiptSignRequest struct {
+	Password   string `json:"password"`
+	SignerName string `json:"signer_name"`
+}
+
+type expenseReceiptData struct {
+	Folio        string  `json:"folio"`
+	ExpenseID    int64   `json:"expense_id"`
+	Description  string  `json:"description"`
+	CategoryName string  `json:"category_name"`
+	Amount       float64 `json:"amount"`
+	Date         string  `json:"date"`
+	SignerName   string  `json:"signer_name"`
+	GeneratedAt  time.Time `json:"generated_at"`
+}
+
+type expenseReceiptSignatureResponse struct {
+	Folio       string             `json:"folio"`
+	Data        expenseReceiptData `json:"data"`
+	Signature   string             `json:"signature"`
+	Certificate string             `json:"certificate"`
+}
+
+// ExpenseReceiptSignature handles POST /expenses/{id}/receipt-signature.
+func (h *ReceiptHandler) ExpenseReceiptSignature(w http.ResponseWriter, r *http.Request) {
+	if !h.signer.Available() {
+		writeErrorT(w, r, h.tr, http.StatusServiceUnavailable, "receipt_signing_not_configured")
+		return
+	}
+
+	expenseID, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
+	if err != nil {
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
+		return
+	}
+
+	var req expenseReceiptSignRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_request_body")
+		return
+	}
+	if req.Password == "" {
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "password_required")
+		return
+	}
+	if req.SignerName == "" {
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "signer_name_required")
+		return
+	}
+
+	claims, ok := ClaimsFromContext(r.Context())
+	if !ok {
+		writeErrorT(w, r, h.tr, http.StatusUnauthorized, "no_claims_in_context")
+		return
+	}
+
+	// Fetch expense detail (enforces ownership)
+	exp, err := h.expenseSvc.GetExpenseDetail(r.Context(), claims.UserID, claims.Role, expenseID)
+	if err != nil {
+		if errors.Is(err, expense.ErrForbidden) {
+			writeErrorT(w, r, h.tr, http.StatusForbidden, "expense_not_found_for_receipt")
+			return
+		}
+		writeErrorT(w, r, h.tr, http.StatusNotFound, "expense_not_found_for_receipt")
+		return
+	}
+
+	// Generate security folio
+	now := time.Now().UTC()
+	folio, seq, suffix, err := h.receiptSvc.GenerateNewFolio(r.Context(), now.Year())
+	if err != nil {
+		writeErrorT(w, r, h.tr, http.StatusInternalServerError, "failed_to_generate_folio")
+		return
+	}
+
+	data := expenseReceiptData{
+		Folio:        folio,
+		ExpenseID:    exp.ID,
+		Description:  exp.Description,
+		CategoryName: exp.CategoryName,
+		Amount:       exp.Amount,
+		Date:         exp.Date.Format("2006-01-02"),
+		SignerName:   req.SignerName,
+		GeneratedAt:  now,
+	}
+
+	canonical, err := json.Marshal(data)
+	if err != nil {
+		writeErrorT(w, r, h.tr, http.StatusInternalServerError, "failed_to_serialize_receipt_data")
+		return
+	}
+
+	sig, err := h.signer.Sign(canonical, req.Password)
+	if err != nil {
+		if strings.Contains(err.Error(), "decrypt") {
+			writeErrorT(w, r, h.tr, http.StatusUnauthorized, "invalid_certificate_password")
+			return
+		}
+		writeErrorT(w, r, h.tr, http.StatusInternalServerError, "failed_to_sign_receipt")
+		return
+	}
+
+	rf := receipt.ReceiptFolio{
+		Folio:         folio,
+		YearIssued:    now.Year(),
+		SeqNumber:     seq,
+		UUIDSuffix:    suffix,
+		ReceiptType:   receipt.TypeExpense,
+		ExpenseID:     &expenseID,
+		ReceiptYear:   exp.Date.Year(),
+		SignerName:    req.SignerName,
+		UserID:        claims.UserID,
+		CanonicalJSON: canonical,
+		Signature:     sig,
+		Certificate:   h.signer.Certificate(),
+		SignedAt:      now,
+	}
+	if err := h.receiptSvc.SaveFolio(r.Context(), &rf); err != nil {
+		log.Printf("WARNING: expense receipt signed but failed to persist folio %s: %v", folio, err)
+		writeErrorT(w, r, h.tr, http.StatusInternalServerError, "failed_to_save_receipt")
+		return
+	}
+
+	resp := expenseReceiptSignatureResponse{
+		Folio:       folio,
+		Data:        data,
+		Signature:   base64.StdEncoding.EncodeToString(sig),
+		Certificate: base64.StdEncoding.EncodeToString(h.signer.Certificate()),
+	}
+
+	writeJSON(w, http.StatusOK, resp)
 }

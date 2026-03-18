@@ -51,6 +51,18 @@ func (r *fakeRepo) FindByID(_ context.Context, id int64) (*expense.Expense, erro
 	return &cp, nil
 }
 
+func (r *fakeRepo) FindDetailedByID(_ context.Context, id int64) (*expense.ExpenseDetail, error) {
+	e, ok := r.data[id]
+	if !ok {
+		return nil, expense.ErrNotFound
+	}
+	return &expense.ExpenseDetail{
+		ID: e.ID, UserID: e.UserID, Description: e.Description,
+		Amount: e.Amount, CategoryID: e.CategoryID, CategoryName: "Test",
+		Date: e.Date, CreatedAt: e.CreatedAt, UpdatedAt: e.UpdatedAt,
+	}, nil
+}
+
 func (r *fakeRepo) FindAll(_ context.Context) ([]expense.Expense, error) {
 	result := make([]expense.Expense, 0, len(r.data))
 	for _, e := range r.data {
@@ -388,6 +400,41 @@ func TestDeleteExpense_NotFound(t *testing.T) {
 	svc, _, _ := newService()
 
 	err := svc.DeleteExpense(ctx, userID1, user.RoleUser, 999)
+	if !errors.Is(err, expense.ErrNotFound) {
+		t.Errorf("expected ErrNotFound, got %v", err)
+	}
+}
+
+func TestGetExpenseDetail_HappyPath(t *testing.T) {
+	svc, _, _ := newService()
+	created, _ := svc.CreateExpense(ctx, userID1, "Lunch", 12.50, categoryID, testDate)
+
+	detail, err := svc.GetExpenseDetail(ctx, userID1, user.RoleUser, created.ID)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if detail.ID != created.ID {
+		t.Errorf("id = %d, want %d", detail.ID, created.ID)
+	}
+	if detail.CategoryName != "Test" {
+		t.Errorf("category_name = %q, want %q", detail.CategoryName, "Test")
+	}
+}
+
+func TestGetExpenseDetail_NonOwnerForbidden(t *testing.T) {
+	svc, _, _ := newService()
+	created, _ := svc.CreateExpense(ctx, userID1, "Lunch", 12.50, categoryID, testDate)
+
+	_, err := svc.GetExpenseDetail(ctx, userID2, user.RoleUser, created.ID)
+	if !errors.Is(err, expense.ErrForbidden) {
+		t.Errorf("expected ErrForbidden, got %v", err)
+	}
+}
+
+func TestGetExpenseDetail_NotFound(t *testing.T) {
+	svc, _, _ := newService()
+
+	_, err := svc.GetExpenseDetail(ctx, userID1, user.RoleUser, 999)
 	if !errors.Is(err, expense.ErrNotFound) {
 		t.Errorf("expected ErrNotFound, got %v", err)
 	}

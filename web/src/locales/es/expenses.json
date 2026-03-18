@@ -38,5 +38,23 @@
     "deleted": "Gasto eliminado",
     "errorDelete": "No se pudo eliminar el gasto",
     "errorLoad": "No se pudieron cargar los gastos"
+  },
+  "receipt": {
+    "title": "Recibo de Gasto",
+    "folio": "Folio de Seguridad",
+    "signAndPrint": "Firmar e Imprimir",
+    "signing": "Firmando...",
+    "signerName": "Nombre del Firmante",
+    "signerNamePlaceholder": "ej. Juan Pérez",
+    "certPassword": "Contraseña del Certificado",
+    "certPasswordPlaceholder": "Contraseña del certificado SAT",
+    "errorSign": "No se pudo firmar el recibo",
+    "errorLoad": "No se pudo cargar el gasto",
+    "printed": "Impreso",
+    "authorizedSignature": "Firma Autorizada",
+    "name": "Nombre",
+    "seal": "Sello",
+    "digitalVerification": "Verificación Digital",
+    "viewReceipt": "Ver Recibo"
   }
 }

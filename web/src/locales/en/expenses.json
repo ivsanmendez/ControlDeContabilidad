@@ -38,5 +38,23 @@
     "deleted": "Expense deleted",
     "errorDelete": "Failed to delete expense",
     "errorLoad": "Failed to load expenses"
+  },
+  "receipt": {
+    "title": "Expense Receipt",
+    "folio": "Security Folio",
+    "signAndPrint": "Sign & Print",
+    "signing": "Signing...",
+    "signerName": "Signer Name",
+    "signerNamePlaceholder": "e.g. John Doe",
+    "certPassword": "Certificate Password",
+    "certPasswordPlaceholder": "SAT certificate password",
+    "errorSign": "Failed to sign receipt",
+    "errorLoad": "Failed to load expense",
+    "printed": "Printed",
+    "authorizedSignature": "Authorized Signature",
+    "name": "Name",
+    "seal": "Seal",
+    "digitalVerification": "Digital Verification",
+    "viewReceipt": "View Receipt"
   }
 }

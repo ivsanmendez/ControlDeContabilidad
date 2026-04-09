@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Carta Poder — Baja del Servicio Eléctrico ante CFE</title>
+<style>
+  @page {
+    size: letter;
+    margin: 1.5cm 2cm;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 11pt;
+    line-height: 1.35;
+    color: #1a1a1a;
+  }
+
+  .page {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px 30px;
+  }
+
+  /* ── Title ── */
+  .title {
+    font-size: 22pt;
+    font-weight: 700;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+  }
+
+  /* ── Date row ── */
+  .date-row {
+    text-align: right;
+    margin-bottom: 10px;
+    font-size: 11pt;
+  }
+  .date-row .underline {
+    border-bottom: 1px solid #333;
+    padding: 0 4px 1px;
+  }
+
+  /* ── Addressee ── */
+  .addressee {
+    margin-bottom: 4px;
+    font-size: 11pt;
+  }
+  .addressee-label {
+    font-size: 9.5pt;
+    color: #444;
+  }
+  .addressee-value {
+    border-bottom: 1px solid #333;
+    padding-bottom: 1px;
+    font-size: 12pt;
+    font-weight: 600;
+  }
+
+  .presente {
+    font-weight: 700;
+    font-size: 11pt;
+    margin: 8px 0 10px;
+  }
+
+  /* ── Grant line ── */
+  .grant-line {
+    font-size: 11pt;
+    margin-bottom: 4px;
+    line-height: 1.5;
+    text-align: justify;
+  }
+  .grant-line .label {
+    font-size: 9.5pt;
+    color: #444;
+  }
+  .grant-line .value {
+    border-bottom: 1px solid #333;
+    padding: 0 4px 1px;
+    font-weight: 600;
+  }
+
+  .poder-line {
+    font-size: 11pt;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    text-align: justify;
+  }
+  .poder-line .label {
+    font-size: 9.5pt;
+    color: #444;
+  }
+
+  /* ── Body (ruled lines via background + border frame) ── */
+  .body-area {
+    margin: 4px 0 10px;
+    font-size: 11pt;
+    line-height: 24px;
+    text-align: justify;
+    padding: 0 4px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 23px,
+      #aaa 23px,
+      #aaa 24px
+    );
+    min-height: auto;
+  }
+  .body-area .highlight {
+    font-weight: 700;
+    text-decoration: underline;
+  }
+
+  /* ── Legal paragraph ── */
+  .legal-block {
+    border-top: 2.5px solid #8B6914;
+    border-bottom: 2.5px solid #8B6914;
+    padding: 8px 8px;
+    margin: 12px 0;
+    font-size: 8.5pt;
+    line-height: 1.3;
+    text-align: justify;
+  }
+
+  /* ── Signature area ── */
+  .signatures {
+    margin-top: 80px;
+  }
+  .sig-ine {
+    font-size: 8.5pt;
+    color: #444;
+    margin-top: 2px;
+  }
+  .sig-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+    margin-bottom: 32px;
+  }
+  .sig-block {
+    flex: 1;
+    text-align: center;
+  }
+  .sig-line {
+    border-bottom: 1px dotted #333;
+    height: 30px;
+    margin-bottom: 4px;
+  }
+  .sig-label {
+    font-size: 9.5pt;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .sig-sublabel {
+    font-size: 9pt;
+    color: #444;
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { font-size: 11pt; }
+    .page { max-width: none; padding: 0; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ── Title ── -->
+  <div class="title">CARTA PODER</div>
+
+  <!-- ── Date ── -->
+  <div class="date-row">
+    <span class="underline">Ciudad de México</span>, a
+    <span class="underline">25</span> de
+    <span class="underline">Marzo</span> de 20<span class="underline">26</span>
+  </div>
+
+  <!-- ── Addressee ── -->
+  <div class="addressee">
+    <span class="addressee-label"></span>
+    <span class="addressee-value">Comisión Federal de Electricidad</span>
+    <br>
+    <span class="addressee-value">A quien corresponda</span>
+  </div>
+
+  <!-- ── PRESENTE ── -->
+  <div class="presente">PRESENTE</div>
+
+  <!-- ── Grant line ── -->
+  <div class="grant-line">
+    <span class="label">Por la presente,</span>
+    <span class="value">yo, Apolinar Salvador Santiago Rodriguez otorgo</span>
+    <span class="label">al Sr.(Sra.)</span>
+    <span class="value">Iván Santiago Méndez</span>
+    <span class="label">poder amplio, cumplido y bastante para que</span>
+    <span class="value">en mi</span>
+    <span class="label">nombre y representación</span>
+    <span class="value">realice los trámites necesarios ante la Comisión Federal de Electricidad (CFE) para
+      hacer nuevo contrato para usos generales, registrado en la dirección Agustín Romero Ibáñez No. 89, entre Avenida Santa Ana y Calzada de la Virgen.
+      El motivo de la presente es hacer un nuevo contrato para usos generales, incluyendo la firma de documentos, entrega y recepción de información, y cualquier gestión administrativa que se requiera para concluir dicho trámite.</span>
+  </div>
+
+  <!-- ── Legal paragraph ── -->
+  <div class="legal-block">
+    y así mismo para que conteste las demandas y reconvenciones que se entablen en mi contra, oponga excepciones
+    dilatorias y perentorias, rinda toda clase de pruebas, reconozca firmas y documentos, redarguya de falsos a los que se
+    presenten por la contraria, presente testigos, vea protestar a los de la contraria y los represente y tache, articule y absuelva
+    posiciones, recuse Jueces superiores o inferiores, oiga autos interlocutorios y definitivos, consienta de los favorables y pida
+    revocación por contrario imperio, apele, interponga el recurso de amparo y se desista de los que interponga, pida
+    aclaración de las sentencias, ejecute, embargue y me represente en los embargos que contra mí se decreten, pida el
+    remate de los bienes embargados, nombre peritos y recuse a los de la contraria, asista a almonedas, transe este juicio,
+    perciba valores y otorgue recibos y cartas de pago, someta el presente juicio a la decisión de los Jueces, árbitro y
+    arbitradores, gestione el otorgamiento de garantías, y en fin, para que promueva todos los recursos que favorezcan mis
+    derechos, así como para que sustituya este poder ratificando desde hoy todo lo que haga sobre este particular.
+  </div>
+
+  <!-- ── Signatures ── -->
+  <div class="signatures">
+    <div class="sig-row">
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="sig-label">ACEPTO EL PODER</div>
+        <div class="sig-ine">Nombre: ________________________________</div>
+        <div class="sig-ine">No. INE: ________________________________</div>
+      </div>
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="sig-sublabel">Suyo afmo S.S.</div>
+        <div class="sig-label">OTORGANTE</div>
+        <div class="sig-ine">Nombre: ________________________________</div>
+        <div class="sig-ine">No. INE: ________________________________</div>
+      </div>
+    </div>
+
+    <div class="sig-row">
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="sig-label">TESTIGO</div>
+        <div class="sig-ine">Nombre: ________________________________</div>
+        <div class="sig-ine">No. INE: ________________________________</div>
+      </div>
+      <div class="sig-block">
+        <div class="sig-line"></div>
+        <div class="sig-label">TESTIGO</div>
+        <div class="sig-ine">Nombre: ________________________________</div>
+        <div class="sig-ine">No. INE: ________________________________</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

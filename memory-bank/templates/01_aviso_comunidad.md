@@ -36,6 +36,8 @@ Agradecemos de antemano su colaboración y participación.
 
 Saludos cordiales,
 **{{NOMBRE_DEL_REMITENTE}}**
+Administrador de la Seguridad
+Calle Agustín Romero Ibáñez Entrada Santa Ana
 
 ---
 
@@ -47,7 +49,7 @@ Saludos cordiales,
 | `{{DESCRIPCION_DEL_ASUNTO}}` | Resumen breve del tema | la administración de la seguridad queda a cargo de... |
 | `{{LISTA_DE_RESPONSABLES}}` | Personas involucradas con rol | - **Iván Santiago** — Coordinador |
 | `{{DETALLES_ADICIONALES}}` | Info extra (montos, fechas, cuentas) | Cooperación mensual: $XXX por casa |
-| `{{NOMBRE_DEL_REMITENTE}}` | Quien firma el comunicado | Iván Santiago |
+| `{{NOMBRE_DEL_REMITENTE}}` | Quien firma el comunicado | Iván Santiago Méndez |
 
 ---
 
@@ -70,4 +72,6 @@ Cualquier duda o comentario, no duden en comunicarse con cualquiera de nosotros.
 Agradecemos de antemano su colaboración y participación.
 
 Saludos cordiales,
-**Iván Santiago**
+**Iván Santiago Méndez**
+Administrador de la Seguridad
+Calle Agustín Romero Ibáñez Entrada Santa Ana

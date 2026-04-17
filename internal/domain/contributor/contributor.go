@@ -20,6 +20,7 @@ type Contributor struct {
 	Name        string
 	Phone       string
 	UserID      int64
+	CasaID      *int64
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

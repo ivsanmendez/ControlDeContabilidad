@@ -27,6 +27,7 @@ var MessagesES = map[string]string{
 	"invalid_page_size":    "tamaño de página inválido",
 	"invalid_date_from":    "fecha de inicio inválida, se esperaba YYYY-MM-DD",
 	"invalid_date_to":      "fecha de fin inválida, se esperaba YYYY-MM-DD",
+	"invalid_date_format":  "formato de fecha inválido, se esperaba YYYY-MM-DD",
 	"invalid_category_id":  "category_id inválido",
 
 	// Contributors
@@ -61,4 +62,10 @@ var MessagesES = map[string]string{
 
 	// Reports
 	"report_query_failed": "error al generar el reporte",
+
+	// Casas
+	"casa_not_found":                "casa no encontrada",
+	"casa_duplicate":                "ya existe una casa con ese nombre",
+	"casa_contributor_not_found":    "contribuyente no encontrado",
+	"casa_has_access_controls":      "la casa tiene controles de acceso asignados",
 }

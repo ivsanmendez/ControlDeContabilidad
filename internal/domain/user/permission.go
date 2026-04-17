@@ -34,6 +34,12 @@ const (
 	PermExpenseCategoryRead   Permission = "expense_category:read"
 	PermExpenseCategoryUpdate Permission = "expense_category:update"
 	PermExpenseCategoryDelete Permission = "expense_category:delete"
+
+	PermCasaCreate              Permission = "casa:create"
+	PermCasaRead                Permission = "casa:read"
+	PermCasaUpdate              Permission = "casa:update"
+	PermCasaDelete              Permission = "casa:delete"
+	PermCasaAssignContributor   Permission = "casa:assign_contributor"
 )
 
 var rolePermissions = map[Role][]Permission{
@@ -60,6 +66,7 @@ var rolePermissions = map[Role][]Permission{
 		PermExpenseCategoryRead,
 		PermExpenseCategoryUpdate,
 		PermExpenseCategoryDelete,
+		PermCasaRead,
 	},
 	RoleAdmin: {
 		PermExpenseCreate,
@@ -87,6 +94,11 @@ var rolePermissions = map[Role][]Permission{
 		PermExpenseCategoryRead,
 		PermExpenseCategoryUpdate,
 		PermExpenseCategoryDelete,
+		PermCasaCreate,
+		PermCasaRead,
+		PermCasaUpdate,
+		PermCasaDelete,
+		PermCasaAssignContributor,
 	},
 }
 

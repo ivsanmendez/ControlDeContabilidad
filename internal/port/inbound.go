@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/casa"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/category"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contribution"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contributor"
@@ -63,6 +64,17 @@ type ReceiptFolioService interface {
 // ReportService is the driving port for report use cases.
 type ReportService interface {
 	GetMonthlyBalance(ctx context.Context, year int) (*report.MonthlyBalanceReport, error)
+}
+
+// CasaService is the driving port for casa use cases.
+type CasaService interface {
+	CreateCasa(ctx context.Context, name, address, notes string) (*casa.Casa, error)
+	GetCasa(ctx context.Context, id int64) (*casa.CasaDetail, error)
+	ListCasas(ctx context.Context) ([]casa.Casa, error)
+	UpdateCasa(ctx context.Context, id int64, name, address, notes string) (*casa.Casa, error)
+	DeleteCasa(ctx context.Context, id int64) error
+	AssignContributor(ctx context.Context, casaID, contributorID int64) error
+	UnassignContributor(ctx context.Context, contributorID int64) error
 }
 
 // ExpenseCategoryService is the driving port for expense category use cases.

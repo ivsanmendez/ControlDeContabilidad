@@ -27,6 +27,7 @@ var MessagesEN = map[string]string{
 	"invalid_page_size":    "invalid page size",
 	"invalid_date_from":    "invalid date_from, expected YYYY-MM-DD",
 	"invalid_date_to":      "invalid date_to, expected YYYY-MM-DD",
+	"invalid_date_format":  "invalid date format, expected YYYY-MM-DD",
 	"invalid_category_id":  "invalid category_id",
 
 	// Contributors
@@ -61,4 +62,10 @@ var MessagesEN = map[string]string{
 
 	// Reports
 	"report_query_failed": "report query failed",
+
+	// Casas
+	"casa_not_found":                "casa not found",
+	"casa_duplicate":                "a casa with that name already exists",
+	"casa_contributor_not_found":    "contributor not found",
+	"casa_has_access_controls":      "casa has access controls assigned",
 }

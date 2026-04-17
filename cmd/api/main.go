@@ -15,6 +15,7 @@ import (
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/i18n"
 	jwtadapter "github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/jwt"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/postgres"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/casa"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/category"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contribution"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contributor"
@@ -52,6 +53,7 @@ func main() {
 	categoryRepo := postgres.NewCategoryRepo(db)
 	expCatRepo := postgres.NewExpenseCategoryRepo(db)
 	receiptFolioRepo := postgres.NewReceiptFolioRepo(db)
+	casaRepo := postgres.NewCasaRepo(db)
 	bus := eventbus.New()
 	hasher := bcryptadapter.New()
 	jwtIssuer := jwtadapter.NewIssuer(jwtSecret)
@@ -75,13 +77,14 @@ func main() {
 	receiptSvc := receipt.NewService(receiptFolioRepo)
 	reportRepo := postgres.NewReportRepo(db)
 	reportSvc := report.NewService(reportRepo)
+	casaSvc := casa.NewService(casaRepo)
 
 	// i18n translator
 	tr := i18n.New()
 
 	// Inbound adapters
 	mux := http.NewServeMux()
-	httpapi.RegisterRoutes(mux, expenseSvc, authSvc, contribSvc, contributorSvc, categorySvc, expCatSvc, receiptSvc, reportSvc, jwtIssuer, signer, tr)
+	httpapi.RegisterRoutes(mux, expenseSvc, authSvc, contribSvc, contributorSvc, categorySvc, expCatSvc, receiptSvc, reportSvc, casaSvc, jwtIssuer, signer, tr)
 
 	// Serve static files (production React build)
 	staticDir := os.Getenv("STATIC_DIR")

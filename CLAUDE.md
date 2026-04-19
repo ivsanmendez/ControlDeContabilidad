@@ -28,6 +28,10 @@ Subdirectories for growing documentation:
 
 Update these files when making significant changes. Use the `NN_` naming convention when adding new files.
 
+> **Rule: Never read memory-bank files directly to answer knowledge or status questions.** Always delegate to the `memory-bank-manager` subagent. It runs semantic search over the AgentFS vector index in addition to reading files, and represents the correct workflow. Direct reads via the Read tool are only acceptable when modifying a file (you must read before editing).
+>
+> **Rule: Never call `python3 .agentfs/embed.py` or the `agentfs` CLI directly.** All AgentFS and embedding operations belong exclusively to `memory-bank-manager`. It handles DB-lock errors (the SQLite DB may be held by the MCP server) and fallback logic gracefully — other agents must not attempt these calls.
+
 ## Tool Management
 
 Uses **mise** (`.mise.toml`) to manage Go 1.23 and Node 22. All commands should be prefixed with `mise exec --` or use `mise run <task>`.
@@ -73,6 +77,24 @@ mise exec -- go test -run TestName ./internal/domain/expense/...
 mise exec -- npm --prefix web run dev
 mise exec -- npm --prefix web run build
 ```
+
+## Coding Language
+
+> **Rule: All code identifiers must be in English — no exceptions.**
+
+This applies to every layer of the stack:
+
+| Layer | Scope |
+|-------|-------|
+| Go | Package names, struct/type names, function/method names, variable names, error vars, constant names |
+| TypeScript / React | Interface/type names, component names, hook names, variable names, prop names |
+| SQL | Table names, column names, index names, constraint names |
+| HTTP | API route paths (`/houses`, not `/casas`) |
+| i18n | Namespace names and translation **keys** (`house_not_found`, not `casa_no_encontrada`) |
+
+**Translation values** (what users see in the UI or API responses) are the only exception — they stay in Spanish (`es`) or English (`en`) depending on locale.
+
+If a domain concept is in Spanish in the real world (e.g. "casa"), the code identifier is still the English equivalent (`house`). Document the mapping in the memory bank if needed.
 
 ## Architecture (Hexagonal)
 

@@ -29,3 +29,7 @@ Thumbs.db
 /web/.vite/deps/package.json
 /web/.vite/deps/_metadata.json
 /.env.production
+# AgentFS — ignore DB files but keep scripts
+/.agentfs/control-contabilidad.db
+/.agentfs/control-contabilidad.db-shm
+/.agentfs/control-contabilidad.db-wal

@@ -33,6 +33,13 @@ export type CreateExpenseRequest = {
   date: string
 }
 
+export type UpdateExpenseRequest = {
+  description: string
+  amount: number
+  category_id: number
+  date: string
+}
+
 export type ExpenseReceiptData = {
   folio: string
   expense_id: number

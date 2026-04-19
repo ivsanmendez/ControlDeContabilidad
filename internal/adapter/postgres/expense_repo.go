@@ -30,7 +30,7 @@ func (r *ExpenseRepo) Save(ctx context.Context, e *expense.Expense) error {
 		e.Description,
 		e.Amount,
 		e.CategoryID,
-		e.Date,
+		e.Date.Format("2006-01-02"),
 		e.CreatedAt,
 		e.UpdatedAt,
 	).Scan(&e.ID)
@@ -46,7 +46,7 @@ func (r *ExpenseRepo) Update(ctx context.Context, e *expense.Expense) error {
 		e.Description,
 		e.Amount,
 		e.CategoryID,
-		e.Date,
+		e.Date.Format("2006-01-02"),
 		e.UpdatedAt,
 		e.ID,
 	)
@@ -151,12 +151,12 @@ func (r *ExpenseRepo) FindDetailedPaginated(ctx context.Context, userID *int64, 
 	}
 	if params.DateFrom != nil {
 		where = append(where, fmt.Sprintf("e.date >= $%d", n))
-		args = append(args, *params.DateFrom)
+		args = append(args, params.DateFrom.Format("2006-01-02"))
 		n++
 	}
 	if params.DateTo != nil {
 		where = append(where, fmt.Sprintf("e.date <= $%d", n))
-		args = append(args, *params.DateTo)
+		args = append(args, params.DateTo.Format("2006-01-02"))
 		n++
 	}
 	if params.CategoryID != nil {

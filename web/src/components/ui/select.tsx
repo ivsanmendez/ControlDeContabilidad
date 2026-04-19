@@ -4,7 +4,66 @@ import { Select as SelectPrimitive } from "@base-ui/react/select"
 import { cn } from "@/lib/utils"
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
 
-const Select = SelectPrimitive.Root
+// Store that lets child SelectItem components register their (value → label)
+// mapping so the SelectValue trigger can display the item's human-readable text
+// instead of the raw value. base-ui's Select.Value only resolves labels from the
+// `items` prop on Select.Root, which we don't use — so we bridge it ourselves.
+//
+// The store is held in a ref so the context value reference is stable across
+// renders. SelectValue subscribes to label changes to re-render when items
+// mount/unmount; SelectItem's registration effect has stable deps, avoiding
+// the infinite loop that would happen if we bumped a version on the context.
+type SelectLabelsStore = {
+  register: (value: string, label: React.ReactNode) => void
+  unregister: (value: string) => void
+  getLabel: (value: string) => React.ReactNode | undefined
+  subscribe: (listener: () => void) => () => void
+}
+
+const SelectLabelsContext = React.createContext<SelectLabelsStore | null>(null)
+
+function createLabelsStore(): SelectLabelsStore {
+  const labels = new Map<string, React.ReactNode>()
+  const listeners = new Set<() => void>()
+  const emit = () => {
+    listeners.forEach((l) => l())
+  }
+  return {
+    register(value, label) {
+      if (labels.get(value) !== label) {
+        labels.set(value, label)
+        emit()
+      }
+    },
+    unregister(value) {
+      if (labels.delete(value)) {
+        emit()
+      }
+    },
+    getLabel(value) {
+      return labels.get(value)
+    },
+    subscribe(listener) {
+      listeners.add(listener)
+      return () => {
+        listeners.delete(listener)
+      }
+    },
+  }
+}
+
+function Select<Value, Multiple extends boolean | undefined = false>(
+  props: SelectPrimitive.Root.Props<Value, Multiple>
+) {
+  // Lazy-init a per-Select store with a stable identity across renders.
+  const [store] = React.useState(createLabelsStore)
+
+  return (
+    <SelectLabelsContext.Provider value={store}>
+      <SelectPrimitive.Root {...props} />
+    </SelectLabelsContext.Provider>
+  )
+}
 
 function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   return (
@@ -16,13 +75,46 @@ function SelectGroup({ className, ...props }: SelectPrimitive.Group.Props) {
   )
 }
 
-function SelectValue({ className, ...props }: SelectPrimitive.Value.Props) {
+function SelectValue({
+  className,
+  children,
+  placeholder,
+  ...props
+}: SelectPrimitive.Value.Props) {
+  const ctx = React.useContext(SelectLabelsContext)
+
+  // Subscribe to label changes so we re-render when SelectItems mount/unmount
+  // and their (value → label) pairs become available in the store.
+  const [, forceUpdate] = React.useReducer((n: number) => n + 1, 0)
+  React.useEffect(() => {
+    if (!ctx) return
+    return ctx.subscribe(forceUpdate)
+  }, [ctx])
+
+  // If the caller provided explicit children (function or node), honor it.
+  // Otherwise auto-provide a render function that looks up the label for the
+  // currently selected value from the labels store populated by SelectItem.
+  const resolvedChildren =
+    children !== undefined
+      ? children
+      : (value: unknown) => {
+          if (value == null || value === "") {
+            return placeholder ?? ""
+          }
+          const key = String(value)
+          const label = ctx?.getLabel(key)
+          return label ?? placeholder ?? key
+        }
+
   return (
     <SelectPrimitive.Value
       data-slot="select-value"
       className={cn("flex flex-1 text-left", className)}
+      placeholder={placeholder}
       {...props}
-    />
+    >
+      {resolvedChildren}
+    </SelectPrimitive.Value>
   )
 }
 
@@ -109,11 +201,38 @@ function SelectLabel({
 function SelectItem({
   className,
   children,
+  label,
+  value,
   ...props
 }: SelectPrimitive.Item.Props) {
+  // Auto-derive the label from string children when not explicitly provided.
+  // This label is used by base-ui's composite list for keyboard-typed search
+  // and by SelectValue (via the labels context) to render the trigger text.
+  const resolvedLabel =
+    label ?? (typeof children === "string" ? children : undefined)
+
+  // Register (value → resolvedLabel) in the labels context so SelectValue
+  // can render the human-readable label in the trigger when this item is
+  // selected. We use the resolved string label (not raw children) so the
+  // effect dependency stays stable across re-renders — avoiding infinite
+  // re-register loops when children is a new array reference each render.
+  const ctx = React.useContext(SelectLabelsContext)
+  React.useLayoutEffect(() => {
+    if (!ctx || value == null || resolvedLabel == null) {
+      return
+    }
+    const key = String(value)
+    ctx.register(key, resolvedLabel)
+    return () => {
+      ctx.unregister(key)
+    }
+  }, [ctx, value, resolvedLabel])
+
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
+      value={value}
+      label={resolvedLabel}
       className={cn(
         "relative flex w-full cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className

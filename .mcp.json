@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "memory-bank": {
+      "command": "/Users/ivan/.cargo/bin/agentfs",
+      "args": ["serve", "mcp", "control-contabilidad"],
+      "cwd": "/Users/ivan/0000000_Repos/GITHUB/0_ivsanmendez/ControlDeContabilidad"
+    }
+  }
+}

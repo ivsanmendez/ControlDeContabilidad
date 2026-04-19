@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 .agentfs/embed.py search \"current phase recently completed progress\")",
+      "Bash(python3 .agentfs/embed.py search \"kanban board in progress todo backlog done\")",
+      "Bash(python3 .agentfs/embed.py search \"pending next steps open questions known issues\")"
+    ]
+  }
+}

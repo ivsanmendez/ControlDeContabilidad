@@ -24,11 +24,12 @@
 ## Current Board State
 
 ### Backlog
+- GitHub #4 Feature: Control de Acceso Vehicular por Casa [`backend`, `frontend`, `domain`] — 4 phases: Casa+Contributors, AccessControls, Vehicles, AutoEvaluation
 - #6 Implement AI agent driving adapter [`agentic`, `backend`]
 - #7 Replace in-memory event bus with persistent broker [`agentic`, `infrastructure`]
 
 ### Todo
-- #4 Build React expense management UI [`frontend`]
+_(none)_
 
 ### In Progress
 _(none)_
@@ -45,3 +46,4 @@ _(none)_
 - SAT certificate signing + print-sign dialog [`backend`, `frontend`]
 - Contribution category catalog [`backend`, `frontend`, `domain`] — migration 008, CRUD API + UI
 - Security Folio for receipts [`backend`, `frontend`, `domain`] — migration 009, persistent folios, verification endpoint
+- #4 (old) Build React expense management UI [`frontend`] — full CRUD (list, create, edit, delete) with i18n, edit dialog, Pencil icon per row

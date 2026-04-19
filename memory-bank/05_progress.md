@@ -11,7 +11,15 @@
 - React SPA scaffolded with Vite + TypeScript (`web/`)
 - Docker Compose (API + PostgreSQL 16 + React dev server)
 - GitHub Actions CI pipeline
-- Memory bank with SessionStart hook auto-loading
+- Memory bank with SessionStart hook — now loads from AgentFS (local fallback preserved)
+- AgentFS vector memory bank (see ADR-04):
+  - Local SQLite DB at `.agentfs/control-contabilidad.db`
+  - Ollama `nomic-embed-text` 768d embeddings with chunking + 10% overlap
+  - Incremental re-indexing via SHA-256 content hash
+  - `memory-bank` MCP server in `~/.claude/settings.json`
+  - `memory-bank-manager` Claude Code subagent
+  - Embedding script: `.agentfs/embed.py index|search|status`
+- `orchestrator-agent.sh` — shell script to launch the project-orchestrator agent (`./orchestrator-agent.sh [flags] [prompt]`)
 - CLAUDE.md
 - Database migrations with goose (`db/migrations/`)
 - Domain unit tests (entity + service with fake adapters)
@@ -67,6 +75,23 @@ Extended the receipt infrastructure to support individual expense receipts along
 3. User clicks "Sign & Print" → dialog opens with signer name + SAT password
 4. `POST /expenses/{id}/receipt-signature` → generates folio, signs canonical JSON, persists to `receipt_folios`
 5. Response includes folio + signed data → QR code appears → auto-print
+
+## Recently Completed — Edit Expense (closes #4)
+Completed the full expense management UI by adding edit-expense support, making feature #4 fully done. The backend was already complete; this was a frontend-only milestone.
+
+### What Was Built
+
+**Frontend:**
+- **`UpdateExpenseRequest` type** (`web/src/types/expense.ts`): request shape for `PUT /expenses/{id}`
+- **`useUpdateExpense()` hook** (`web/src/hooks/use-expenses.ts`): mutation that calls `PUT /expenses/{id}`, invalidates expense list on success
+- **`ExpenseEditForm` component** (`web/src/components/expenses/expense-edit-form.tsx`): pre-fills all fields from the existing expense; same validation pattern as `ExpenseForm`
+- **`ExpenseTable`**: added `onEdit` prop and Pencil icon button per row (mobile + desktop layouts)
+- **`ExpensesPage`**: edit dialog state (`editingExpense: Expense | null`), wired to `ExpenseTable` and `ExpenseEditForm`
+- **i18n keys** (`form.editTitle`, `form.submitUpdate`, `form.errorUpdate`, `toast.updated`) added in both `messages_es.go` and `messages_en.go`
+- Build passes with zero TypeScript errors
+
+**Backend (pre-existing):**
+- `PUT /expenses/{id}` handler, domain `UpdateExpense` use case, postgres `Update` method — all complete before this sprint
 
 ## Previously Completed — SPA Content Negotiation Fix
 Fixed production bug where browser navigation to SPA client-side routes was intercepted by API wildcard routes, causing auth errors.
@@ -150,9 +175,27 @@ Example: `REC-2026-000001-A3F7B2C1`
 - Go upgraded 1.23 → 1.24
 
 ## What's Left to Build
-- React expense management UI (#4)
 - AI agent driving adapter (#6)
 - Persistent event bus (#7)
+
+## Recently Completed — AgentFS Vector Memory Bank
+Migrated memory-bank from flat markdown files to a local SQLite/libSQL database with Ollama vector embeddings, enabling semantic search over project knowledge.
+
+### What Was Built
+- **AgentFS** (`agentfs v0.6.4`): local agent filesystem at `.agentfs/control-contabilidad.db`
+  - All 34 `memory-bank/*.md` files imported via `agentfs fs write`
+  - Installed at `~/.cargo/bin/agentfs`
+- **Vector index** (table `vec_memory_bank` in same DB):
+  - Model: `nomic-embed-text` (Ollama, local, 768 dimensions)
+  - Chunking: 4000 chars/chunk, 10% overlap (400 chars), adaptive halving on context overflow
+  - Deduplication: SHA-256 content hash — only changed files re-embedded on `index`
+- **Embedding script** (`.agentfs/embed.py`):
+  - `index` — incremental index, `index --force` to re-embed all
+  - `search <query>` — cosine similarity search, returns top 5
+  - `status` — shows each file as `current`, `STALE`, or `DELETED`
+- **MCP server**: `memory-bank` entry in `~/.claude/settings.json` → `agentfs serve mcp control-contabilidad`
+- **SessionStart hook** (`.claude/hooks/load-memory-bank.sh`): reads core docs from AgentFS CLI; falls back to local files if AgentFS unavailable
+- **`memory-bank-manager` agent** (`.claude/agents/memory-bank-manager.md`): Claude Code subagent that handles search, read, update, and sync lifecycle
 
 ## Known Issues
 _(none)_

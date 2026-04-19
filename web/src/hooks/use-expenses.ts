@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiFetch } from '@/lib/api-client'
-import type { Expense, PaginatedExpenses, ExpenseFilters, CreateExpenseRequest } from '@/types/expense'
+import type { Expense, PaginatedExpenses, ExpenseFilters, CreateExpenseRequest, UpdateExpenseRequest } from '@/types/expense'
 
 export function useExpense(id: number) {
   return useQuery<Expense>({
@@ -37,6 +37,21 @@ export function useCreateExpense() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] })
+    },
+  })
+}
+
+export function useUpdateExpense() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: UpdateExpenseRequest }) =>
+      apiFetch<Expense>(`/expenses/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: (_result, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['expenses'] })
+      queryClient.invalidateQueries({ queryKey: ['expense', id] })
     },
   })
 }

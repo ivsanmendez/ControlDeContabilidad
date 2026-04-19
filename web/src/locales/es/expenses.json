@@ -5,13 +5,16 @@
   "addFirst": "Agrega tu primer gasto",
   "form": {
     "title": "Nuevo Gasto",
+    "editTitle": "Editar Gasto",
     "description": "Descripción",
     "amount": "Monto",
     "category": "Categoría",
     "date": "Fecha",
     "submit": "Crear gasto",
-    "submitting": "Creando...",
-    "errorCreate": "No se pudo crear el gasto"
+    "submitUpdate": "Guardar cambios",
+    "submitting": "Guardando...",
+    "errorCreate": "No se pudo crear el gasto",
+    "errorUpdate": "No se pudo actualizar el gasto"
   },
   "table": {
     "date": "Fecha",
@@ -35,6 +38,7 @@
   },
   "toast": {
     "created": "Gasto creado",
+    "updated": "Gasto actualizado",
     "deleted": "Gasto eliminado",
     "errorDelete": "No se pudo eliminar el gasto",
     "errorLoad": "No se pudieron cargar los gastos"

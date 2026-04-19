@@ -16,22 +16,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useCreateExpense } from '@/hooks/use-expenses'
+import { useUpdateExpense } from '@/hooks/use-expenses'
 import { useExpenseCategories } from '@/hooks/use-expense-categories'
 import { ApiClientError } from '@/lib/api-client'
+import type { Expense } from '@/types/expense'
 
-type ExpenseFormProps = {
+type ExpenseEditFormProps = {
+  expense: Expense
   onSuccess: () => void
 }
 
-export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
-  const createExpense = useCreateExpense()
+export function ExpenseEditForm({ expense, onSuccess }: ExpenseEditFormProps) {
+  const updateExpense = useUpdateExpense()
   const { data: categories } = useExpenseCategories()
   const { t } = useTranslation('expenses')
-  const [description, setDescription] = useState('')
-  const [amount, setAmount] = useState('')
-  const [categoryId, setCategoryId] = useState('')
-  const [date, setDate] = useState(() => new Date().toISOString().split('T')[0])
+  const [description, setDescription] = useState(expense.Description)
+  const [amount, setAmount] = useState(String(expense.Amount))
+  const [categoryId, setCategoryId] = useState(String(expense.CategoryID))
+  const [date, setDate] = useState(expense.Date.slice(0, 10))
   const [error, setError] = useState('')
 
   const activeCategories = categories?.filter((c) => c.IsActive) ?? []
@@ -41,18 +43,21 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
     setError('')
 
     try {
-      await createExpense.mutateAsync({
-        description,
-        amount: parseFloat(amount),
-        category_id: parseInt(categoryId, 10),
-        date,
+      await updateExpense.mutateAsync({
+        id: expense.ID,
+        data: {
+          description,
+          amount: parseFloat(amount),
+          category_id: parseInt(categoryId, 10),
+          date,
+        },
       })
       onSuccess()
     } catch (err) {
       if (err instanceof ApiClientError) {
         setError(err.message)
       } else {
-        setError(t('form.errorCreate'))
+        setError(t('form.errorUpdate'))
       }
     }
   }
@@ -60,23 +65,23 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>{t('form.title')}</DialogTitle>
+        <DialogTitle>{t('form.editTitle')}</DialogTitle>
       </DialogHeader>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {error && <p className="text-sm text-destructive">{error}</p>}
         <div className="flex flex-col gap-2">
-          <Label htmlFor="description">{t('form.description')}</Label>
+          <Label htmlFor="edit-description">{t('form.description')}</Label>
           <Input
-            id="description"
+            id="edit-description"
             required
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="amount">{t('form.amount')}</Label>
+          <Label htmlFor="edit-amount">{t('form.amount')}</Label>
           <Input
-            id="amount"
+            id="edit-amount"
             type="number"
             step="0.01"
             min="0.01"
@@ -86,9 +91,9 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="category">{t('form.category')}</Label>
+          <Label htmlFor="edit-category">{t('form.category')}</Label>
           <Select value={categoryId} onValueChange={(v) => setCategoryId(v ?? '')} required>
-            <SelectTrigger id="category">
+            <SelectTrigger id="edit-category">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -101,17 +106,17 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
           </Select>
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="date">{t('form.date')}</Label>
+          <Label htmlFor="edit-date">{t('form.date')}</Label>
           <Input
-            id="date"
+            id="edit-date"
             type="date"
             required
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
         </div>
-        <Button type="submit" disabled={createExpense.isPending}>
-          {createExpense.isPending ? t('form.submitting') : t('form.submit')}
+        <Button type="submit" disabled={updateExpense.isPending}>
+          {updateExpense.isPending ? t('form.submitting') : t('form.submitUpdate')}
         </Button>
       </form>
     </DialogContent>

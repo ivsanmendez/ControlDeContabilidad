@@ -30,7 +30,10 @@ function formatCurrency(amount: number, lang: string) {
 
 function formatDate(dateStr: string, lang: string) {
   const locale = lang.startsWith('es') ? 'es-MX' : 'en-US'
-  return new Date(dateStr).toLocaleDateString(locale, {
+  // Parse date-only portion (YYYY-MM-DD) as a local calendar date to avoid
+  // the UTC→local timezone shift that displays the previous day in UTC-6.
+  const [y, m, d] = dateStr.slice(0, 10).split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString(locale, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

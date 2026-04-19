@@ -18,10 +18,10 @@ type ExpenseHandler struct {
 }
 
 type createExpenseRequest struct {
-	Description string    `json:"description"`
-	Amount      float64   `json:"amount"`
-	CategoryID  int64     `json:"category_id"`
-	Date        time.Time `json:"date"`
+	Description string  `json:"description"`
+	Amount      float64 `json:"amount"`
+	CategoryID  int64   `json:"category_id"`
+	Date        string  `json:"date"`
 }
 
 func (h *ExpenseHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +36,12 @@ func (h *ExpenseHandler) Create(w http.ResponseWriter, r *http.Request) {
 		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_request_body")
 		return
 	}
-	e, err := h.svc.CreateExpense(r.Context(), claims.UserID, req.Description, req.Amount, req.CategoryID, req.Date)
+	date, err := time.Parse("2006-01-02", req.Date)
+	if err != nil {
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_date_format")
+		return
+	}
+	e, err := h.svc.CreateExpense(r.Context(), claims.UserID, req.Description, req.Amount, req.CategoryID, date)
 	if err != nil {
 		writeError(w, http.StatusUnprocessableEntity, err.Error())
 		return
@@ -129,10 +134,10 @@ func (h *ExpenseHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 type updateExpenseRequest struct {
-	Description string    `json:"description"`
-	Amount      float64   `json:"amount"`
-	CategoryID  int64     `json:"category_id"`
-	Date        time.Time `json:"date"`
+	Description string  `json:"description"`
+	Amount      float64 `json:"amount"`
+	CategoryID  int64   `json:"category_id"`
+	Date        string  `json:"date"`
 }
 
 func (h *ExpenseHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -154,7 +159,13 @@ func (h *ExpenseHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	e, err := h.svc.UpdateExpense(r.Context(), claims.UserID, claims.Role, id, req.Description, req.Amount, req.CategoryID, req.Date)
+	date, err := time.Parse("2006-01-02", req.Date)
+	if err != nil {
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_date_format")
+		return
+	}
+
+	e, err := h.svc.UpdateExpense(r.Context(), claims.UserID, claims.Role, id, req.Description, req.Amount, req.CategoryID, date)
 	if err != nil {
 		if errors.Is(err, expense.ErrForbidden) {
 			writeError(w, http.StatusForbidden, err.Error())

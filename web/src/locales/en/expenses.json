@@ -5,13 +5,16 @@
   "addFirst": "Add your first expense",
   "form": {
     "title": "New Expense",
+    "editTitle": "Edit Expense",
     "description": "Description",
     "amount": "Amount",
     "category": "Category",
     "date": "Date",
     "submit": "Create expense",
-    "submitting": "Creating...",
-    "errorCreate": "Failed to create expense"
+    "submitUpdate": "Save changes",
+    "submitting": "Saving...",
+    "errorCreate": "Failed to create expense",
+    "errorUpdate": "Failed to update expense"
   },
   "table": {
     "date": "Date",
@@ -35,6 +38,7 @@
   },
   "toast": {
     "created": "Expense created",
+    "updated": "Expense updated",
     "deleted": "Expense deleted",
     "errorDelete": "Failed to delete expense",
     "errorLoad": "Failed to load expenses"

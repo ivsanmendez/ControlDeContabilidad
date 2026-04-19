@@ -14,10 +14,11 @@ import {
 import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { ExpenseTable } from '@/components/expenses/expense-table'
 import { ExpenseForm } from '@/components/expenses/expense-form'
+import { ExpenseEditForm } from '@/components/expenses/expense-edit-form'
 import { ExpenseEmpty } from '@/components/expenses/expense-empty'
 import { useExpenses, useDeleteExpense } from '@/hooks/use-expenses'
 import { useExpenseCategories } from '@/hooks/use-expense-categories'
-import type { ExpenseFilters } from '@/types/expense'
+import type { Expense, ExpenseFilters } from '@/types/expense'
 
 const PAGE_SIZE = 20
 
@@ -28,6 +29,7 @@ export function ExpensesPage() {
   const [categoryId, setCategoryId] = useState('')
   const [page, setPage] = useState(1)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
   const { t } = useTranslation('expenses')
 
   const filters: ExpenseFilters = {
@@ -46,6 +48,10 @@ export function ExpensesPage() {
   const activeCategories = categories?.filter((c) => c.IsActive) ?? []
 
   const resetPage = useCallback(() => setPage(1), [])
+
+  function handleEdit(expense: Expense) {
+    setEditingExpense(expense)
+  }
 
   function handleDelete(id: number) {
     deleteExpense.mutate(id, {
@@ -93,6 +99,19 @@ export function ExpensesPage() {
           />
         </Dialog>
       </div>
+
+      {/* Edit dialog — controlled externally, no trigger button */}
+      <Dialog open={editingExpense !== null} onOpenChange={(open) => { if (!open) setEditingExpense(null) }}>
+        {editingExpense && (
+          <ExpenseEditForm
+            expense={editingExpense}
+            onSuccess={() => {
+              setEditingExpense(null)
+              toast.success(t('toast.updated'))
+            }}
+          />
+        )}
+      </Dialog>
 
       {/* Filter bar */}
       <div className="flex flex-wrap items-end gap-3">
@@ -143,7 +162,7 @@ export function ExpensesPage() {
         <ExpenseEmpty onAdd={() => setDialogOpen(true)} />
       ) : (
         <>
-          <ExpenseTable expenses={result.items} onDelete={handleDelete} />
+          <ExpenseTable expenses={result.items} onEdit={handleEdit} onDelete={handleDelete} />
 
           {/* Pagination */}
           <div className="flex items-center justify-between text-sm text-muted-foreground">

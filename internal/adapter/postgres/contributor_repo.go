@@ -46,7 +46,7 @@ func (r *ContributorRepo) Save(ctx context.Context, c *contributor.Contributor) 
 
 func (r *ContributorRepo) FindByID(ctx context.Context, id int64) (*contributor.Contributor, error) {
 	const q = `
-		SELECT id, house_number, name, phone, user_id, casa_id, created_at, updated_at
+		SELECT id, house_number, name, phone, user_id, house_id, created_at, updated_at
 		FROM contributors
 		WHERE id = $1`
 
@@ -62,7 +62,7 @@ func (r *ContributorRepo) FindByID(ctx context.Context, id int64) (*contributor.
 
 func (r *ContributorRepo) FindAll(ctx context.Context) ([]contributor.Contributor, error) {
 	const q = `
-		SELECT id, house_number, name, phone, user_id, casa_id, created_at, updated_at
+		SELECT id, house_number, name, phone, user_id, house_id, created_at, updated_at
 		FROM contributors
 		ORDER BY house_number`
 
@@ -117,7 +117,7 @@ func (r *ContributorRepo) scanOne(ctx context.Context, query string, args ...any
 		&c.Name,
 		&c.Phone,
 		&c.UserID,
-		&c.CasaID,
+		&c.HouseID,
 		&c.CreatedAt,
 		&c.UpdatedAt,
 	)
@@ -143,7 +143,7 @@ func (r *ContributorRepo) scanMany(ctx context.Context, query string, args ...an
 			&c.Name,
 			&c.Phone,
 			&c.UserID,
-			&c.CasaID,
+			&c.HouseID,
 			&c.CreatedAt,
 			&c.UpdatedAt,
 		); err != nil {

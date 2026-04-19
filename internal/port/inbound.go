@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/casa"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/house"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/category"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contribution"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contributor"
@@ -66,14 +66,14 @@ type ReportService interface {
 	GetMonthlyBalance(ctx context.Context, year int) (*report.MonthlyBalanceReport, error)
 }
 
-// CasaService is the driving port for casa use cases.
-type CasaService interface {
-	CreateCasa(ctx context.Context, name, address, notes string) (*casa.Casa, error)
-	GetCasa(ctx context.Context, id int64) (*casa.CasaDetail, error)
-	ListCasas(ctx context.Context) ([]casa.Casa, error)
-	UpdateCasa(ctx context.Context, id int64, name, address, notes string) (*casa.Casa, error)
-	DeleteCasa(ctx context.Context, id int64) error
-	AssignContributor(ctx context.Context, casaID, contributorID int64) error
+// HouseService is the driving port for house use cases.
+type HouseService interface {
+	CreateHouse(ctx context.Context, name, address, notes string) (*house.House, error)
+	GetHouse(ctx context.Context, id int64) (*house.HouseDetail, error)
+	ListHouses(ctx context.Context) ([]house.House, error)
+	UpdateHouse(ctx context.Context, id int64, name, address, notes string) (*house.House, error)
+	DeleteHouse(ctx context.Context, id int64) error
+	AssignContributor(ctx context.Context, houseID, contributorID int64) error
 	UnassignContributor(ctx context.Context, contributorID int64) error
 }
 

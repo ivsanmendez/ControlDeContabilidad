@@ -1,0 +1,49 @@
+{
+  "title": "Houses",
+  "newHouse": "New House",
+  "empty": "No houses registered",
+  "form": {
+    "title": "New House",
+    "editTitle": "Edit House",
+    "name": "Name",
+    "namePlaceholder": "e.g. House 15, Lot 7B",
+    "address": "Address",
+    "addressPlaceholder": "e.g. Oak Street 12",
+    "notes": "Notes",
+    "notesPlaceholder": "Internal observations",
+    "submit": "Create house",
+    "submitUpdate": "Save changes",
+    "submitting": "Saving...",
+    "errorCreate": "Failed to create house",
+    "errorUpdate": "Failed to update house"
+  },
+  "table": {
+    "name": "Name",
+    "address": "Address",
+    "notes": "Notes"
+  },
+  "toast": {
+    "created": "House created",
+    "updated": "House updated",
+    "deleted": "House deleted",
+    "errorDelete": "Failed to delete house",
+    "errorLoad": "Failed to load houses"
+  },
+  "detail": {
+    "back": "Back",
+    "contributors": "Contributors",
+    "noContributors": "This house has no contributors assigned",
+    "houseNumber": "House No."
+  },
+  "assign": {
+    "title": "Assign Contributor",
+    "button": "Assign",
+    "contributor": "Contributor",
+    "selectPlaceholder": "Select a contributor",
+    "submit": "Assign",
+    "assigned": "Contributor assigned",
+    "unassigned": "Contributor unassigned",
+    "error": "Failed to assign contributor",
+    "errorUnassign": "Failed to unassign contributor"
+  }
+}

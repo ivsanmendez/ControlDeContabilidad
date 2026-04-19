@@ -5,7 +5,8 @@
     "contributions": "Contribuciones",
     "categories": "Categorias",
     "expenseCategories": "Cat. Gastos",
-    "monthlyBalance": "Reporte Mensual"
+    "monthlyBalance": "Reporte Mensual",
+    "houses": "Casas"
   },
   "auth": {
     "logout": "Cerrar sesión"

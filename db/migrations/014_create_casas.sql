@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE casas (
+CREATE TABLE houses (
     id         BIGSERIAL    PRIMARY KEY,
     name       VARCHAR(255) NOT NULL UNIQUE,
     address    TEXT         NOT NULL DEFAULT '',
@@ -9,4 +9,4 @@ CREATE TABLE casas (
 );
 
 -- +goose Down
-DROP TABLE casas;
+DROP TABLE houses;

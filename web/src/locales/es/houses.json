@@ -1,0 +1,49 @@
+{
+  "title": "Casas",
+  "newHouse": "Nueva Casa",
+  "empty": "No hay casas registradas",
+  "form": {
+    "title": "Nueva Casa",
+    "editTitle": "Editar Casa",
+    "name": "Nombre",
+    "namePlaceholder": "ej. Casa 15, Lote 7B",
+    "address": "Dirección",
+    "addressPlaceholder": "ej. Calle Roble 12",
+    "notes": "Notas",
+    "notesPlaceholder": "Observaciones internas",
+    "submit": "Crear casa",
+    "submitUpdate": "Guardar cambios",
+    "submitting": "Guardando...",
+    "errorCreate": "No se pudo crear la casa",
+    "errorUpdate": "No se pudo actualizar la casa"
+  },
+  "table": {
+    "name": "Nombre",
+    "address": "Dirección",
+    "notes": "Notas"
+  },
+  "toast": {
+    "created": "Casa creada",
+    "updated": "Casa actualizada",
+    "deleted": "Casa eliminada",
+    "errorDelete": "No se pudo eliminar la casa",
+    "errorLoad": "No se pudieron cargar las casas"
+  },
+  "detail": {
+    "back": "Regresar",
+    "contributors": "Contribuyentes",
+    "noContributors": "Esta casa no tiene contribuyentes asignados",
+    "houseNumber": "No. Casa"
+  },
+  "assign": {
+    "title": "Asignar Contribuyente",
+    "button": "Asignar",
+    "contributor": "Contribuyente",
+    "selectPlaceholder": "Selecciona un contribuyente",
+    "submit": "Asignar",
+    "assigned": "Contribuyente asignado",
+    "unassigned": "Contribuyente desasignado",
+    "error": "No se pudo asignar el contribuyente",
+    "errorUnassign": "No se pudo desasignar el contribuyente"
+  }
+}

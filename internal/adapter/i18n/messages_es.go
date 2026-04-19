@@ -63,9 +63,9 @@ var MessagesES = map[string]string{
 	// Reports
 	"report_query_failed": "error al generar el reporte",
 
-	// Casas
-	"casa_not_found":                "casa no encontrada",
-	"casa_duplicate":                "ya existe una casa con ese nombre",
-	"casa_contributor_not_found":    "contribuyente no encontrado",
-	"casa_has_access_controls":      "la casa tiene controles de acceso asignados",
+	// Houses
+	"house_not_found":               "casa no encontrada",
+	"house_duplicate":               "ya existe una casa con ese nombre",
+	"house_contributor_not_found":   "contribuyente no encontrado",
+	"house_has_access_controls":     "la casa tiene controles de acceso asignados",
 }

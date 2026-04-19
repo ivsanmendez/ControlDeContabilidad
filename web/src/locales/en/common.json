@@ -5,7 +5,8 @@
     "contributions": "Contributions",
     "categories": "Categories",
     "expenseCategories": "Expense Cat.",
-    "monthlyBalance": "Monthly Report"
+    "monthlyBalance": "Monthly Report",
+    "houses": "Houses"
   },
   "auth": {
     "logout": "Log out"

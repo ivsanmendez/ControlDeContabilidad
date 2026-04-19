@@ -10,7 +10,7 @@ import (
 )
 
 // RegisterRoutes wires all HTTP routes onto the given mux.
-func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc port.AuthService, contribSvc port.ContributionService, contributorSvc port.ContributorService, categorySvc port.CategoryService, expCatSvc port.ExpenseCategoryService, receiptSvc port.ReceiptFolioService, reportSvc port.ReportService, casaSvc port.CasaService, jwtIssuer *jwtadapter.Issuer, signer port.ReceiptSigner, tr *i18n.Translator) {
+func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc port.AuthService, contribSvc port.ContributionService, contributorSvc port.ContributorService, categorySvc port.CategoryService, expCatSvc port.ExpenseCategoryService, receiptSvc port.ReceiptFolioService, reportSvc port.ReportService, houseSvc port.HouseService, jwtIssuer *jwtadapter.Issuer, signer port.ReceiptSigner, tr *i18n.Translator) {
 	auth := RequireAuth(jwtIssuer, tr)
 	expH := &ExpenseHandler{svc: expenseSvc, tr: tr}
 	authH := &AuthHandler{svc: authSvc, tr: tr}
@@ -20,7 +20,7 @@ func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc 
 	expCatH := &ExpenseCategoryHandler{svc: expCatSvc, tr: tr}
 	receiptH := &ReceiptHandler{contribSvc: contribSvc, contributorSvc: contributorSvc, expenseSvc: expenseSvc, receiptSvc: receiptSvc, signer: signer, tr: tr}
 	reportH := &ReportHandler{svc: reportSvc, tr: tr}
-	casaH := &CasaHandler{svc: casaSvc, tr: tr}
+	houseH := &HouseHandler{svc: houseSvc, tr: tr}
 
 	// Public routes
 	mux.HandleFunc("GET /health", Health)
@@ -164,33 +164,33 @@ func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc 
 		auth, RequirePermission(user.PermReportRead, tr),
 	))
 
-	// Casa routes
-	mux.Handle("POST /casas", Chain(
-		http.HandlerFunc(casaH.Create),
-		auth, RequirePermission(user.PermCasaCreate, tr),
+	// House routes
+	mux.Handle("POST /houses", Chain(
+		http.HandlerFunc(houseH.Create),
+		auth, RequirePermission(user.PermHouseCreate, tr),
 	))
-	mux.Handle("GET /casas", Chain(
-		http.HandlerFunc(casaH.List),
-		auth, RequirePermission(user.PermCasaRead, tr),
+	mux.Handle("GET /houses", Chain(
+		http.HandlerFunc(houseH.List),
+		auth, RequirePermission(user.PermHouseRead, tr),
 	))
-	mux.Handle("GET /casas/{id}", Chain(
-		http.HandlerFunc(casaH.GetByID),
-		auth, RequirePermission(user.PermCasaRead, tr),
+	mux.Handle("GET /houses/{id}", Chain(
+		http.HandlerFunc(houseH.GetByID),
+		auth, RequirePermission(user.PermHouseRead, tr),
 	))
-	mux.Handle("PUT /casas/{id}", Chain(
-		http.HandlerFunc(casaH.Update),
-		auth, RequirePermission(user.PermCasaUpdate, tr),
+	mux.Handle("PUT /houses/{id}", Chain(
+		http.HandlerFunc(houseH.Update),
+		auth, RequirePermission(user.PermHouseUpdate, tr),
 	))
-	mux.Handle("DELETE /casas/{id}", Chain(
-		http.HandlerFunc(casaH.Delete),
-		auth, RequirePermission(user.PermCasaDelete, tr),
+	mux.Handle("DELETE /houses/{id}", Chain(
+		http.HandlerFunc(houseH.Delete),
+		auth, RequirePermission(user.PermHouseDelete, tr),
 	))
-	mux.Handle("POST /casas/{id}/contributors", Chain(
-		http.HandlerFunc(casaH.AssignContributor),
-		auth, RequirePermission(user.PermCasaAssignContributor, tr),
+	mux.Handle("POST /houses/{id}/contributors", Chain(
+		http.HandlerFunc(houseH.AssignContributor),
+		auth, RequirePermission(user.PermHouseAssignContributor, tr),
 	))
-	mux.Handle("DELETE /casas/{id}/contributors/{contributor_id}", Chain(
-		http.HandlerFunc(casaH.UnassignContributor),
-		auth, RequirePermission(user.PermCasaAssignContributor, tr),
+	mux.Handle("DELETE /houses/{id}/contributors/{contributor_id}", Chain(
+		http.HandlerFunc(houseH.UnassignContributor),
+		auth, RequirePermission(user.PermHouseAssignContributor, tr),
 	))
 }

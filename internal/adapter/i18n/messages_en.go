@@ -63,9 +63,9 @@ var MessagesEN = map[string]string{
 	// Reports
 	"report_query_failed": "report query failed",
 
-	// Casas
-	"casa_not_found":                "casa not found",
-	"casa_duplicate":                "a casa with that name already exists",
-	"casa_contributor_not_found":    "contributor not found",
-	"casa_has_access_controls":      "casa has access controls assigned",
+	// Houses
+	"house_not_found":               "house not found",
+	"house_duplicate":               "a house with that name already exists",
+	"house_contributor_not_found":   "contributor not found",
+	"house_has_access_controls":     "house has access controls assigned",
 }

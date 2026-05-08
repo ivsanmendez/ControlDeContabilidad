@@ -22,8 +22,8 @@ func NewContributorRepo(db *sql.DB) *ContributorRepo {
 
 func (r *ContributorRepo) Save(ctx context.Context, c *contributor.Contributor) error {
 	const q = `
-		INSERT INTO contributors (house_number, name, phone, user_id, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		INSERT INTO contributors (house_number, name, phone, user_id, house_id, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id`
 
 	err := r.db.QueryRowContext(ctx, q,
@@ -31,6 +31,7 @@ func (r *ContributorRepo) Save(ctx context.Context, c *contributor.Contributor) 
 		c.Name,
 		c.Phone,
 		c.UserID,
+		c.HouseID,
 		c.CreatedAt,
 		c.UpdatedAt,
 	).Scan(&c.ID)
@@ -71,10 +72,10 @@ func (r *ContributorRepo) FindAll(ctx context.Context) ([]contributor.Contributo
 
 func (r *ContributorRepo) Update(ctx context.Context, c *contributor.Contributor) error {
 	const q = `
-		UPDATE contributors SET name = $1, phone = $2, updated_at = $3
-		WHERE id = $4`
+		UPDATE contributors SET house_number = $1, name = $2, phone = $3, house_id = $4, updated_at = $5
+		WHERE id = $6`
 
-	result, err := r.db.ExecContext(ctx, q, c.Name, c.Phone, c.UpdatedAt, c.ID)
+	result, err := r.db.ExecContext(ctx, q, c.HouseNumber, c.Name, c.Phone, c.HouseID, c.UpdatedAt, c.ID)
 	if err != nil {
 		return fmt.Errorf("update contributor %d: %w", c.ID, err)
 	}

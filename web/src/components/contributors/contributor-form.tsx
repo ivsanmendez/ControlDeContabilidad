@@ -5,13 +5,24 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
 import { useCreateContributor, useUpdateContributor } from '@/hooks/use-contributors'
+import { useHouses } from '@/hooks/use-houses'
 import { ApiClientError } from '@/lib/api-client'
 import type { Contributor } from '@/types/contributor'
+import type { House } from '@/types/house'
+
+const NO_HOUSE = '__none__'
 
 type ContributorFormProps = {
   contributor?: Contributor
@@ -23,11 +34,23 @@ export function ContributorForm({ contributor, onSuccess }: ContributorFormProps
   const createContributor = useCreateContributor()
   const updateContributor = useUpdateContributor()
   const { t } = useTranslation('contributors')
+  const { data: houses } = useHouses()
 
-  const [houseNumber, setHouseNumber] = useState(contributor?.HouseNumber ?? '')
+  // Create: '' = nothing chosen yet (submit blocked).
+  const [selectedHouseID, setSelectedHouseID] = useState<string>('')
+
+  // Edit: track selected house ID; NO_HOUSE means "clear the assignment".
+  const [editHouseID, setEditHouseID] = useState<string>(
+    contributor?.HouseID != null ? String(contributor.HouseID) : NO_HOUSE
+  )
+
   const [name, setName] = useState(contributor?.Name ?? '')
   const [phone, setPhone] = useState(contributor?.Phone ?? '')
   const [error, setError] = useState('')
+
+  function findHouse(id: string): House | undefined {
+    return (houses ?? []).find((h) => String(h.ID) === id)
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -35,15 +58,24 @@ export function ContributorForm({ contributor, onSuccess }: ContributorFormProps
 
     try {
       if (isEdit) {
+        const house = editHouseID !== NO_HOUSE ? findHouse(editHouseID) : undefined
         await updateContributor.mutateAsync({
           id: contributor!.ID,
-          data: { name, phone },
+          data: {
+            // house_number follows the house name; keep existing if no house selected
+            house_number: house ? house.Name : contributor!.HouseNumber,
+            name,
+            phone,
+            house_id: house ? house.ID : null,
+          },
         })
       } else {
+        const house = findHouse(selectedHouseID)!
         await createContributor.mutateAsync({
-          house_number: houseNumber,
+          house_number: house.Name,
           name,
           phone,
+          house_id: house.ID,
         })
       }
       onSuccess()
@@ -65,17 +97,42 @@ export function ContributorForm({ contributor, onSuccess }: ContributorFormProps
       </DialogHeader>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {error && <p className="text-sm text-destructive">{error}</p>}
+
         <div className="flex flex-col gap-2">
-          <Label htmlFor="houseNumber">{t('form.houseNumber')}</Label>
-          <Input
-            id="houseNumber"
-            required
-            value={houseNumber}
-            onChange={(e) => setHouseNumber(e.target.value)}
-            placeholder={t('form.houseNumberPlaceholder')}
-            disabled={isEdit}
-          />
+          <Label htmlFor="house">{t('form.house')}</Label>
+
+          {isEdit ? (
+            <Select value={editHouseID} onValueChange={(v) => setEditHouseID(v ?? NO_HOUSE)}>
+              <SelectTrigger id="house">
+                <SelectValue placeholder={t('form.noHouse')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={NO_HOUSE} label={t('form.noHouse')}>
+                  {t('form.noHouse')}
+                </SelectItem>
+                {(houses ?? []).map((h) => (
+                  <SelectItem key={h.ID} value={String(h.ID)} label={h.Name}>
+                    {h.Name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <Select value={selectedHouseID} onValueChange={(v) => setSelectedHouseID(v ?? '')}>
+              <SelectTrigger id="house">
+                <SelectValue placeholder={t('form.selectHouse')} />
+              </SelectTrigger>
+              <SelectContent>
+                {(houses ?? []).map((h) => (
+                  <SelectItem key={h.ID} value={String(h.ID)} label={h.Name}>
+                    {h.Name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
+
         <div className="flex flex-col gap-2">
           <Label htmlFor="name">{t('form.name')}</Label>
           <Input
@@ -93,7 +150,8 @@ export function ContributorForm({ contributor, onSuccess }: ContributorFormProps
             onChange={(e) => setPhone(e.target.value)}
           />
         </div>
-        <Button type="submit" disabled={isPending}>
+
+        <Button type="submit" disabled={isPending || (!isEdit && !selectedHouseID)}>
           {isPending
             ? (isEdit ? t('form.submittingEdit') : t('form.submittingCreate'))
             : (isEdit ? t('form.submitEdit') : t('form.submitCreate'))}

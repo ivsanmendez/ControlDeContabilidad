@@ -69,6 +69,14 @@ export default defineConfig({
       '/receipts': apiBase,
       '/reports': apiBase,
       '/health': apiBase,
+      '/houses': {
+        target: apiBase,
+        bypass(req) {
+          if (req.headers.accept?.includes('text/html')) {
+            return req.url
+          }
+        },
+      },
     },
   },
 })

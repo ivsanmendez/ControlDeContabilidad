@@ -66,7 +66,11 @@ var rolePermissions = map[Role][]Permission{
 		PermExpenseCategoryRead,
 		PermExpenseCategoryUpdate,
 		PermExpenseCategoryDelete,
+		PermHouseCreate,
 		PermHouseRead,
+		PermHouseUpdate,
+		PermHouseDelete,
+		PermHouseAssignContributor,
 	},
 	RoleAdmin: {
 		PermExpenseCreate,

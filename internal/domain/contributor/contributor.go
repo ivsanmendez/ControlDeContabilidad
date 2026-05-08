@@ -35,7 +35,7 @@ type Repository interface {
 }
 
 // New creates a Contributor enforcing domain invariants.
-func New(userID int64, houseNumber, name, phone string) (*Contributor, error) {
+func New(userID int64, houseNumber, name, phone string, houseID *int64) (*Contributor, error) {
 	if userID <= 0 {
 		return nil, ErrInvalidUserID
 	}
@@ -52,6 +52,7 @@ func New(userID int64, houseNumber, name, phone string) (*Contributor, error) {
 		Name:        name,
 		Phone:       phone,
 		UserID:      userID,
+		HouseID:     houseID,
 		CreatedAt:   now,
 		UpdatedAt:   now,
 	}, nil

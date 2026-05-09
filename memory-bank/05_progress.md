@@ -197,5 +197,35 @@ Migrated memory-bank from flat markdown files to a local SQLite/libSQL database 
 - **SessionStart hook** (`.claude/hooks/load-memory-bank.sh`): reads core docs from AgentFS CLI; falls back to local files if AgentFS unavailable
 - **`memory-bank-manager` agent** (`.claude/agents/memory-bank-manager.md`): Claude Code subagent that handles search, read, update, and sync lifecycle
 
-## Known Issues
-_(none)_
+## Known Issues / Operational Notes
+
+### 2026-05-07 — "permisos insuficientes" when creating a house (403)
+
+**Symptom:** Any authenticated user with role `user` gets a 403 "permisos insuficientes" when calling `POST /houses`.
+
+**Root cause:** `house:create` is an admin-only permission. `internal/domain/user/permission.go` grants `RoleUser` only `PermHouseRead`. The route enforces `RequirePermission(PermHouseCreate)`, which rejects non-admin callers.
+
+**Permission matrix:**
+
+| Permission | user role | admin role |
+|---|---|---|
+| house:create | no | yes |
+| house:read | yes | yes |
+| house:update | no | yes |
+| house:delete | no | yes |
+| house:assign_contributor | no | yes |
+
+**Fix applied (2026-05-07):** Promoted `falliv@gmail.com` to `admin` directly in the database:
+```sql
+UPDATE users SET role = 'admin', updated_at = NOW() WHERE email = 'falliv@gmail.com';
+```
+User must log out and log back in to receive a new JWT with the updated role claim.
+
+**Future admin promotion command:**
+```bash
+psql "postgres://postgres:postgres@localhost:5432/controldecontabilidad?sslmode=disable" \
+  -c "UPDATE users SET role = 'admin', updated_at = NOW() WHERE email = '<email>';"
+```
+Then the user must re-login to refresh their JWT.
+
+**Known UX gap (pending improvement):** The frontend does not conditionally hide or disable the "Create House" button for `user`-role accounts, so non-admin users can still attempt the action and hit the 403. See `04_activecontext.md` — Pending Improvements.

@@ -73,12 +73,6 @@ export function LoginForm() {
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? t('login.submitting') : t('login.submit')}
           </Button>
-          <p className="text-center text-sm text-muted-foreground">
-            {t('login.noAccount')}{' '}
-            <Link to="/register" className="text-primary underline">
-              {t('login.register')}
-            </Link>
-          </p>
         </form>
       </CardContent>
     </Card>

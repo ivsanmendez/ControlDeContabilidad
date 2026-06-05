@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gafete Vehicular ARI — Residentes</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #d0d0d0;
+      font-family: 'Arial Black', 'Arial', sans-serif;
+    }
+
+    /* Each side fills one screen "page" and one print page */
+    .label-wrapper {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 20px;
+      break-after: page;
+      page-break-after: always;
+    }
+
+    .label-wrapper:last-child {
+      break-after: avoid;
+      page-break-after: avoid;
+    }
+
+    .label-wrapper h2 {
+      font-size: 12px;
+      color: #666;
+      font-family: Arial, sans-serif;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ── Hangtag: 8cm × 18cm total ── */
+    .hangtag {
+      width: 8cm;
+      height: 18cm;
+      background: #F5E642;
+      border-radius: 0.5cm;
+      box-shadow: 3px 3px 14px rgba(0,0,0,0.4);
+      border: 2px solid #c8ba00;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* Hook area: 4.5cm — leaves 13.5cm for body */
+    .hook-area {
+      width: 100%;
+      height: 4.5cm;
+      flex-shrink: 0;
+      background: #F5E642;
+      position: relative;
+    }
+
+    .hook-area::before {
+      content: '';
+      position: absolute;
+      top: 0.45cm;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2.6cm;
+      height: 2.6cm;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #c8ba00;
+    }
+
+    /* Body: exactly 13.5cm, black line marks the boundary */
+    .body {
+      width: 100%;
+      height: 13.5cm;
+      flex-shrink: 0;
+      padding: 0.3cm 0.4cm 0.3cm;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2cm;
+      border-top: 3px solid #222;
+      overflow: hidden;
+    }
+
+    /* ── FRONT ELEMENTS ── */
+    .tag-title {
+      font-size: 15pt;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-align: center;
+      background: #222;
+      color: #F5E642;
+      width: 100%;
+      padding: 3px 0;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3cm;
+      flex-shrink: 0;
+    }
+
+    .ari-brand {
+      font-size: 38pt;
+      font-weight: 900;
+      letter-spacing: 4px;
+      color: #111;
+      line-height: 1;
+    }
+
+    .logo-svg {
+      width: 2.2cm;
+      height: 2.2cm;
+    }
+
+    .field-box {
+      width: 100%;
+      background: #fff;
+      border: 2px solid #222;
+      border-radius: 5px;
+      padding: 3px 8px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .field-label {
+      font-size: 7pt;
+      font-weight: 700;
+      color: #666;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: Arial, sans-serif;
+    }
+
+    .field-value {
+      font-size: 20pt;
+      font-weight: 900;
+      color: #111;
+      letter-spacing: 2px;
+      width: 100%;
+      text-align: center;
+      min-height: 0.8cm;
+    }
+
+    /* QR placeholder — fills remaining space */
+    .qr-zone {
+      width: 100%;
+      flex: 1;
+      background: #fff;
+      border: 2px dashed #999;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-height: 2.8cm;
+    }
+
+    .qr-zone span {
+      font-size: 8pt;
+      color: #bbb;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: Arial, sans-serif;
+    }
+
+    .qr-icon {
+      width: 1.2cm;
+      height: 1.2cm;
+      opacity: 0.2;
+    }
+
+    /* ── BACK ELEMENTS ── */
+    .section-title {
+      font-size: 11pt;
+      font-weight: 900;
+      text-align: center;
+      background: #222;
+      color: #F5E642;
+      width: 100%;
+      padding: 3px 0;
+      border-radius: 4px;
+      letter-spacing: 1px;
+      flex-shrink: 0;
+    }
+
+    .rules-list {
+      width: 100%;
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .rules-list li {
+      font-size: 9pt;
+      color: #111;
+      font-family: Arial, sans-serif;
+      line-height: 1.35;
+    }
+
+    .rules-list li b {
+      font-weight: 700;
+    }
+
+    .emergency-block {
+      width: 100%;
+      background: #fff;
+      border: 2px solid #222;
+      border-radius: 6px;
+      padding: 5px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .emerg-row {
+      font-size: 9pt;
+      font-family: Arial, sans-serif;
+      color: #111;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .emerg-row.big {
+      font-size: 16pt;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    .emerg-divider {
+      width: 80%;
+      border: none;
+      border-top: 1px solid #ccc;
+      margin: 2px 0;
+    }
+
+    .footer-brand {
+      font-size: 7pt;
+      font-weight: 700;
+      color: #555;
+      letter-spacing: 1.5px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      flex-shrink: 0;
+    }
+
+    /* ── PRINT ── */
+    @media print {
+      body { background: white; }
+      .label-wrapper h2 { display: none; }
+      .label-wrapper {
+        min-height: 100vh;
+        padding: 0;
+        justify-content: center;
+      }
+      .hook-area::before { background: white; }
+      .hangtag { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ FRENTE ══════════════════ -->
+<div class="label-wrapper">
+  <h2>Frente</h2>
+  <div class="hangtag">
+
+    <div class="hook-area"></div>
+
+    <div class="body">
+
+      <div class="tag-title">RESIDENTES</div>
+
+      <div class="logo-row">
+        <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <g transform="translate(50,50)">
+            <g id="house" transform="translate(0,-34)">
+              <polygon points="0,-9 8,0 8,10 -8,10 -8,0" fill="#111"/>
+              <polygon points="-10,0 0,-10 10,0" fill="#111"/>
+              <rect x="-2.5" y="4" width="5" height="6" fill="#F5E642"/>
+            </g>
+            <use href="#house" transform="rotate(60)"/>
+            <use href="#house" transform="rotate(120)"/>
+            <use href="#house" transform="rotate(180)"/>
+            <use href="#house" transform="rotate(240)"/>
+            <use href="#house" transform="rotate(300)"/>
+            <path d="M0,0 Q6,-6 0,-12 Q-10,-8 -12,0 Q-8,10 0,12 Q10,8 12,0 Q8,-10 0,-12"
+                  fill="none" stroke="#111" stroke-width="3" stroke-linecap="round"/>
+          </g>
+        </svg>
+        <span class="ari-brand">ARI</span>
+      </div>
+
+      <div class="field-box">
+        <span class="field-label">No. de Casa</span>
+        <div class="field-value">&nbsp;</div>
+      </div>
+
+      <div class="field-box">
+        <span class="field-label">Placas del vehículo</span>
+        <div class="field-value">&nbsp;</div>
+      </div>
+
+      <div class="qr-zone">
+        <svg class="qr-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="14" height="14" rx="1" stroke="#000" stroke-width="2"/>
+          <rect x="6" y="6" width="6" height="6" fill="#000"/>
+          <rect x="24" y="2" width="14" height="14" rx="1" stroke="#000" stroke-width="2"/>
+          <rect x="28" y="6" width="6" height="6" fill="#000"/>
+          <rect x="2" y="24" width="14" height="14" rx="1" stroke="#000" stroke-width="2"/>
+          <rect x="6" y="28" width="6" height="6" fill="#000"/>
+          <rect x="24" y="24" width="4" height="4" fill="#000"/>
+          <rect x="30" y="24" width="4" height="4" fill="#000"/>
+          <rect x="24" y="30" width="4" height="4" fill="#000"/>
+          <rect x="30" y="32" width="4" height="4" fill="#000"/>
+        </svg>
+        <span>Pegar QR aquí</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ REVERSO ══════════════════ -->
+<div class="label-wrapper">
+  <h2>Reverso</h2>
+  <div class="hangtag">
+
+    <div class="hook-area"></div>
+
+    <div class="body">
+
+      <div class="section-title">REGLAS DE USO</div>
+
+      <ul class="rules-list">
+        <li><b>- Debe ser visible</b> colocarse en el espejo retrovisor.</li>
+        <li><b>- Es intransferible</b> entre casas o vehículos ajenos a la colonia.</li>
+        <li><b>- En caso de extravío</b> reportarlo a la Administración ARI Santa Ana.</li>
+        <li><b>- Se prohíbe alterarlo</b> y/o modificarlo.</li>
+      </ul>
+
+      <div class="section-title">EMERGENCIAS</div>
+
+      <div class="emergency-block">
+        <div class="emerg-row"><b>Caseta 1 "Santa Ana"</b></div>
+        <div class="emerg-row">Tel. 55 21550957</div>
+        <div class="emerg-row">Cel. Vig. 55 41311374</div>
+        <hr class="emerg-divider"/>
+        <div class="emerg-row"><b>Cuadrante 16</b></div>
+        <div class="emerg-row">55 46 05 76 93</div>
+        <hr class="emerg-divider"/>
+        <div class="emerg-row"><b>EMERGENCIAS</b></div>
+        <div class="emerg-row big">911</div>
+      </div>
+
+      <div class="footer-brand">COMITÉ DE VIGILANCIA COLECTIVA · ARI SANTA ANA</div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -9,7 +9,7 @@ Cloudflare Tunnel solves this by creating an **outbound** encrypted connection f
 ## How It Works
 
 ```
-Browser → https://cdg.meyis.work
+Browser → https://cdc.meyis.work
              │
        Cloudflare edge (HTTPS terminated here)
              │  (outbound tunnel, initiated by cloudflared)
@@ -55,14 +55,14 @@ podman logs controldecontabilidad-cloudflared
 # Look for: "Connection established" or "Registered tunnel connection"
 
 # Test public URL
-curl https://cdg.meyis.work/health
+curl https://cdc.meyis.work/health
 ```
 
 ## Current Configuration
 
 | Setting | Value |
 |---------|-------|
-| Public URL | `https://cdg.meyis.work` |
+| Public URL | `https://cdc.meyis.work` |
 | Tunnel type | Named tunnel (stable, persistent) |
 | HTTPS | Cloudflare edge (automatic, no cert management) |
 | Backend | `localhost:8080` inside pod |
@@ -72,7 +72,7 @@ curl https://cdg.meyis.work/health
 
 | | Named Tunnel | Quick Tunnel |
 |--|--|--|
-| URL | Stable (`cdg.meyis.work`) | Random (`xxx.trycloudflare.com`) |
+| URL | Stable (`cdc.meyis.work`) | Random (`xxx.trycloudflare.com`) |
 | Auth | Token in env | None |
 | DNS | Configured in dashboard | Auto-assigned |
 | Persistence | Survives restarts | Changes on restart |

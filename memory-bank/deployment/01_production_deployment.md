@@ -23,7 +23,7 @@ ControlDeContabilidad is deployed as a containerized application using Podman po
                           │
               Cloudflare edge (HTTPS)
                           │
-              https://cdg.meyis.work
+              https://cdc.meyis.work
 ```
 
 ## Prerequisites
@@ -71,7 +71,7 @@ Generate a strong password: `openssl rand -hex 24`
 curl http://localhost:8080/health
 
 # Public URL
-curl https://cdg.meyis.work/health
+curl https://cdc.meyis.work/health
 
 # Check tunnel is connected
 podman logs controldecontabilidad-cloudflared

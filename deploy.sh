@@ -1,6 +1,6 @@
 #!/bin/bash
 # ControlDeContabilidad - Cloudflare Named Tunnel Deployment
-# Public URL: https://cdg.meyis.work
+# Public URL: https://cdc.meyis.work
 # Requires TUNNEL_TOKEN in .env.production
 
 set -e

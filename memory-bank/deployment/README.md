@@ -19,7 +19,7 @@ nano .env.production   # set DB password + TUNNEL_TOKEN
 ./deploy.sh deploy
 
 # 3. Verify
-curl https://cdg.meyis.work/health
+curl https://cdc.meyis.work/health
 ```
 
 ## Convention

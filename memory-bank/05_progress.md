@@ -25,7 +25,7 @@
 - Domain unit tests (entity + service with fake adapters)
 - Convention-aligned PR template (`.github/pull_request_template.md`)
 - Production deployment via Podman pod + Cloudflare Named Tunnel
-  - Public URL: https://cdg.meyis.work
+  - Public URL: https://cdc.meyis.work
   - Script: `./deploy.sh`
   - Pod: API + PostgreSQL + cloudflared containers
 - Contributor + contribution management (CRUD endpoints + React UI)
@@ -220,6 +220,8 @@ Migrated memory-bank from flat markdown files to a local SQLite/libSQL database 
 UPDATE users SET role = 'admin', updated_at = NOW() WHERE email = 'falliv@gmail.com';
 ```
 User must log out and log back in to receive a new JWT with the updated role claim.
+
+**Additional fix (2026-05-09):** Password for `falliv@gmail.com` was changed. Combined with the admin promotion above, the account has had both its role and its password updated.
 
 **Future admin promotion command:**
 ```bash

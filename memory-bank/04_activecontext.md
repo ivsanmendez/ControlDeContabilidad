@@ -80,7 +80,7 @@ Edit expense was the final piece completing the full expense management UI. Feat
 - [x] House feature frontend wired (/houses routes, HousesPage, HouseDetailPage)
 
 ## Pending Improvements
-- **Frontend: hide house creation controls for non-admin users** — The "Create House" button (and any other house mutation controls) should be conditionally rendered based on the authenticated user's role or permissions. Currently a `user`-role account can see and click the button but will receive a 403 from the API. The fix requires reading the role/permissions claim from the JWT (or a `/me` endpoint) in the React SPA and gating the UI accordingly. (Tracked from 2026-05-07 investigation — see `05_progress.md` Known Issues.)
+- **Frontend: hide house creation controls for non-admin users** — The "Create House" button (and any other house mutation controls) should be conditionally rendered based on the authenticated user's role or permissions. Currently a `user`-role account can see and click the button but will receive a 403 from the API. The fix requires reading the role/permissions claim from the JWT (or a `/me` endpoint) in the React SPA and gating the UI accordingly. (Tracked from 2026-05-07 investigation — see `05_progress.md` Known Issues.) Workaround applied to `falliv@gmail.com`: promoted to `admin` role (2026-05-07) and password changed (2026-05-09).
 
 ## Open Questions
 - API documentation tooling (OpenAPI/Swagger)

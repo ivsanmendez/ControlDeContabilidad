@@ -35,8 +35,9 @@
 - Monthly Balance Report (see below)
 - SPA content negotiation middleware (see below)
 - Per-expense receipts with SAT digital signing (see below)
+- Vehicle access control system (#4, all phases) — AccessControls + Vehicles CRUD APIs, auto-evaluation service, pending-sync tracking (`physical_synced_at`), HouseDetailPage extended with Access Controls and Vehicles sections; migrations 017–019; PR #9 merged to main 2026-06-12
 
-## Recently Completed — Vehicle Access Control (#4, all phases)
+## Previously Completed — Vehicle Access Control (#4, all phases)
 Full implementation of vehicle access control tied to houses: automatic evaluation, physical-device sync tracking, and a reworked house detail page.
 
 ### What Was Built
@@ -66,9 +67,9 @@ Full implementation of vehicle access control tied to houses: automatic evaluati
 - Vehicles section: lists vehicles per house, create form, link to associate with an access control
 
 ### Build Status
-All CI jobs passing (Go vet + tests + build, TypeScript build).
+All CI jobs passing (Go vet + tests + build, TypeScript build). Merged to main via PR #9 on 2026-06-12.
 
-## Recently Completed — Per-Expense Receipts with SAT Digital Signing
+## Previously Completed — Per-Expense Receipts with SAT Digital Signing
 Extended the receipt infrastructure to support individual expense receipts alongside contribution receipts, reusing the existing folio counter, certsigner, and receipt domain.
 
 ### What Was Built

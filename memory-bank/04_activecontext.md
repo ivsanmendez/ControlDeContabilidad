@@ -1,7 +1,7 @@
 # Active Context
 
 ## Current Phase
-Feature #4 "Vehicle Access Control" (GitHub issue #4 — Control de Acceso Vehicular por Casa) is fully implemented across all four phases. Builds are passing. The issue is ready to move from Backlog to Review on the Kanban board, pending a PR and final testing pass.
+Feature #4 "Vehicle Access Control" (GitHub issue #4 — Control de Acceso Vehicular por Casa) is complete. PR #9 merged into main on 2026-06-12. All four phases are in production. The project is in steady state — no active in-progress issues. Suggested next items from the backlog: #5 (User Admin CRUD), #6 (Filter contributors by house), #7 (House report), or #8 (Dynamic nav menu).
 
 ## Recent Decisions
 - Hexagonal architecture (ports & adapters) for the Go backend
@@ -81,8 +81,8 @@ Feature #4 "Vehicle Access Control" (GitHub issue #4 — Control de Acceso Vehic
 - [x] Vehicle Access Control — all 4 phases implemented (AccessControl + Vehicle CRUD APIs, auto-evaluation service, pending-sync tracking, HouseDetailPage extended) — #4
 
 ## Next Actions
-- Move GitHub issue #4 to "Review" on the Kanban board and open a PR
-- After #4 merges → move to "Done" and consider starting #5 (User Admin CRUD) or #6 (Filter contributors by house)
+- Pick next issue from backlog: #5 (User Admin CRUD), #6 (Filter contributors by house), #7 (House report), or #8 (Dynamic nav menu)
+- Move chosen issue to "In Progress" on the Kanban board and create a feature branch
 
 ## Pending Improvements
 - **Frontend: hide house creation controls for non-admin users** — The "Create House" button (and any other house mutation controls) should be conditionally rendered based on the authenticated user's role or permissions. Currently a `user`-role account can see and click the button but will receive a 403 from the API. The fix requires reading the role/permissions claim from the JWT (or a `/me` endpoint) in the React SPA and gating the UI accordingly. (Tracked from 2026-05-07 investigation — see `05_progress.md` Known Issues.) Workaround applied to `falliv@gmail.com`: promoted to `admin` role (2026-05-07) and password changed (2026-05-09).

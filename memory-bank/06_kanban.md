@@ -38,7 +38,7 @@ _(none)_
 _(none)_
 
 ### Review
-- #4 Feature: Control de Acceso Vehicular por Casa [`backend`, `frontend`, `domain`] — all 4 phases implemented (AccessControls entity + CRUD, Vehicles entity + CRUD, AutoEvaluation service, pending-sync tracking, HouseDetailPage extensions, migrations 017–019). Awaiting PR and testing pass.
+_(none)_
 
 ### Done
 - #1 Implement PostgreSQL expense repository [`backend`, `domain`]
@@ -50,3 +50,4 @@ _(none)_
 - Contribution category catalog [`backend`, `frontend`, `domain`] — migration 008, CRUD API + UI
 - Security Folio for receipts [`backend`, `frontend`, `domain`] — migration 009, persistent folios, verification endpoint
 - #4 (old) Build React expense management UI [`frontend`] — full CRUD (list, create, edit, delete) with i18n, edit dialog, Pencil icon per row
+- #4 Feature: Control de Acceso Vehicular por Casa [`backend`, `frontend`, `domain`] — all 4 phases merged to main via PR #9 (2026-06-12). AccessControls + Vehicles CRUD, auto-evaluation service, pending-sync tracking, HouseDetailPage extensions, migrations 017–019.

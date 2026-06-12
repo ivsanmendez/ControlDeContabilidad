@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
@@ -35,26 +35,14 @@ export function ContributionForm({ onSuccess, contribution }: ContributionFormPr
   const { data: contributors } = useContributors()
   const { data: categories } = useCategories()
   const { t } = useTranslation('contributions')
-  const [contributorId, setContributorId] = useState('')
-  const [categoryId, setCategoryId] = useState('')
-  const [amount, setAmount] = useState('')
-  const [month, setMonth] = useState(() => String(new Date().getMonth() + 1))
-  const [year, setYear] = useState(() => String(new Date().getFullYear()))
-  const [paymentDate, setPaymentDate] = useState(() => new Date().toISOString().split('T')[0])
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash')
+  const [contributorId, setContributorId] = useState(() => contribution ? String(contribution.ContributorID) : '')
+  const [categoryId, setCategoryId] = useState(() => contribution ? String(contribution.CategoryID) : '')
+  const [amount, setAmount] = useState(() => contribution ? String(contribution.Amount) : '')
+  const [month, setMonth] = useState(() => contribution ? String(contribution.Month) : String(new Date().getMonth() + 1))
+  const [year, setYear] = useState(() => contribution ? String(contribution.Year) : String(new Date().getFullYear()))
+  const [paymentDate, setPaymentDate] = useState(() => contribution ? contribution.PaymentDate.split('T')[0] : new Date().toISOString().split('T')[0])
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(() => contribution?.PaymentMethod ?? 'cash')
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    if (contribution) {
-      setContributorId(String(contribution.ContributorID))
-      setCategoryId(String(contribution.CategoryID))
-      setAmount(String(contribution.Amount))
-      setMonth(String(contribution.Month))
-      setYear(String(contribution.Year))
-      setPaymentDate(contribution.PaymentDate.split('T')[0])
-      setPaymentMethod(contribution.PaymentMethod)
-    }
-  }, [contribution])
 
   const isPending = isEditing ? updateContribution.isPending : createContribution.isPending
 

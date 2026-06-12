@@ -4,15 +4,17 @@ import (
 	"context"
 	"time"
 
-	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/house"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/accesscontrol"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/category"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contribution"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contributor"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/expense"
 	ec "github.com/ivsanmendez/ControlDeContabilidad/internal/domain/expense_category"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/house"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/receipt"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/report"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/user"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/vehicle"
 )
 
 // ExpenseService is the driving port — the contract that inbound adapters
@@ -85,4 +87,31 @@ type ExpenseCategoryService interface {
 	ListActiveCategories(ctx context.Context) ([]ec.ExpenseCategory, error)
 	UpdateCategory(ctx context.Context, id int64, name, description string, isActive bool) (*ec.ExpenseCategory, error)
 	DeleteCategory(ctx context.Context, id int64) error
+}
+
+// AccessControlService is the driving port for access control use cases.
+type AccessControlService interface {
+	CreateAccessControl(ctx context.Context, houseID int64, code, adminNumber, notes string) (*accesscontrol.AccessControl, error)
+	GetAccessControl(ctx context.Context, id int64) (*accesscontrol.AccessControl, error)
+	LookupByCode(ctx context.Context, code string) (*accesscontrol.AccessControl, error)
+	ListAll(ctx context.Context) ([]accesscontrol.AccessControlWithHouse, error)
+	ListByHouse(ctx context.Context, houseID int64) ([]accesscontrol.AccessControl, error)
+	UpdateAccessControl(ctx context.Context, id int64, code, adminNumber, notes string) (*accesscontrol.AccessControl, error)
+	ChangeStatus(ctx context.Context, id int64, status accesscontrol.Status) (*accesscontrol.AccessControl, error)
+	MarkPhysicallySynced(ctx context.Context, id int64) (*accesscontrol.AccessControl, error)
+	DeleteAccessControl(ctx context.Context, id int64) error
+	ListPendingSync(ctx context.Context) ([]accesscontrol.AccessControl, error)
+	EvaluateHouse(ctx context.Context, houseID int64) error
+	EvaluateAll(ctx context.Context) error
+}
+
+// VehicleService is the driving port for vehicle use cases.
+type VehicleService interface {
+	CreateVehicle(ctx context.Context, houseID int64, plate, color, brand, model, notes string) (*vehicle.Vehicle, error)
+	GetVehicle(ctx context.Context, id int64) (*vehicle.Vehicle, error)
+	ListByHouse(ctx context.Context, houseID int64) ([]vehicle.Vehicle, error)
+	UpdateVehicle(ctx context.Context, id int64, plate, color, brand, model, notes string) (*vehicle.Vehicle, error)
+	DeleteVehicle(ctx context.Context, id int64) error
+	AssignAccessControl(ctx context.Context, vehicleID, accessControlID int64) error
+	UnassignAccessControl(ctx context.Context, vehicleID, accessControlID int64) error
 }

@@ -45,5 +45,93 @@
     "unassigned": "Contribuyente desasignado",
     "error": "No se pudo asignar el contribuyente",
     "errorUnassign": "No se pudo desasignar el contribuyente"
+  },
+  "accessControls": {
+    "title": "Controles de Acceso",
+    "pageTitle": "Administración de Controles",
+    "house": "Casa",
+    "evaluateAll": "Evaluar Todo",
+    "newAccessControl": "Nuevo Control",
+    "noAccessControls": "Esta casa no tiene controles de acceso",
+    "empty": "No hay controles de acceso registrados",
+    "code": "Código",
+    "adminNumber": "No. Administrativo",
+    "status": "Estado",
+    "notes": "Notas",
+    "pendingSync": "Pendiente de sincronización",
+    "markSynced": "Marcar como sincronizado",
+    "statusLabels": {
+      "active": "Activo",
+      "warning": "Advertencia",
+      "inactive": "Inactivo"
+    },
+    "form": {
+      "title": "Nuevo Control de Acceso",
+      "editTitle": "Editar Control de Acceso",
+      "codePlaceholder": "ej. TAG-001",
+      "adminNumberPlaceholder": "ej. A-123",
+      "notesPlaceholder": "Observaciones",
+      "submit": "Crear control",
+      "submitUpdate": "Guardar cambios",
+      "submitting": "Guardando..."
+    },
+    "toast": {
+      "created": "Control de acceso creado",
+      "updated": "Control de acceso actualizado",
+      "deleted": "Control de acceso eliminado",
+      "statusChanged": "Estado actualizado",
+      "synced": "Marcado como sincronizado",
+      "evaluated": "Evaluación completada",
+      "errorLoad": "No se pudieron cargar los controles de acceso",
+      "errorCreate": "No se pudo crear el control de acceso",
+      "errorUpdate": "No se pudo actualizar el control de acceso",
+      "errorDelete": "No se pudo eliminar el control de acceso",
+      "errorStatus": "No se pudo cambiar el estado",
+      "errorSync": "No se pudo marcar como sincronizado",
+      "errorEvaluate": "No se pudo ejecutar la evaluación"
+    }
+  },
+  "vehicles": {
+    "title": "Vehículos",
+    "addVehicle": "Agregar Vehículo",
+    "noVehicles": "Esta casa no tiene vehículos registrados",
+    "plate": "Placa",
+    "color": "Color",
+    "brand": "Marca",
+    "model": "Modelo",
+    "notes": "Notas",
+    "accessControlsCount": "{{count}} control(es)",
+    "form": {
+      "title": "Nuevo Vehículo",
+      "editTitle": "Editar Vehículo",
+      "platePlaceholder": "ej. ABC-1234",
+      "colorPlaceholder": "ej. Blanco",
+      "brandPlaceholder": "ej. Toyota",
+      "modelPlaceholder": "ej. Corolla",
+      "notesPlaceholder": "Observaciones",
+      "submit": "Crear vehículo",
+      "submitUpdate": "Guardar cambios",
+      "submitting": "Guardando..."
+    },
+    "assignControl": {
+      "title": "Asignar Control de Acceso",
+      "codePlaceholder": "Ingresa el código del control",
+      "search": "Buscar",
+      "searching": "Buscando...",
+      "notFound": "No se encontró ningún control con ese código",
+      "alreadyAssigned": "Este control ya está asignado a este vehículo"
+    },
+    "toast": {
+      "created": "Vehículo creado",
+      "updated": "Vehículo actualizado",
+      "deleted": "Vehículo eliminado",
+      "assigned": "Control asignado",
+      "unassigned": "Control desasignado",
+      "errorCreate": "No se pudo crear el vehículo",
+      "errorUpdate": "No se pudo actualizar el vehículo",
+      "errorDelete": "No se pudo eliminar el vehículo",
+      "errorAssign": "No se pudo asignar el control",
+      "errorUnassign": "No se pudo desasignar el control"
+    }
   }
 }

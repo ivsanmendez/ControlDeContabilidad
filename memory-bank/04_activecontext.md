@@ -1,7 +1,7 @@
 # Active Context
 
 ## Current Phase
-Edit expense was the final piece completing the full expense management UI. Feature #4 "Build React expense management UI" is now complete — all CRUD operations (list, create, edit, delete) are available in the React SPA, backed by existing backend endpoints.
+Feature #4 "Vehicle Access Control" (GitHub issue #4 — Control de Acceso Vehicular por Casa) is fully implemented across all four phases. Builds are passing. The issue is ready to move from Backlog to Review on the Kanban board, pending a PR and final testing pass.
 
 ## Recent Decisions
 - Hexagonal architecture (ports & adapters) for the Go backend
@@ -78,6 +78,11 @@ Edit expense was the final piece completing the full expense management UI. Feat
 - [x] Build React UI for expense management — #4
 - [x] English-only code identifiers enforced (ADR-05), `casa` → `house` rename complete
 - [x] House feature frontend wired (/houses routes, HousesPage, HouseDetailPage)
+- [x] Vehicle Access Control — all 4 phases implemented (AccessControl + Vehicle CRUD APIs, auto-evaluation service, pending-sync tracking, HouseDetailPage extended) — #4
+
+## Next Actions
+- Move GitHub issue #4 to "Review" on the Kanban board and open a PR
+- After #4 merges → move to "Done" and consider starting #5 (User Admin CRUD) or #6 (Filter contributors by house)
 
 ## Pending Improvements
 - **Frontend: hide house creation controls for non-admin users** — The "Create House" button (and any other house mutation controls) should be conditionally rendered based on the authenticated user's role or permissions. Currently a `user`-role account can see and click the button but will receive a 403 from the API. The fix requires reading the role/permissions claim from the JWT (or a `/me` endpoint) in the React SPA and gating the UI accordingly. (Tracked from 2026-05-07 investigation — see `05_progress.md` Known Issues.) Workaround applied to `falliv@gmail.com`: promoted to `admin` role (2026-05-07) and password changed (2026-05-09).

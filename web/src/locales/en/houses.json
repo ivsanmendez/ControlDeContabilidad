@@ -45,5 +45,93 @@
     "unassigned": "Contributor unassigned",
     "error": "Failed to assign contributor",
     "errorUnassign": "Failed to unassign contributor"
+  },
+  "accessControls": {
+    "title": "Access Controls",
+    "pageTitle": "Access Controls Admin",
+    "house": "House",
+    "evaluateAll": "Evaluate All",
+    "newAccessControl": "New Control",
+    "noAccessControls": "This house has no access controls",
+    "empty": "No access controls registered",
+    "code": "Code",
+    "adminNumber": "Admin Number",
+    "status": "Status",
+    "notes": "Notes",
+    "pendingSync": "Pending sync",
+    "markSynced": "Mark as synced",
+    "statusLabels": {
+      "active": "Active",
+      "warning": "Warning",
+      "inactive": "Inactive"
+    },
+    "form": {
+      "title": "New Access Control",
+      "editTitle": "Edit Access Control",
+      "codePlaceholder": "e.g. TAG-001",
+      "adminNumberPlaceholder": "e.g. A-123",
+      "notesPlaceholder": "Observations",
+      "submit": "Create control",
+      "submitUpdate": "Save changes",
+      "submitting": "Saving..."
+    },
+    "toast": {
+      "created": "Access control created",
+      "updated": "Access control updated",
+      "deleted": "Access control deleted",
+      "statusChanged": "Status updated",
+      "synced": "Marked as synced",
+      "evaluated": "Evaluation completed",
+      "errorLoad": "Failed to load access controls",
+      "errorCreate": "Failed to create access control",
+      "errorUpdate": "Failed to update access control",
+      "errorDelete": "Failed to delete access control",
+      "errorStatus": "Failed to change status",
+      "errorSync": "Failed to mark as synced",
+      "errorEvaluate": "Failed to run evaluation"
+    }
+  },
+  "vehicles": {
+    "title": "Vehicles",
+    "addVehicle": "Add Vehicle",
+    "noVehicles": "This house has no registered vehicles",
+    "plate": "Plate",
+    "color": "Color",
+    "brand": "Brand",
+    "model": "Model",
+    "notes": "Notes",
+    "accessControlsCount": "{{count}} control(s)",
+    "form": {
+      "title": "New Vehicle",
+      "editTitle": "Edit Vehicle",
+      "platePlaceholder": "e.g. ABC-1234",
+      "colorPlaceholder": "e.g. White",
+      "brandPlaceholder": "e.g. Toyota",
+      "modelPlaceholder": "e.g. Corolla",
+      "notesPlaceholder": "Observations",
+      "submit": "Create vehicle",
+      "submitUpdate": "Save changes",
+      "submitting": "Saving..."
+    },
+    "assignControl": {
+      "title": "Assign Access Control",
+      "codePlaceholder": "Enter the control code",
+      "search": "Search",
+      "searching": "Searching...",
+      "notFound": "No access control found with that code",
+      "alreadyAssigned": "This control is already assigned to this vehicle"
+    },
+    "toast": {
+      "created": "Vehicle created",
+      "updated": "Vehicle updated",
+      "deleted": "Vehicle deleted",
+      "assigned": "Control assigned",
+      "unassigned": "Control unassigned",
+      "errorCreate": "Failed to create vehicle",
+      "errorUpdate": "Failed to update vehicle",
+      "errorDelete": "Failed to delete vehicle",
+      "errorAssign": "Failed to assign control",
+      "errorUnassign": "Failed to unassign control"
+    }
   }
 }

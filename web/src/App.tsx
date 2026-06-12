@@ -15,6 +15,7 @@ const ExpenseReceiptPage = lazy(() => import('@/pages/expense-receipt-page').the
 const MonthlyBalancePage = lazy(() => import('@/pages/monthly-balance-page').then(m => ({ default: m.MonthlyBalancePage })))
 const HousesPage = lazy(() => import('@/pages/houses-page').then(m => ({ default: m.HousesPage })))
 const HouseDetailPage = lazy(() => import('@/pages/house-detail-page').then(m => ({ default: m.HouseDetailPage })))
+const AccessControlsPage = lazy(() => import('@/pages/access-controls-page').then(m => ({ default: m.AccessControlsPage })))
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/reports/monthly-balance" element={<MonthlyBalancePage />} />
           <Route path="/houses" element={<HousesPage />} />
           <Route path="/houses/:id" element={<HouseDetailPage />} />
+          <Route path="/access-controls" element={<AccessControlsPage />} />
         </Route>
         <Route path="/contributions/receipt" element={<ContributionReceiptPage />} />
         <Route path="/expenses/:id/receipt" element={<ExpenseReceiptPage />} />

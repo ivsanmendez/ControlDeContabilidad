@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/lib/pq"
 
@@ -135,6 +136,26 @@ func (r *ContributionRepo) Delete(ctx context.Context, id int64) error {
 		return contribution.ErrNotFound
 	}
 	return nil
+}
+
+// FindLastPaymentDateByHouseID returns the most recent payment_date for any
+// contribution made by contributors assigned to the given house.
+// Returns nil if no contributions exist for that house.
+func (r *ContributionRepo) FindLastPaymentDateByHouseID(ctx context.Context, houseID int64) (*time.Time, error) {
+	const q = `
+		SELECT MAX(c.payment_date)
+		FROM contributions c
+		JOIN contributors ct ON ct.id = c.contributor_id
+		WHERE ct.house_id = $1`
+
+	var t sql.NullTime
+	if err := r.db.QueryRowContext(ctx, q, houseID).Scan(&t); err != nil {
+		return nil, fmt.Errorf("find last payment date for house %d: %w", houseID, err)
+	}
+	if !t.Valid {
+		return nil, nil
+	}
+	return &t.Time, nil
 }
 
 // --- Detailed (JOIN) queries ---

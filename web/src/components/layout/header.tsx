@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/use-auth'
 const navKeys = [
   { to: '/', key: 'nav.expenses' },
   { to: '/houses', key: 'nav.houses' },
+  { to: '/access-controls', key: 'nav.accessControls' },
   { to: '/contributors', key: 'nav.contributors' },
   { to: '/contributions', key: 'nav.contributions' },
   { to: '/contribution-categories', key: 'nav.categories' },

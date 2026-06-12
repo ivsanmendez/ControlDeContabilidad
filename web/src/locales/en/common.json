@@ -6,7 +6,8 @@
     "categories": "Categories",
     "expenseCategories": "Expense Cat.",
     "monthlyBalance": "Monthly Report",
-    "houses": "Houses"
+    "houses": "Houses",
+    "accessControls": "Controls"
   },
   "auth": {
     "logout": "Log out"
@@ -20,6 +21,7 @@
     "print": "Print"
   },
   "loading": "Loading...",
+  "searching": "Searching...",
   "paymentMethods": {
     "cash": "Cash",
     "transfer": "Transfer",

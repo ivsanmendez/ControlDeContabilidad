@@ -77,6 +77,15 @@ export default defineConfig({
           }
         },
       },
+      '/access-controls': {
+        target: apiBase,
+        bypass(req) {
+          if (req.headers.accept?.includes('text/html')) {
+            return req.url
+          }
+        },
+      },
+      '/vehicles': apiBase,
     },
   },
 })

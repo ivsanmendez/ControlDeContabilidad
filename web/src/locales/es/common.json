@@ -6,7 +6,8 @@
     "categories": "Categorias",
     "expenseCategories": "Cat. Gastos",
     "monthlyBalance": "Reporte Mensual",
-    "houses": "Casas"
+    "houses": "Casas",
+    "accessControls": "Controles"
   },
   "auth": {
     "logout": "Cerrar sesión"
@@ -20,6 +21,7 @@
     "print": "Imprimir"
   },
   "loading": "Cargando...",
+  "searching": "Buscando...",
   "paymentMethods": {
     "cash": "Efectivo",
     "transfer": "Transferencia",

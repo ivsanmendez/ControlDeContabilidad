@@ -27,8 +27,9 @@
 - GitHub #4 Feature: Control de Acceso Vehicular por Casa [`backend`, `frontend`, `domain`] — 4 phases: Casa+Contributors, AccessControls, Vehicles, AutoEvaluation
 - #5 feat: User Administration CRUD page [`backend`, `frontend`, `domain`] — admin-only page at `/admin/users` to list users, change roles, reset passwords, and delete accounts. Currently role promotion requires direct SQL.
 - #6 feat: Filter contributors by house on contributors page [`backend`, `frontend`] — adds a house filter dropdown to `/contributors` + `GET /contributors?house_id={id}` API query param.
-- #7 Implement AI agent driving adapter [`agentic`, `backend`]
-- #8 Replace in-memory event bus with persistent broker [`agentic`, `infrastructure`]
+- #7 feat: House report page with shareable QR access link [`backend`, `frontend`, `domain`] — depends on #6. Generates a detailed report page per house (contributors, contributions, balance) with a printable QR code that links to the protected URL `/houses/{id}/report`.
+- Implement AI agent driving adapter [`agentic`, `backend`]
+- Replace in-memory event bus with persistent broker [`agentic`, `infrastructure`]
 
 ### Todo
 _(none)_

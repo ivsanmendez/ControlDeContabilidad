@@ -36,6 +36,38 @@
 - SPA content negotiation middleware (see below)
 - Per-expense receipts with SAT digital signing (see below)
 
+## Recently Completed — Vehicle Access Control (#4, all phases)
+Full implementation of vehicle access control tied to houses: automatic evaluation, physical-device sync tracking, and a reworked house detail page.
+
+### What Was Built
+
+**Backend:**
+- **Migration 017**: `access_controls` table with `physical_synced_at` column for pending-sync tracking
+- **Migration 018**: `vehicles` table with FK to `houses`
+- **Migration 019**: `vehicle_access_controls` join table linking vehicles to access controls
+- **AccessControl entity + CRUD API**:
+  - `GET/POST /houses/{id}/access-controls` — list and create access controls per house
+  - `GET/PUT/DELETE /access-controls/{id}` — single access control management
+  - `GET /access-controls/pending-sync` — returns records where `physical_synced_at IS NULL`
+  - `POST /access-controls/evaluate` — manual trigger for auto-evaluation of all houses
+- **Vehicle entity + CRUD API**:
+  - `GET/POST /houses/{id}/vehicles` — list and create vehicles per house
+  - `GET/PUT/DELETE /vehicles/{id}` — single vehicle management
+  - `POST /vehicles/{id}/access-controls/{control_id}` — associate a vehicle with an access control
+- **Automatic evaluation service** (`EvaluateHouse` / `EvaluateAll`):
+  - Sets status to `warning` at 2 months arrears
+  - Sets status to `inactive` at 3+ months arrears
+  - Runs on the evaluate endpoint and can be scheduled
+- **Pending-physical sync tracking**: `physical_synced_at` timestamp; `NULL` means not yet pushed to physical access-control device; cleared on successful sync
+
+**Frontend:**
+- **HouseDetailPage** extended with two new collapsible sections: "Access Controls" and "Vehicles"
+- Access Controls section: lists controls, status badges (active/warning/inactive), pending-sync indicator, create form
+- Vehicles section: lists vehicles per house, create form, link to associate with an access control
+
+### Build Status
+All CI jobs passing (Go vet + tests + build, TypeScript build).
+
 ## Recently Completed — Per-Expense Receipts with SAT Digital Signing
 Extended the receipt infrastructure to support individual expense receipts alongside contribution receipts, reusing the existing folio counter, certsigner, and receipt domain.
 

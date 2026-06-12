@@ -28,6 +28,7 @@
 - #5 feat: User Administration CRUD page [`backend`, `frontend`, `domain`] — admin-only page at `/admin/users` to list users, change roles, reset passwords, and delete accounts. Currently role promotion requires direct SQL.
 - #6 feat: Filter contributors by house on contributors page [`backend`, `frontend`] — adds a house filter dropdown to `/contributors` + `GET /contributors?house_id={id}` API query param.
 - #7 feat: House report page with shareable QR access link [`backend`, `frontend`, `domain`] — depends on #6. Generates a detailed report page per house (contributors, contributions, balance) with a printable QR code that links to the protected URL `/houses/{id}/report`.
+- #8 feat: Dynamic nested navigation menu with admin CRUD management [`backend`, `frontend`, `domain`] — replaces the hardcoded flat nav in `header.tsx` with a DB-backed tree (`menu_items` table, self-referencing FK), adds `GET /menu-items/tree` API, and an admin CRUD page at `/admin/menu`.
 - Implement AI agent driving adapter [`agentic`, `backend`]
 - Replace in-memory event bus with persistent broker [`agentic`, `infrastructure`]
 

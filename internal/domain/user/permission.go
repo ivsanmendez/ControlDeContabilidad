@@ -35,11 +35,24 @@ const (
 	PermExpenseCategoryUpdate Permission = "expense_category:update"
 	PermExpenseCategoryDelete Permission = "expense_category:delete"
 
-	PermHouseCreate             Permission = "house:create"
-	PermHouseRead               Permission = "house:read"
-	PermHouseUpdate             Permission = "house:update"
-	PermHouseDelete             Permission = "house:delete"
-	PermHouseAssignContributor  Permission = "house:assign_contributor"
+	PermHouseCreate            Permission = "house:create"
+	PermHouseRead              Permission = "house:read"
+	PermHouseUpdate            Permission = "house:update"
+	PermHouseDelete            Permission = "house:delete"
+	PermHouseAssignContributor Permission = "house:assign_contributor"
+
+	PermAccessControlCreate   Permission = "access_control:create"
+	PermAccessControlRead     Permission = "access_control:read"
+	PermAccessControlUpdate   Permission = "access_control:update"
+	PermAccessControlStatus   Permission = "access_control:status"
+	PermAccessControlSync     Permission = "access_control:sync"
+	PermAccessControlDelete   Permission = "access_control:delete"
+	PermAccessControlEvaluate Permission = "access_control:evaluate"
+
+	PermVehicleCreate Permission = "vehicle:create"
+	PermVehicleRead   Permission = "vehicle:read"
+	PermVehicleUpdate Permission = "vehicle:update"
+	PermVehicleDelete Permission = "vehicle:delete"
 )
 
 var rolePermissions = map[Role][]Permission{
@@ -71,6 +84,11 @@ var rolePermissions = map[Role][]Permission{
 		PermHouseUpdate,
 		PermHouseDelete,
 		PermHouseAssignContributor,
+		PermAccessControlRead,
+		PermVehicleCreate,
+		PermVehicleRead,
+		PermVehicleUpdate,
+		PermVehicleDelete,
 	},
 	RoleAdmin: {
 		PermExpenseCreate,
@@ -103,6 +121,17 @@ var rolePermissions = map[Role][]Permission{
 		PermHouseUpdate,
 		PermHouseDelete,
 		PermHouseAssignContributor,
+		PermAccessControlCreate,
+		PermAccessControlRead,
+		PermAccessControlUpdate,
+		PermAccessControlStatus,
+		PermAccessControlSync,
+		PermAccessControlDelete,
+		PermAccessControlEvaluate,
+		PermVehicleCreate,
+		PermVehicleRead,
+		PermVehicleUpdate,
+		PermVehicleDelete,
 	},
 }
 

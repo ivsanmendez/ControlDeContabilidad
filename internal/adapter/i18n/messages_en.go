@@ -68,4 +68,15 @@ var MessagesEN = map[string]string{
 	"house_duplicate":               "a house with that name already exists",
 	"house_contributor_not_found":   "contributor not found",
 	"house_has_access_controls":     "house has access controls assigned",
+
+	// Access controls
+	"access_control_not_found":       "access control not found",
+	"access_control_duplicate":       "an access control with that admin number already exists",
+	"access_control_max_per_house":   "house already has the maximum number of access controls (4)",
+
+	// Vehicles
+	"vehicle_not_found":                        "vehicle not found",
+	"vehicle_duplicate":                        "a vehicle with that plate already exists for this house",
+	"vehicle_access_control_already_assigned":  "access control is already assigned to this vehicle",
+	"vehicle_access_control_not_assigned":      "access control is not assigned to this vehicle",
 }

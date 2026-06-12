@@ -10,7 +10,7 @@ import (
 )
 
 // RegisterRoutes wires all HTTP routes onto the given mux.
-func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc port.AuthService, contribSvc port.ContributionService, contributorSvc port.ContributorService, categorySvc port.CategoryService, expCatSvc port.ExpenseCategoryService, receiptSvc port.ReceiptFolioService, reportSvc port.ReportService, houseSvc port.HouseService, jwtIssuer *jwtadapter.Issuer, signer port.ReceiptSigner, tr *i18n.Translator) {
+func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc port.AuthService, contribSvc port.ContributionService, contributorSvc port.ContributorService, categorySvc port.CategoryService, expCatSvc port.ExpenseCategoryService, receiptSvc port.ReceiptFolioService, reportSvc port.ReportService, houseSvc port.HouseService, accessControlSvc port.AccessControlService, vehicleSvc port.VehicleService, jwtIssuer *jwtadapter.Issuer, signer port.ReceiptSigner, tr *i18n.Translator) {
 	auth := RequireAuth(jwtIssuer, tr)
 	expH := &ExpenseHandler{svc: expenseSvc, tr: tr}
 	authH := &AuthHandler{svc: authSvc, tr: tr}
@@ -21,6 +21,8 @@ func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc 
 	receiptH := &ReceiptHandler{contribSvc: contribSvc, contributorSvc: contributorSvc, expenseSvc: expenseSvc, receiptSvc: receiptSvc, signer: signer, tr: tr}
 	reportH := &ReportHandler{svc: reportSvc, tr: tr}
 	houseH := &HouseHandler{svc: houseSvc, tr: tr}
+	acH := &AccessControlHandler{svc: accessControlSvc, tr: tr}
+	vehicleH := &VehicleHandler{svc: vehicleSvc, tr: tr}
 
 	// Public routes
 	mux.HandleFunc("GET /health", Health)
@@ -192,5 +194,73 @@ func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc 
 	mux.Handle("DELETE /houses/{id}/contributors/{contributor_id}", Chain(
 		http.HandlerFunc(houseH.UnassignContributor),
 		auth, RequirePermission(user.PermHouseAssignContributor, tr),
+	))
+
+	// Access control routes
+	mux.Handle("GET /access-controls", Chain(
+		http.HandlerFunc(acH.ListAll),
+		auth, RequirePermission(user.PermAccessControlRead, tr),
+	))
+	mux.Handle("GET /houses/{id}/access-controls", Chain(
+		http.HandlerFunc(acH.ListByHouse),
+		auth, RequirePermission(user.PermAccessControlRead, tr),
+	))
+	mux.Handle("POST /houses/{id}/access-controls", Chain(
+		http.HandlerFunc(acH.Create),
+		auth, RequirePermission(user.PermAccessControlCreate, tr),
+	))
+	mux.Handle("PUT /access-controls/{id}", Chain(
+		http.HandlerFunc(acH.Update),
+		auth, RequirePermission(user.PermAccessControlUpdate, tr),
+	))
+	mux.Handle("PUT /access-controls/{id}/status", Chain(
+		http.HandlerFunc(acH.ChangeStatus),
+		auth, RequirePermission(user.PermAccessControlStatus, tr),
+	))
+	mux.Handle("PUT /access-controls/{id}/sync", Chain(
+		http.HandlerFunc(acH.MarkSynced),
+		auth, RequirePermission(user.PermAccessControlSync, tr),
+	))
+	mux.Handle("DELETE /access-controls/{id}", Chain(
+		http.HandlerFunc(acH.Delete),
+		auth, RequirePermission(user.PermAccessControlDelete, tr),
+	))
+	mux.Handle("GET /access-controls/lookup", Chain(
+		http.HandlerFunc(acH.LookupByCode),
+		auth, RequirePermission(user.PermAccessControlRead, tr),
+	))
+	mux.Handle("GET /access-controls/pending-sync", Chain(
+		http.HandlerFunc(acH.PendingSync),
+		auth, RequirePermission(user.PermAccessControlRead, tr),
+	))
+	mux.Handle("POST /access-controls/evaluate", Chain(
+		http.HandlerFunc(acH.Evaluate),
+		auth, RequirePermission(user.PermAccessControlEvaluate, tr),
+	))
+
+	// Vehicle routes
+	mux.Handle("GET /houses/{id}/vehicles", Chain(
+		http.HandlerFunc(vehicleH.ListByHouse),
+		auth, RequirePermission(user.PermVehicleRead, tr),
+	))
+	mux.Handle("POST /houses/{id}/vehicles", Chain(
+		http.HandlerFunc(vehicleH.Create),
+		auth, RequirePermission(user.PermVehicleCreate, tr),
+	))
+	mux.Handle("PUT /vehicles/{id}", Chain(
+		http.HandlerFunc(vehicleH.Update),
+		auth, RequirePermission(user.PermVehicleUpdate, tr),
+	))
+	mux.Handle("DELETE /vehicles/{id}", Chain(
+		http.HandlerFunc(vehicleH.Delete),
+		auth, RequirePermission(user.PermVehicleDelete, tr),
+	))
+	mux.Handle("POST /vehicles/{id}/access-controls/{control_id}", Chain(
+		http.HandlerFunc(vehicleH.AssignAccessControl),
+		auth, RequirePermission(user.PermVehicleUpdate, tr),
+	))
+	mux.Handle("DELETE /vehicles/{id}/access-controls/{control_id}", Chain(
+		http.HandlerFunc(vehicleH.UnassignAccessControl),
+		auth, RequirePermission(user.PermVehicleUpdate, tr),
 	))
 }

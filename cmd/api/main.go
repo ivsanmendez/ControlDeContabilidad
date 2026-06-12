@@ -15,15 +15,17 @@ import (
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/i18n"
 	jwtadapter "github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/jwt"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/adapter/postgres"
-	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/house"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/accesscontrol"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/category"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contribution"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/contributor"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/expense"
 	ec "github.com/ivsanmendez/ControlDeContabilidad/internal/domain/expense_category"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/house"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/receipt"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/report"
 	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/user"
+	"github.com/ivsanmendez/ControlDeContabilidad/internal/domain/vehicle"
 )
 
 func main() {
@@ -54,6 +56,8 @@ func main() {
 	expCatRepo := postgres.NewExpenseCategoryRepo(db)
 	receiptFolioRepo := postgres.NewReceiptFolioRepo(db)
 	houseRepo := postgres.NewHouseRepo(db)
+	accessControlRepo := postgres.NewAccessControlRepo(db)
+	vehicleRepo := postgres.NewVehicleRepo(db)
 	bus := eventbus.New()
 	hasher := bcryptadapter.New()
 	jwtIssuer := jwtadapter.NewIssuer(jwtSecret)
@@ -78,13 +82,15 @@ func main() {
 	reportRepo := postgres.NewReportRepo(db)
 	reportSvc := report.NewService(reportRepo)
 	houseSvc := house.NewService(houseRepo)
+	accessControlSvc := accesscontrol.NewService(accessControlRepo, contribRepo)
+	vehicleSvc := vehicle.NewService(vehicleRepo)
 
 	// i18n translator
 	tr := i18n.New()
 
 	// Inbound adapters
 	mux := http.NewServeMux()
-	httpapi.RegisterRoutes(mux, expenseSvc, authSvc, contribSvc, contributorSvc, categorySvc, expCatSvc, receiptSvc, reportSvc, houseSvc, jwtIssuer, signer, tr)
+	httpapi.RegisterRoutes(mux, expenseSvc, authSvc, contribSvc, contributorSvc, categorySvc, expCatSvc, receiptSvc, reportSvc, houseSvc, accessControlSvc, vehicleSvc, jwtIssuer, signer, tr)
 
 	// Serve static files (production React build)
 	staticDir := os.Getenv("STATIC_DIR")

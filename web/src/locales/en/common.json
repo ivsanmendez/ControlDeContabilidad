@@ -7,7 +7,8 @@
     "expenseCategories": "Expense Cat.",
     "monthlyBalance": "Monthly Report",
     "houses": "Houses",
-    "accessControls": "Controls"
+    "accessControls": "Controls",
+    "adminUsers": "Users"
   },
   "auth": {
     "logout": "Log out"

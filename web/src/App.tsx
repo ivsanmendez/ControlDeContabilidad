@@ -16,6 +16,7 @@ const MonthlyBalancePage = lazy(() => import('@/pages/monthly-balance-page').the
 const HousesPage = lazy(() => import('@/pages/houses-page').then(m => ({ default: m.HousesPage })))
 const HouseDetailPage = lazy(() => import('@/pages/house-detail-page').then(m => ({ default: m.HouseDetailPage })))
 const AccessControlsPage = lazy(() => import('@/pages/access-controls-page').then(m => ({ default: m.AccessControlsPage })))
+const AdminUsersPage = lazy(() => import('@/pages/admin-users-page').then(m => ({ default: m.AdminUsersPage })))
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <Route path="/houses" element={<HousesPage />} />
           <Route path="/houses/:id" element={<HouseDetailPage />} />
           <Route path="/access-controls" element={<AccessControlsPage />} />
+          <Route path="/admin/users" element={<AdminUsersPage />} />
         </Route>
         <Route path="/contributions/receipt" element={<ContributionReceiptPage />} />
         <Route path="/expenses/:id/receipt" element={<ExpenseReceiptPage />} />

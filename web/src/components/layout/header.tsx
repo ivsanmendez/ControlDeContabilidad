@@ -6,21 +6,23 @@ import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/use-auth'
 
 const navKeys = [
-  { to: '/', key: 'nav.expenses' },
-  { to: '/houses', key: 'nav.houses' },
-  { to: '/access-controls', key: 'nav.accessControls' },
-  { to: '/contributors', key: 'nav.contributors' },
-  { to: '/contributions', key: 'nav.contributions' },
-  { to: '/contribution-categories', key: 'nav.categories' },
-  { to: '/expense-categories', key: 'nav.expenseCategories' },
-  { to: '/reports/monthly-balance', key: 'nav.monthlyBalance' },
-] as const
+  { to: '/', key: 'nav.expenses', adminOnly: false },
+  { to: '/houses', key: 'nav.houses', adminOnly: false },
+  { to: '/access-controls', key: 'nav.accessControls', adminOnly: false },
+  { to: '/contributors', key: 'nav.contributors', adminOnly: false },
+  { to: '/contributions', key: 'nav.contributions', adminOnly: false },
+  { to: '/contribution-categories', key: 'nav.categories', adminOnly: false },
+  { to: '/expense-categories', key: 'nav.expenseCategories', adminOnly: false },
+  { to: '/reports/monthly-balance', key: 'nav.monthlyBalance', adminOnly: false },
+  { to: '/admin/users', key: 'nav.adminUsers', adminOnly: true },
+]
 
 export function Header() {
   const { user, logout } = useAuth()
   const { pathname } = useLocation()
   const { t, i18n } = useTranslation('common')
   const [mobileOpen, setMobileOpen] = useState(false)
+  const isAdmin = user?.role === 'admin'
 
   function toggleLanguage() {
     const next = i18n.language.startsWith('es') ? 'en' : 'es'
@@ -39,7 +41,7 @@ export function Header() {
           <span className="text-lg font-semibold">ARI ADMIN</span>
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-4">
-            {navKeys.map((link) => (
+            {navKeys.filter((link) => !link.adminOnly || isAdmin).map((link) => (
               <Link key={link.to} to={link.to} className={linkClass(link.to)}>
                 {t(link.key)}
               </Link>
@@ -72,7 +74,7 @@ export function Header() {
       {mobileOpen && (
         <div className="md:hidden border-t bg-background px-4 pb-4">
           <nav className="flex flex-col pt-2">
-            {navKeys.map((link) => (
+            {navKeys.filter((link) => !link.adminOnly || isAdmin).map((link) => (
               <Link
                 key={link.to}
                 to={link.to}

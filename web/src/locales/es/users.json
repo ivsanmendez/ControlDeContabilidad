@@ -1,0 +1,42 @@
+{
+  "title": "Administración de Usuarios",
+  "table": {
+    "email": "Email",
+    "role": "Rol",
+    "createdAt": "Registro",
+    "actions": "Acciones"
+  },
+  "roles": {
+    "admin": "Administrador",
+    "user": "Usuario"
+  },
+  "changeRole": {
+    "title": "Cambiar Rol",
+    "label": "Nuevo rol",
+    "submit": "Guardar",
+    "submitting": "Guardando...",
+    "success": "Rol actualizado — el usuario debe volver a iniciar sesión",
+    "error": "No se pudo cambiar el rol"
+  },
+  "changePassword": {
+    "title": "Cambiar Contraseña",
+    "label": "Nueva contraseña",
+    "placeholder": "Mínimo 8 caracteres",
+    "submit": "Guardar",
+    "submitting": "Guardando...",
+    "success": "Contraseña actualizada — se cerraron todas las sesiones activas",
+    "error": "No se pudo cambiar la contraseña"
+  },
+  "deleteUser": {
+    "title": "Eliminar Usuario",
+    "confirm": "¿Eliminar la cuenta de {{email}}? Esta acción no se puede deshacer.",
+    "submit": "Eliminar",
+    "submitting": "Eliminando...",
+    "success": "Usuario eliminado",
+    "error": "No se pudo eliminar el usuario"
+  },
+  "empty": "No hay usuarios registrados",
+  "toast": {
+    "errorLoad": "No se pudieron cargar los usuarios"
+  }
+}

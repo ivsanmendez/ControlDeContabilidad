@@ -86,6 +86,14 @@ export default defineConfig({
         },
       },
       '/vehicles': apiBase,
+      '/users': {
+        target: apiBase,
+        bypass(req) {
+          if (req.headers.accept?.includes('text/html')) {
+            return req.url
+          }
+        },
+      },
     },
   },
 })

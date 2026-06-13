@@ -11,6 +11,7 @@ import categoriesEs from '@/locales/es/categories.json'
 import expenseCategoriesEs from '@/locales/es/expense-categories.json'
 import reportsEs from '@/locales/es/reports.json'
 import housesEs from '@/locales/es/houses.json'
+import usersEs from '@/locales/es/users.json'
 
 import commonEn from '@/locales/en/common.json'
 import authEn from '@/locales/en/auth.json'
@@ -21,6 +22,7 @@ import categoriesEn from '@/locales/en/categories.json'
 import expenseCategoriesEn from '@/locales/en/expense-categories.json'
 import reportsEn from '@/locales/en/reports.json'
 import housesEn from '@/locales/en/houses.json'
+import usersEn from '@/locales/en/users.json'
 
 i18n
   .use(LanguageDetector)
@@ -37,6 +39,7 @@ i18n
         'expense-categories': expenseCategoriesEs,
         reports: reportsEs,
         houses: housesEs,
+        users: usersEs,
       },
       en: {
         common: commonEn,
@@ -48,11 +51,12 @@ i18n
         'expense-categories': expenseCategoriesEn,
         reports: reportsEn,
         houses: housesEn,
+        users: usersEn,
       },
     },
     fallbackLng: 'en',
     defaultNS: 'common',
-    ns: ['common', 'auth', 'expenses', 'contributors', 'contributions', 'categories', 'expense-categories', 'reports', 'houses'],
+    ns: ['common', 'auth', 'expenses', 'contributors', 'contributions', 'categories', 'expense-categories', 'reports', 'houses', 'users'],
     interpolation: {
       escapeValue: false,
     },

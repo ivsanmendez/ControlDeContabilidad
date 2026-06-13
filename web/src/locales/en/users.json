@@ -1,0 +1,42 @@
+{
+  "title": "User Administration",
+  "table": {
+    "email": "Email",
+    "role": "Role",
+    "createdAt": "Registered",
+    "actions": "Actions"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "user": "User"
+  },
+  "changeRole": {
+    "title": "Change Role",
+    "label": "New role",
+    "submit": "Save",
+    "submitting": "Saving...",
+    "success": "Role updated — the user must log in again",
+    "error": "Could not change the role"
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "label": "New password",
+    "placeholder": "Minimum 8 characters",
+    "submit": "Save",
+    "submitting": "Saving...",
+    "success": "Password updated — all active sessions were closed",
+    "error": "Could not change the password"
+  },
+  "deleteUser": {
+    "title": "Delete User",
+    "confirm": "Delete the account of {{email}}? This action cannot be undone.",
+    "submit": "Delete",
+    "submitting": "Deleting...",
+    "success": "User deleted",
+    "error": "Could not delete the user"
+  },
+  "empty": "No registered users",
+  "toast": {
+    "errorLoad": "Could not load users"
+  }
+}

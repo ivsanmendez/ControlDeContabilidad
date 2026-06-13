@@ -192,6 +192,36 @@ func (r *UserRepo) FindHousesByUserID(ctx context.Context, userID int64) ([]user
 	return assignments, nil
 }
 
+func (r *UserRepo) FindUsersByHouseID(ctx context.Context, houseID int64) ([]user.User, error) {
+	const q = `
+		SELECT u.id, u.email, u.password_hash, u.role, u.created_at, u.updated_at
+		FROM users u
+		JOIN user_houses uh ON uh.user_id = u.id
+		WHERE uh.house_id = $1
+		ORDER BY u.email`
+
+	rows, err := r.db.QueryContext(ctx, q, houseID)
+	if err != nil {
+		return nil, fmt.Errorf("find users for house %d: %w", houseID, err)
+	}
+	defer rows.Close()
+
+	var users []user.User
+	for rows.Next() {
+		var u user.User
+		var role string
+		if err := rows.Scan(&u.ID, &u.Email, &u.PasswordHash, &role, &u.CreatedAt, &u.UpdatedAt); err != nil {
+			return nil, fmt.Errorf("scan user: %w", err)
+		}
+		u.Role = user.Role(role)
+		users = append(users, u)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("find users for house %d: %w", houseID, err)
+	}
+	return users, nil
+}
+
 func (r *UserRepo) AssignHouse(ctx context.Context, userID, houseID int64) error {
 	const q = `INSERT INTO user_houses (user_id, house_id) VALUES ($1, $2)`
 	_, err := r.db.ExecContext(ctx, q, userID, houseID)

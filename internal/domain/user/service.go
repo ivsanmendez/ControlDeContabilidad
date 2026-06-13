@@ -177,6 +177,10 @@ func (s *Service) UpdateUserPassword(ctx context.Context, callerID, id int64, ne
 	return s.repo.UpdatePasswordHash(ctx, id, hash)
 }
 
+func (s *Service) ListUsersForHouse(ctx context.Context, houseID int64) ([]User, error) {
+	return s.repo.FindUsersByHouseID(ctx, houseID)
+}
+
 func (s *Service) ListUserHouses(ctx context.Context, userID int64) ([]HouseAssignment, error) {
 	return s.repo.FindHousesByUserID(ctx, userID)
 }

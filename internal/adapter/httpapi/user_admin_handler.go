@@ -153,6 +153,24 @@ func (h *UserAdminHandler) UpdatePassword(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusNoContent)
 }
 
+func (h *UserAdminHandler) ListUsersForHouse(w http.ResponseWriter, r *http.Request) {
+	houseID, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
+	if err != nil {
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
+		return
+	}
+	users, err := h.svc.ListUsersForHouse(r.Context(), houseID)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	resp := make([]userAdminResponse, len(users))
+	for i, u := range users {
+		resp[i] = toUserAdminResponse(u)
+	}
+	writeJSON(w, http.StatusOK, resp)
+}
+
 func (h *UserAdminHandler) ListHouses(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
 	if err != nil {

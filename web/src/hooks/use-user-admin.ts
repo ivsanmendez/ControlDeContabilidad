@@ -49,6 +49,14 @@ export function useDeleteUser() {
   })
 }
 
+export function useHouseUsers(houseID: number) {
+  return useQuery<UserAdmin[]>({
+    queryKey: ['house-users', houseID],
+    queryFn: () => apiFetch<UserAdmin[]>(`/houses/${houseID}/users`),
+    enabled: houseID > 0,
+  })
+}
+
 export function useUserHouses(userID: number) {
   return useQuery<HouseAssignment[]>({
     queryKey: ['user-houses', userID],

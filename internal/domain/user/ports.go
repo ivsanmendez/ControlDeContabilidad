@@ -13,6 +13,7 @@ type Repository interface {
 	Delete(ctx context.Context, id int64) error
 
 	FindHousesByUserID(ctx context.Context, userID int64) ([]HouseAssignment, error)
+	FindUsersByHouseID(ctx context.Context, houseID int64) ([]User, error)
 	AssignHouse(ctx context.Context, userID, houseID int64) error
 	UnassignHouse(ctx context.Context, userID, houseID int64) error
 

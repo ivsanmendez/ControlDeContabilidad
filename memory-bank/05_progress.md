@@ -36,6 +36,7 @@
 - SPA content negotiation middleware (see below)
 - Per-expense receipts with SAT digital signing (see below)
 - Vehicle access control system (#4, all phases) — AccessControls + Vehicles CRUD APIs, auto-evaluation service, pending-sync tracking (`physical_synced_at`), HouseDetailPage extended with Access Controls and Vehicles sections; migrations 017–019; PR #9 merged to main 2026-06-12
+- Camera access configuration per contributor (PR #10, merged 2026-06-13) — contributors carry `camera_access` (bool), `camera_email`, and `camera_phone` fields; contributor form shows email/phone fields conditionally when access is enabled; contributor table and house detail page display a camera icon indicator with the registered credentials
 
 ## Previously Completed — Vehicle Access Control (#4, all phases)
 Full implementation of vehicle access control tied to houses: automatic evaluation, physical-device sync tracking, and a reworked house detail page.

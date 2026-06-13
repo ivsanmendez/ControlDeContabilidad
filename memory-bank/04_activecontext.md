@@ -1,7 +1,11 @@
 # Active Context
 
 ## Current Phase
-Feature #4 "Vehicle Access Control" (GitHub issue #4 — Control de Acceso Vehicular por Casa) is complete. PR #9 merged into main on 2026-06-12. All four phases are in production. The project is in steady state — no active in-progress issues. Suggested next items from the backlog: #5 (User Admin CRUD), #6 (Filter contributors by house), #7 (House report), or #8 (Dynamic nav menu).
+Feature #4 "Vehicle Access Control" (GitHub issue #4 — Control de Acceso Vehicular por Casa) is complete. PR #9 merged into main on 2026-06-12. All four phases are in production.
+
+Camera access configuration was added to contributors as a quick ad-hoc enhancement (PR #10, merged 2026-06-13): contributors now carry `camera_access`, `camera_email`, and `camera_phone` fields with conditional UI and a camera icon indicator in the contributor table and house detail page. No GitHub issue tracked.
+
+The project is in steady state — no active in-progress issues. Suggested next items from the backlog: #5 (User Admin CRUD), #6 (Filter contributors by house), #7 (House report), or #8 (Dynamic nav menu).
 
 ## Recent Decisions
 - Hexagonal architecture (ports & adapters) for the Go backend

@@ -177,6 +177,18 @@ func (s *Service) UpdateUserPassword(ctx context.Context, callerID, id int64, ne
 	return s.repo.UpdatePasswordHash(ctx, id, hash)
 }
 
+func (s *Service) ListUserHouses(ctx context.Context, userID int64) ([]HouseAssignment, error) {
+	return s.repo.FindHousesByUserID(ctx, userID)
+}
+
+func (s *Service) AssignHouseToUser(ctx context.Context, userID, houseID int64) error {
+	return s.repo.AssignHouse(ctx, userID, houseID)
+}
+
+func (s *Service) UnassignHouseFromUser(ctx context.Context, userID, houseID int64) error {
+	return s.repo.UnassignHouse(ctx, userID, houseID)
+}
+
 func (s *Service) DeleteUser(ctx context.Context, callerID, id int64) error {
 	if callerID == id {
 		return ErrCannotDeleteSelf

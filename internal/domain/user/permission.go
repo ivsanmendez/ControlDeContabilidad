@@ -59,6 +59,7 @@ const (
 	PermUserUpdateRole     Permission = "user:update_role"
 	PermUserUpdatePassword Permission = "user:update_password"
 	PermUserDelete         Permission = "user:delete"
+	PermUserManageHouses   Permission = "user:manage_houses"
 )
 
 var rolePermissions = map[Role][]Permission{
@@ -140,6 +141,7 @@ var rolePermissions = map[Role][]Permission{
 		PermVehicleDelete,
 		PermUserCreate,
 		PermUserList,
+		PermUserManageHouses,
 		PermUserUpdateRole,
 		PermUserUpdatePassword,
 		PermUserDelete,

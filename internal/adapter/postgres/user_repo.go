@@ -164,6 +164,63 @@ func (r *UserRepo) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
+func (r *UserRepo) FindHousesByUserID(ctx context.Context, userID int64) ([]user.HouseAssignment, error) {
+	const q = `
+		SELECT uh.house_id, h.name, uh.assigned_at
+		FROM user_houses uh
+		JOIN houses h ON h.id = uh.house_id
+		WHERE uh.user_id = $1
+		ORDER BY h.name`
+
+	rows, err := r.db.QueryContext(ctx, q, userID)
+	if err != nil {
+		return nil, fmt.Errorf("find houses for user %d: %w", userID, err)
+	}
+	defer rows.Close()
+
+	var assignments []user.HouseAssignment
+	for rows.Next() {
+		var a user.HouseAssignment
+		if err := rows.Scan(&a.HouseID, &a.HouseName, &a.AssignedAt); err != nil {
+			return nil, fmt.Errorf("scan house assignment: %w", err)
+		}
+		assignments = append(assignments, a)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("find houses for user %d: %w", userID, err)
+	}
+	return assignments, nil
+}
+
+func (r *UserRepo) AssignHouse(ctx context.Context, userID, houseID int64) error {
+	const q = `INSERT INTO user_houses (user_id, house_id) VALUES ($1, $2)`
+	_, err := r.db.ExecContext(ctx, q, userID, houseID)
+	if err != nil {
+		var pqErr *pq.Error
+		if errors.As(err, &pqErr) && pqErr.Code == "23505" {
+			return user.ErrHouseAlreadyAssigned
+		}
+		return fmt.Errorf("assign house %d to user %d: %w", houseID, userID, err)
+	}
+	return nil
+}
+
+func (r *UserRepo) UnassignHouse(ctx context.Context, userID, houseID int64) error {
+	const q = `DELETE FROM user_houses WHERE user_id = $1 AND house_id = $2`
+	result, err := r.db.ExecContext(ctx, q, userID, houseID)
+	if err != nil {
+		return fmt.Errorf("unassign house %d from user %d: %w", houseID, userID, err)
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("unassign house: %w", err)
+	}
+	if rows == 0 {
+		return user.ErrHouseNotAssigned
+	}
+	return nil
+}
+
 func (r *UserRepo) SaveRefreshToken(ctx context.Context, t *user.RefreshToken) error {
 	const q = `
 		INSERT INTO refresh_tokens (user_id, token_hash, expires_at, revoked, created_at)

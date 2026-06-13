@@ -18,7 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useCreateUser, useUsers, useUpdateUserRole, useUpdateUserPassword, useDeleteUser } from '@/hooks/use-user-admin'
+import { useCreateUser, useUsers, useUpdateUserRole, useUpdateUserPassword, useDeleteUser, useUserHouses, useAssignHouseToUser, useUnassignHouseFromUser } from '@/hooks/use-user-admin'
+import { useHouses } from '@/hooks/use-houses'
 import { useAuth } from '@/hooks/use-auth'
 import type { UserAdmin } from '@/types/user-admin'
 
@@ -27,6 +28,93 @@ function roleBadgeClass(role: UserAdmin['role']) {
   return role === 'admin'
     ? `${base} bg-green-100 text-green-800`
     : `${base} bg-gray-100 text-gray-700`
+}
+
+function ManageHousesDialog({ target, open, onClose }: { target: UserAdmin; open: boolean; onClose: () => void }) {
+  const { t } = useTranslation('users')
+  const { data: assigned, isLoading } = useUserHouses(open ? target.id : 0)
+  const { data: allHouses } = useHouses()
+  const assignHouse = useAssignHouseToUser()
+  const unassignHouse = useUnassignHouseFromUser()
+  const [selectedHouseID, setSelectedHouseID] = useState('')
+
+  const assignedIDs = new Set((assigned ?? []).map((a) => a.HouseID))
+  const available = (allHouses ?? []).filter((h) => !assignedIDs.has(h.ID))
+
+  function handleAdd() {
+    if (!selectedHouseID) return
+    assignHouse.mutate(
+      { userID: target.id, houseID: parseInt(selectedHouseID, 10) },
+      {
+        onSuccess: () => setSelectedHouseID(''),
+        onError: () => toast.error(t('houses.errorAdd')),
+      }
+    )
+  }
+
+  function handleRemove(houseID: number) {
+    unassignHouse.mutate(
+      { userID: target.id, houseID },
+      { onError: () => toast.error(t('houses.errorRemove')) }
+    )
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => { if (!o) onClose() }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t('houses.title', { email: target.email })}</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4 pt-2">
+          {isLoading ? (
+            <div className="flex justify-center py-4">
+              <div className="h-6 w-6 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            </div>
+          ) : (assigned ?? []).length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t('houses.noneAssigned')}</p>
+          ) : (
+            <div className="flex flex-col divide-y rounded-md border">
+              {(assigned ?? []).map((a) => (
+                <div key={a.HouseID} className="flex items-center justify-between px-3 py-2">
+                  <span className="text-sm font-medium">{a.HouseName}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive hover:text-destructive h-7 px-2 text-xs"
+                    onClick={() => handleRemove(a.HouseID)}
+                    disabled={unassignHouse.isPending}
+                  >
+                    {t('houses.remove')}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {available.length > 0 && (
+            <div className="flex gap-2">
+              <Select value={selectedHouseID} onValueChange={(v) => setSelectedHouseID(v ?? '')}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder={t('houses.addPlaceholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {available.map((h) => (
+                    <SelectItem key={h.ID} value={String(h.ID)}>{h.Name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                onClick={handleAdd}
+                disabled={!selectedHouseID || assignHouse.isPending}
+              >
+                {assignHouse.isPending ? t('houses.adding') : t('houses.add')}
+              </Button>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
 }
 
 function CreateUserDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -248,7 +336,7 @@ function DeleteUserDialog({
   )
 }
 
-type DialogType = 'create' | 'role' | 'password' | 'delete'
+type DialogType = 'create' | 'houses' | 'role' | 'password' | 'delete'
 
 export function AdminUsersPage() {
   const { t } = useTranslation('users')
@@ -325,6 +413,13 @@ export function AdminUsersPage() {
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => openDialog(u, 'houses')}
+                      >
+                        {t('manageCasas')}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => openDialog(u, 'role')}
                       >
                         {t('changeRole.title')}
@@ -355,6 +450,10 @@ export function AdminUsersPage() {
       )}
 
       <CreateUserDialog open={dialogType === 'create'} onClose={closeDialog} />
+
+      {dialogTarget && dialogType === 'houses' && (
+        <ManageHousesDialog target={dialogTarget} open onClose={closeDialog} />
+      )}
 
       {dialogTarget && dialogType === 'role' && (
         <ChangeRoleDialog

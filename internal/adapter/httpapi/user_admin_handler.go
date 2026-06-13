@@ -25,6 +25,10 @@ type userAdminResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type assignHouseRequest struct {
+	HouseID int64 `json:"house_id"`
+}
+
 type createUserRequest struct {
 	Email    string    `json:"email"`
 	Password string    `json:"password"`
@@ -146,6 +150,67 @@ func (h *UserAdminHandler) UpdatePassword(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *UserAdminHandler) ListHouses(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
+	if err != nil {
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
+		return
+	}
+	assignments, err := h.svc.ListUserHouses(r.Context(), id)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	if assignments == nil {
+		assignments = []user.HouseAssignment{}
+	}
+	writeJSON(w, http.StatusOK, assignments)
+}
+
+func (h *UserAdminHandler) AssignHouse(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
+	if err != nil {
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
+		return
+	}
+	var req assignHouseRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_request_body")
+		return
+	}
+	if err := h.svc.AssignHouseToUser(r.Context(), id, req.HouseID); err != nil {
+		if errors.Is(err, user.ErrHouseAlreadyAssigned) {
+			writeError(w, http.StatusConflict, err.Error())
+		} else {
+			writeError(w, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *UserAdminHandler) UnassignHouse(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
+	if err != nil {
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
+		return
+	}
+	houseID, err := strconv.ParseInt(r.PathValue("house_id"), 10, 64)
+	if err != nil {
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
+		return
+	}
+	if err := h.svc.UnassignHouseFromUser(r.Context(), id, houseID); err != nil {
+		if errors.Is(err, user.ErrHouseNotAssigned) {
+			writeError(w, http.StatusNotFound, err.Error())
+		} else {
+			writeError(w, http.StatusInternalServerError, err.Error())
+		}
+		return
+	}
 	w.WriteHeader(http.StatusNoContent)
 }
 

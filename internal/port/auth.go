@@ -22,4 +22,7 @@ type UserAdminService interface {
 	UpdateUserRole(ctx context.Context, id int64, role user.Role) (*user.User, error)
 	UpdateUserPassword(ctx context.Context, callerID, id int64, newPassword string) error
 	DeleteUser(ctx context.Context, callerID, id int64) error
+	ListUserHouses(ctx context.Context, userID int64) ([]user.HouseAssignment, error)
+	AssignHouseToUser(ctx context.Context, userID, houseID int64) error
+	UnassignHouseFromUser(ctx context.Context, userID, houseID int64) error
 }

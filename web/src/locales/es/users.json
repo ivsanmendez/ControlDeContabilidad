@@ -36,6 +36,19 @@
     "error": "No se pudo eliminar el usuario"
   },
   "newUser": "Nuevo Usuario",
+  "manageCasas": "Casas",
+  "houses": {
+    "title": "Casas asignadas a {{email}}",
+    "noneAssigned": "Sin casas asignadas",
+    "addLabel": "Agregar casa",
+    "addPlaceholder": "Selecciona una casa",
+    "add": "Agregar",
+    "adding": "Agregando...",
+    "remove": "Quitar",
+    "errorLoad": "No se pudieron cargar las casas",
+    "errorAdd": "No se pudo asignar la casa",
+    "errorRemove": "No se pudo quitar la casa"
+  },
   "createUser": {
     "title": "Crear Usuario",
     "emailLabel": "Email",

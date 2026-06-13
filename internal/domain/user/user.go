@@ -7,12 +7,14 @@ import (
 )
 
 var (
-	ErrNotFound           = errors.New("user not found")
-	ErrEmailTaken         = errors.New("email already taken")
-	ErrInvalidEmail       = errors.New("invalid email address")
-	ErrWeakPassword       = errors.New("password must be at least 8 characters")
-	ErrInvalidCredentials = errors.New("invalid credentials")
-	ErrCannotDeleteSelf   = errors.New("cannot delete your own account")
+	ErrNotFound              = errors.New("user not found")
+	ErrEmailTaken            = errors.New("email already taken")
+	ErrInvalidEmail          = errors.New("invalid email address")
+	ErrWeakPassword          = errors.New("password must be at least 8 characters")
+	ErrInvalidCredentials    = errors.New("invalid credentials")
+	ErrCannotDeleteSelf      = errors.New("cannot delete your own account")
+	ErrHouseAlreadyAssigned  = errors.New("house already assigned to this user")
+	ErrHouseNotAssigned      = errors.New("house not assigned to this user")
 )
 
 type Role string
@@ -21,6 +23,13 @@ const (
 	RoleUser  Role = "user"
 	RoleAdmin Role = "admin"
 )
+
+// HouseAssignment represents a house linked to a user, including the house name for display.
+type HouseAssignment struct {
+	HouseID    int64
+	HouseName  string
+	AssignedAt time.Time
+}
 
 type User struct {
 	ID           int64

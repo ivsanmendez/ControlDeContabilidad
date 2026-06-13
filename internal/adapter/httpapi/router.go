@@ -286,4 +286,16 @@ func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc 
 		http.HandlerFunc(userAdminH.Delete),
 		auth, RequirePermission(user.PermUserDelete, tr),
 	))
+	mux.Handle("GET /users/{id}/houses", Chain(
+		http.HandlerFunc(userAdminH.ListHouses),
+		auth, RequirePermission(user.PermUserManageHouses, tr),
+	))
+	mux.Handle("POST /users/{id}/houses", Chain(
+		http.HandlerFunc(userAdminH.AssignHouse),
+		auth, RequirePermission(user.PermUserManageHouses, tr),
+	))
+	mux.Handle("DELETE /users/{id}/houses/{house_id}", Chain(
+		http.HandlerFunc(userAdminH.UnassignHouse),
+		auth, RequirePermission(user.PermUserManageHouses, tr),
+	))
 }

@@ -36,6 +36,19 @@
     "error": "Could not delete the user"
   },
   "newUser": "New User",
+  "manageCasas": "Houses",
+  "houses": {
+    "title": "Houses assigned to {{email}}",
+    "noneAssigned": "No houses assigned",
+    "addLabel": "Add house",
+    "addPlaceholder": "Select a house",
+    "add": "Add",
+    "adding": "Adding...",
+    "remove": "Remove",
+    "errorLoad": "Could not load houses",
+    "errorAdd": "Could not assign the house",
+    "errorRemove": "Could not remove the house"
+  },
   "createUser": {
     "title": "Create User",
     "emailLabel": "Email",

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiFetch } from '@/lib/api-client'
-import type { UserAdmin, CreateUserRequest, UpdateRoleRequest, UpdatePasswordRequest } from '@/types/user-admin'
+import type { UserAdmin, HouseAssignment, CreateUserRequest, UpdateRoleRequest, UpdatePasswordRequest } from '@/types/user-admin'
 
 export function useCreateUser() {
   const queryClient = useQueryClient()
@@ -45,6 +45,39 @@ export function useDeleteUser() {
       apiFetch<undefined>(`/users/${id}`, { method: 'DELETE' }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
+    },
+  })
+}
+
+export function useUserHouses(userID: number) {
+  return useQuery<HouseAssignment[]>({
+    queryKey: ['user-houses', userID],
+    queryFn: () => apiFetch<HouseAssignment[]>(`/users/${userID}/houses`),
+    enabled: userID > 0,
+  })
+}
+
+export function useAssignHouseToUser() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ userID, houseID }: { userID: number; houseID: number }) =>
+      apiFetch<undefined>(`/users/${userID}/houses`, {
+        method: 'POST',
+        body: JSON.stringify({ house_id: houseID }),
+      }),
+    onSuccess: (_r, { userID }) => {
+      queryClient.invalidateQueries({ queryKey: ['user-houses', userID] })
+    },
+  })
+}
+
+export function useUnassignHouseFromUser() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ userID, houseID }: { userID: number; houseID: number }) =>
+      apiFetch<undefined>(`/users/${userID}/houses/${houseID}`, { method: 'DELETE' }),
+    onSuccess: (_r, { userID }) => {
+      queryClient.invalidateQueries({ queryKey: ['user-houses', userID] })
     },
   })
 }

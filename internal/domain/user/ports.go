@@ -12,6 +12,10 @@ type Repository interface {
 	UpdatePasswordHash(ctx context.Context, id int64, hash string) error
 	Delete(ctx context.Context, id int64) error
 
+	FindHousesByUserID(ctx context.Context, userID int64) ([]HouseAssignment, error)
+	AssignHouse(ctx context.Context, userID, houseID int64) error
+	UnassignHouse(ctx context.Context, userID, houseID int64) error
+
 	SaveRefreshToken(ctx context.Context, t *RefreshToken) error
 	FindRefreshTokenByHash(ctx context.Context, hash string) (*RefreshToken, error)
 	RevokeRefreshToken(ctx context.Context, id int64) error

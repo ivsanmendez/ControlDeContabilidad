@@ -12,6 +12,7 @@ var (
 	ErrInvalidEmail       = errors.New("invalid email address")
 	ErrWeakPassword       = errors.New("password must be at least 8 characters")
 	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrCannotDeleteSelf   = errors.New("cannot delete your own account")
 )
 
 type Role string

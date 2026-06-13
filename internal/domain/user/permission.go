@@ -53,6 +53,11 @@ const (
 	PermVehicleRead   Permission = "vehicle:read"
 	PermVehicleUpdate Permission = "vehicle:update"
 	PermVehicleDelete Permission = "vehicle:delete"
+
+	PermUserList           Permission = "user:list"
+	PermUserUpdateRole     Permission = "user:update_role"
+	PermUserUpdatePassword Permission = "user:update_password"
+	PermUserDelete         Permission = "user:delete"
 )
 
 var rolePermissions = map[Role][]Permission{
@@ -132,6 +137,10 @@ var rolePermissions = map[Role][]Permission{
 		PermVehicleRead,
 		PermVehicleUpdate,
 		PermVehicleDelete,
+		PermUserList,
+		PermUserUpdateRole,
+		PermUserUpdatePassword,
+		PermUserDelete,
 	},
 }
 

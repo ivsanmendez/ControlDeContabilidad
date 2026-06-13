@@ -86,6 +86,84 @@ func (r *UserRepo) FindByEmail(ctx context.Context, email string) (*user.User, e
 	return &u, nil
 }
 
+func (r *UserRepo) FindAll(ctx context.Context) ([]user.User, error) {
+	const q = `
+		SELECT id, email, password_hash, role, created_at, updated_at
+		FROM users ORDER BY created_at`
+
+	rows, err := r.db.QueryContext(ctx, q)
+	if err != nil {
+		return nil, fmt.Errorf("find all users: %w", err)
+	}
+	defer rows.Close()
+
+	var users []user.User
+	for rows.Next() {
+		var u user.User
+		var role string
+		if err := rows.Scan(&u.ID, &u.Email, &u.PasswordHash, &role, &u.CreatedAt, &u.UpdatedAt); err != nil {
+			return nil, fmt.Errorf("scan user: %w", err)
+		}
+		u.Role = user.Role(role)
+		users = append(users, u)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("find all users: %w", err)
+	}
+	return users, nil
+}
+
+func (r *UserRepo) UpdateRole(ctx context.Context, id int64, role user.Role) error {
+	const q = `UPDATE users SET role=$1, updated_at=NOW() WHERE id=$2`
+	result, err := r.db.ExecContext(ctx, q, string(role), id)
+	if err != nil {
+		return fmt.Errorf("update user role %d: %w", id, err)
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("update user role %d: %w", id, err)
+	}
+	if rows == 0 {
+		return user.ErrNotFound
+	}
+	return nil
+}
+
+func (r *UserRepo) UpdatePasswordHash(ctx context.Context, id int64, hash string) error {
+	const q = `UPDATE users SET password_hash=$1, updated_at=NOW() WHERE id=$2`
+	result, err := r.db.ExecContext(ctx, q, hash, id)
+	if err != nil {
+		return fmt.Errorf("update password hash for user %d: %w", id, err)
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("update password hash for user %d: %w", id, err)
+	}
+	if rows == 0 {
+		return user.ErrNotFound
+	}
+	if err := r.RevokeAllUserRefreshTokens(ctx, id); err != nil {
+		return fmt.Errorf("revoke tokens after password change for user %d: %w", id, err)
+	}
+	return nil
+}
+
+func (r *UserRepo) Delete(ctx context.Context, id int64) error {
+	const q = `DELETE FROM users WHERE id=$1`
+	result, err := r.db.ExecContext(ctx, q, id)
+	if err != nil {
+		return fmt.Errorf("delete user %d: %w", id, err)
+	}
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("delete user %d: %w", id, err)
+	}
+	if rows == 0 {
+		return user.ErrNotFound
+	}
+	return nil
+}
+
 func (r *UserRepo) SaveRefreshToken(ctx context.Context, t *user.RefreshToken) error {
 	const q = `
 		INSERT INTO refresh_tokens (user_id, token_hash, expires_at, revoked, created_at)

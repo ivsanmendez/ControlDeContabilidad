@@ -109,6 +109,52 @@ func (r *fakeRepo) RevokeAllUserRefreshTokens(_ context.Context, userID int64) e
 	return nil
 }
 
+func (r *fakeRepo) FindAll(_ context.Context) ([]user.User, error) {
+	result := make([]user.User, 0, len(r.users))
+	for _, u := range r.users {
+		result = append(result, *u)
+	}
+	return result, nil
+}
+
+func (r *fakeRepo) UpdateRole(_ context.Context, id int64, role user.Role) error {
+	u, ok := r.users[id]
+	if !ok {
+		return user.ErrNotFound
+	}
+	u.Role = role
+	r.usersByEmail[u.Email].Role = role
+	return nil
+}
+
+func (r *fakeRepo) UpdatePasswordHash(_ context.Context, id int64, hash string) error {
+	u, ok := r.users[id]
+	if !ok {
+		return user.ErrNotFound
+	}
+	u.PasswordHash = hash
+	r.usersByEmail[u.Email].PasswordHash = hash
+	for _, t := range r.tokens {
+		if t.UserID == id {
+			t.Revoked = true
+			if byHash, exists := r.tokensByHash[t.TokenHash]; exists {
+				byHash.Revoked = true
+			}
+		}
+	}
+	return nil
+}
+
+func (r *fakeRepo) Delete(_ context.Context, id int64) error {
+	u, ok := r.users[id]
+	if !ok {
+		return user.ErrNotFound
+	}
+	delete(r.usersByEmail, u.Email)
+	delete(r.users, id)
+	return nil
+}
+
 // fakeHasher uses a simple prefix for deterministic testing.
 type fakeHasher struct{}
 
@@ -382,5 +428,80 @@ func TestGetUser_NotFound(t *testing.T) {
 	_, err := svc.GetUser(testCtx, 999)
 	if !errors.Is(err, user.ErrNotFound) {
 		t.Errorf("expected ErrNotFound, got %v", err)
+	}
+}
+
+func TestListUsers(t *testing.T) {
+	svc, _, _, _ := newTestService()
+	svc.Register(testCtx, "a@example.com", "password123", testAuditInfo)
+	svc.Register(testCtx, "b@example.com", "password456", testAuditInfo)
+
+	users, err := svc.ListUsers(testCtx)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(users) != 2 {
+		t.Errorf("expected 2 users, got %d", len(users))
+	}
+}
+
+func TestUpdateUserRole(t *testing.T) {
+	svc, _, _, _ := newTestService()
+	registered, _ := svc.Register(testCtx, "user@example.com", "password123", testAuditInfo)
+
+	updated, err := svc.UpdateUserRole(testCtx, registered.ID, user.RoleAdmin)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if updated.Role != user.RoleAdmin {
+		t.Errorf("role = %q, want %q", updated.Role, user.RoleAdmin)
+	}
+}
+
+func TestUpdateUserPassword_WeakPassword(t *testing.T) {
+	svc, _, _, _ := newTestService()
+	registered, _ := svc.Register(testCtx, "user@example.com", "password123", testAuditInfo)
+
+	err := svc.UpdateUserPassword(testCtx, registered.ID, registered.ID, "short")
+	if !errors.Is(err, user.ErrWeakPassword) {
+		t.Errorf("expected ErrWeakPassword, got %v", err)
+	}
+}
+
+func TestUpdateUserPassword_Success(t *testing.T) {
+	svc, repo, _, _ := newTestService()
+	registered, _ := svc.Register(testCtx, "user@example.com", "password123", testAuditInfo)
+
+	err := svc.UpdateUserPassword(testCtx, registered.ID, registered.ID, "newpassword")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	u := repo.users[registered.ID]
+	if u.PasswordHash != "hashed:newpassword" {
+		t.Errorf("password hash not updated, got %q", u.PasswordHash)
+	}
+}
+
+func TestDeleteUser_CannotDeleteSelf(t *testing.T) {
+	svc, _, _, _ := newTestService()
+	registered, _ := svc.Register(testCtx, "user@example.com", "password123", testAuditInfo)
+
+	err := svc.DeleteUser(testCtx, registered.ID, registered.ID)
+	if !errors.Is(err, user.ErrCannotDeleteSelf) {
+		t.Errorf("expected ErrCannotDeleteSelf, got %v", err)
+	}
+}
+
+func TestDeleteUser_Success(t *testing.T) {
+	svc, repo, _, _ := newTestService()
+	caller, _ := svc.Register(testCtx, "admin@example.com", "password123", testAuditInfo)
+	target, _ := svc.Register(testCtx, "user@example.com", "password456", testAuditInfo)
+
+	err := svc.DeleteUser(testCtx, caller.ID, target.ID)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if _, ok := repo.users[target.ID]; ok {
+		t.Error("expected user to be deleted from repo")
 	}
 }

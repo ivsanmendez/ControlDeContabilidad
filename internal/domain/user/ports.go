@@ -7,6 +7,10 @@ type Repository interface {
 	Save(ctx context.Context, u *User) error
 	FindByID(ctx context.Context, id int64) (*User, error)
 	FindByEmail(ctx context.Context, email string) (*User, error)
+	FindAll(ctx context.Context) ([]User, error)
+	UpdateRole(ctx context.Context, id int64, role Role) error
+	UpdatePasswordHash(ctx context.Context, id int64, hash string) error
+	Delete(ctx context.Context, id int64) error
 
 	SaveRefreshToken(ctx context.Context, t *RefreshToken) error
 	FindRefreshTokenByHash(ctx context.Context, hash string) (*RefreshToken, error)

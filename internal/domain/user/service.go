@@ -137,6 +137,69 @@ func (s *Service) GetUser(ctx context.Context, id int64) (*User, error) {
 	return s.repo.FindByID(ctx, id)
 }
 
+func (s *Service) CreateUser(ctx context.Context, email, password string, role Role) (*User, error) {
+	if err := ValidatePassword(password); err != nil {
+		return nil, err
+	}
+	hash, err := s.hasher.Hash(password)
+	if err != nil {
+		return nil, err
+	}
+	u, err := New(email, hash, role)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.repo.Save(ctx, u); err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
+func (s *Service) ListUsers(ctx context.Context) ([]User, error) {
+	return s.repo.FindAll(ctx)
+}
+
+func (s *Service) UpdateUserRole(ctx context.Context, id int64, role Role) (*User, error) {
+	if err := s.repo.UpdateRole(ctx, id, role); err != nil {
+		return nil, err
+	}
+	return s.repo.FindByID(ctx, id)
+}
+
+func (s *Service) UpdateUserPassword(ctx context.Context, callerID, id int64, newPassword string) error {
+	if err := ValidatePassword(newPassword); err != nil {
+		return err
+	}
+	hash, err := s.hasher.Hash(newPassword)
+	if err != nil {
+		return err
+	}
+	return s.repo.UpdatePasswordHash(ctx, id, hash)
+}
+
+func (s *Service) ListUsersForHouse(ctx context.Context, houseID int64) ([]User, error) {
+	return s.repo.FindUsersByHouseID(ctx, houseID)
+}
+
+func (s *Service) ListUserHouses(ctx context.Context, userID int64) ([]HouseAssignment, error) {
+	return s.repo.FindHousesByUserID(ctx, userID)
+}
+
+func (s *Service) AssignHouseToUser(ctx context.Context, userID, houseID int64) error {
+	return s.repo.AssignHouse(ctx, userID, houseID)
+}
+
+func (s *Service) UnassignHouseFromUser(ctx context.Context, userID, houseID int64) error {
+	return s.repo.UnassignHouse(ctx, userID, houseID)
+}
+
+func (s *Service) DeleteUser(ctx context.Context, callerID, id int64) error {
+	if callerID == id {
+		return ErrCannotDeleteSelf
+	}
+	return s.repo.Delete(ctx, id)
+}
+
 // logAudit fires-and-forgets an audit entry. Errors are logged but never returned.
 func (s *Service) logAudit(ctx context.Context, userID *int64, action AuditAction, info AuditInfo, metadata map[string]string) {
 	entry := NewAuditEntry(userID, action, info, metadata)

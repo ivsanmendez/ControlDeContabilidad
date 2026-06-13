@@ -33,7 +33,9 @@
     "back": "Back",
     "contributors": "Contributors",
     "noContributors": "This house has no contributors assigned",
-    "houseNumber": "House No."
+    "houseNumber": "House No.",
+    "users": "Users with access",
+    "noUsers": "No users have access to this house"
   },
   "assign": {
     "title": "Assign Contributor",

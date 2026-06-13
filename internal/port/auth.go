@@ -14,3 +14,16 @@ type AuthService interface {
 	Logout(ctx context.Context, rawRefresh string, audit user.AuditInfo) error
 	GetUser(ctx context.Context, id int64) (*user.User, error)
 }
+
+// UserAdminService is the driving port for user administration use cases.
+type UserAdminService interface {
+	CreateUser(ctx context.Context, email, password string, role user.Role) (*user.User, error)
+	ListUsers(ctx context.Context) ([]user.User, error)
+	UpdateUserRole(ctx context.Context, id int64, role user.Role) (*user.User, error)
+	UpdateUserPassword(ctx context.Context, callerID, id int64, newPassword string) error
+	DeleteUser(ctx context.Context, callerID, id int64) error
+	ListUsersForHouse(ctx context.Context, houseID int64) ([]user.User, error)
+	ListUserHouses(ctx context.Context, userID int64) ([]user.HouseAssignment, error)
+	AssignHouseToUser(ctx context.Context, userID, houseID int64) error
+	UnassignHouseFromUser(ctx context.Context, userID, houseID int64) error
+}

@@ -10,7 +10,7 @@ import (
 )
 
 // RegisterRoutes wires all HTTP routes onto the given mux.
-func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc port.AuthService, contribSvc port.ContributionService, contributorSvc port.ContributorService, categorySvc port.CategoryService, expCatSvc port.ExpenseCategoryService, receiptSvc port.ReceiptFolioService, reportSvc port.ReportService, houseSvc port.HouseService, accessControlSvc port.AccessControlService, vehicleSvc port.VehicleService, jwtIssuer *jwtadapter.Issuer, signer port.ReceiptSigner, tr *i18n.Translator) {
+func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc port.AuthService, contribSvc port.ContributionService, contributorSvc port.ContributorService, categorySvc port.CategoryService, expCatSvc port.ExpenseCategoryService, receiptSvc port.ReceiptFolioService, reportSvc port.ReportService, houseSvc port.HouseService, accessControlSvc port.AccessControlService, vehicleSvc port.VehicleService, userAdminSvc port.UserAdminService, jwtIssuer *jwtadapter.Issuer, signer port.ReceiptSigner, tr *i18n.Translator) {
 	auth := RequireAuth(jwtIssuer, tr)
 	expH := &ExpenseHandler{svc: expenseSvc, tr: tr}
 	authH := &AuthHandler{svc: authSvc, tr: tr}
@@ -23,6 +23,7 @@ func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc 
 	houseH := &HouseHandler{svc: houseSvc, tr: tr}
 	acH := &AccessControlHandler{svc: accessControlSvc, tr: tr}
 	vehicleH := &VehicleHandler{svc: vehicleSvc, tr: tr}
+	userAdminH := &UserAdminHandler{svc: userAdminSvc, tr: tr}
 
 	// Public routes
 	mux.HandleFunc("GET /health", Health)
@@ -262,5 +263,43 @@ func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc 
 	mux.Handle("DELETE /vehicles/{id}/access-controls/{control_id}", Chain(
 		http.HandlerFunc(vehicleH.UnassignAccessControl),
 		auth, RequirePermission(user.PermVehicleUpdate, tr),
+	))
+
+	// User admin routes
+	mux.Handle("POST /users", Chain(
+		http.HandlerFunc(userAdminH.Create),
+		auth, RequirePermission(user.PermUserCreate, tr),
+	))
+	mux.Handle("GET /users", Chain(
+		http.HandlerFunc(userAdminH.List),
+		auth, RequirePermission(user.PermUserList, tr),
+	))
+	mux.Handle("PATCH /users/{id}/role", Chain(
+		http.HandlerFunc(userAdminH.UpdateRole),
+		auth, RequirePermission(user.PermUserUpdateRole, tr),
+	))
+	mux.Handle("PUT /users/{id}/password", Chain(
+		http.HandlerFunc(userAdminH.UpdatePassword),
+		auth, RequirePermission(user.PermUserUpdatePassword, tr),
+	))
+	mux.Handle("DELETE /users/{id}", Chain(
+		http.HandlerFunc(userAdminH.Delete),
+		auth, RequirePermission(user.PermUserDelete, tr),
+	))
+	mux.Handle("GET /houses/{id}/users", Chain(
+		http.HandlerFunc(userAdminH.ListUsersForHouse),
+		auth, RequirePermission(user.PermUserList, tr),
+	))
+	mux.Handle("GET /users/{id}/houses", Chain(
+		http.HandlerFunc(userAdminH.ListHouses),
+		auth, RequirePermission(user.PermUserManageHouses, tr),
+	))
+	mux.Handle("POST /users/{id}/houses", Chain(
+		http.HandlerFunc(userAdminH.AssignHouse),
+		auth, RequirePermission(user.PermUserManageHouses, tr),
+	))
+	mux.Handle("DELETE /users/{id}/houses/{house_id}", Chain(
+		http.HandlerFunc(userAdminH.UnassignHouse),
+		auth, RequirePermission(user.PermUserManageHouses, tr),
 	))
 }

@@ -1,0 +1,67 @@
+{
+  "title": "User Administration",
+  "table": {
+    "email": "Email",
+    "role": "Role",
+    "createdAt": "Registered",
+    "actions": "Actions"
+  },
+  "roles": {
+    "admin": "Administrator",
+    "user": "User"
+  },
+  "changeRole": {
+    "title": "Change Role",
+    "label": "New role",
+    "submit": "Save",
+    "submitting": "Saving...",
+    "success": "Role updated — the user must log in again",
+    "error": "Could not change the role"
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "label": "New password",
+    "placeholder": "Minimum 8 characters",
+    "submit": "Save",
+    "submitting": "Saving...",
+    "success": "Password updated — all active sessions were closed",
+    "error": "Could not change the password"
+  },
+  "deleteUser": {
+    "title": "Delete User",
+    "confirm": "Delete the account of {{email}}? This action cannot be undone.",
+    "submit": "Delete",
+    "submitting": "Deleting...",
+    "success": "User deleted",
+    "error": "Could not delete the user"
+  },
+  "newUser": "New User",
+  "manageCasas": "Houses",
+  "houses": {
+    "title": "Houses assigned to {{email}}",
+    "noneAssigned": "No houses assigned",
+    "addLabel": "Add house",
+    "addPlaceholder": "Select a house",
+    "add": "Add",
+    "adding": "Adding...",
+    "remove": "Remove",
+    "errorLoad": "Could not load houses",
+    "errorAdd": "Could not assign the house",
+    "errorRemove": "Could not remove the house"
+  },
+  "createUser": {
+    "title": "Create User",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Minimum 8 characters",
+    "roleLabel": "Role",
+    "submit": "Create",
+    "submitting": "Creating...",
+    "success": "User created",
+    "error": "Could not create the user"
+  },
+  "empty": "No registered users",
+  "toast": {
+    "errorLoad": "Could not load users"
+  }
+}

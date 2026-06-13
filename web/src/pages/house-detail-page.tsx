@@ -3,7 +3,7 @@ import type { FormEvent } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, UserPlus, UserMinus, Plus, Pencil, Trash2, RefreshCw, Car, Video, VideoOff } from 'lucide-react'
+import { ArrowLeft, UserPlus, UserMinus, Plus, Pencil, Trash2, RefreshCw, Car, Video, VideoOff, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -37,6 +37,7 @@ import {
 } from '@/hooks/use-vehicles'
 import type { AccessControl, AccessControlStatus, Vehicle } from '@/types/house'
 import { useAuth } from '@/hooks/use-auth'
+import { useHouseUsers } from '@/hooks/use-user-admin'
 
 export function HouseDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -55,6 +56,7 @@ export function HouseDetailPage() {
   const { data: detail, isLoading, isError } = useHouse(houseID)
   const { data: accessControls } = useAccessControls(houseID)
   const { data: vehicles } = useVehicles(houseID)
+  const { data: houseUsers } = useHouseUsers(houseID)
 
   const unassign = useUnassignContributor()
   const deleteAC = useDeleteAccessControl()
@@ -224,6 +226,34 @@ export function HouseDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Users section — admin only */}
+      {isAdmin && (
+        <div className="flex flex-col gap-3">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-muted-foreground" />
+            {t('detail.users')}
+          </h2>
+          {(houseUsers ?? []).length === 0 ? (
+            <p className="text-muted-foreground text-sm py-2">{t('detail.noUsers')}</p>
+          ) : (
+            <div className="flex flex-col divide-y rounded-md border">
+              {(houseUsers ?? []).map((u) => (
+                <div key={u.id} className="flex items-center justify-between px-4 py-2.5">
+                  <span className="text-sm">{u.email}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                    u.role === 'admin'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-gray-100 text-gray-700'
+                  }`}>
+                    {u.role}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Access Controls section */}
       <div className="flex flex-col gap-3">

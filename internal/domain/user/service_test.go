@@ -155,6 +155,17 @@ func (r *fakeRepo) Delete(_ context.Context, id int64) error {
 	return nil
 }
 
+func (r *fakeRepo) FindHousesByUserID(_ context.Context, _ int64) ([]user.HouseAssignment, error) {
+	return nil, nil
+}
+
+func (r *fakeRepo) FindUsersByHouseID(_ context.Context, _ int64) ([]user.User, error) {
+	return nil, nil
+}
+
+func (r *fakeRepo) AssignHouse(_ context.Context, _, _ int64) error   { return nil }
+func (r *fakeRepo) UnassignHouse(_ context.Context, _, _ int64) error { return nil }
+
 // fakeHasher uses a simple prefix for deterministic testing.
 type fakeHasher struct{}
 

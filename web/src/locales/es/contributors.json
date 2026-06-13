@@ -13,6 +13,11 @@
     "house": "Casa",
     "selectHouse": "Selecciona una casa",
     "noHouse": "Sin casa asignada",
+    "cameraAccess": "Acceso a cámaras",
+    "cameraEmail": "Email de acceso a cámaras",
+    "cameraPhone": "Celular de acceso a cámaras",
+    "cameraEmailPlaceholder": "ej. propietario@email.com",
+    "cameraPhonePlaceholder": "ej. 5551234567",
     "submitCreate": "Crear contribuyente",
     "submitEdit": "Guardar cambios",
     "submittingCreate": "Creando...",
@@ -23,7 +28,8 @@
   "table": {
     "house": "Casa",
     "name": "Nombre",
-    "phone": "Teléfono"
+    "phone": "Teléfono",
+    "camera": "Cámaras"
   },
   "toast": {
     "created": "Contribuyente creado",

@@ -12,6 +12,9 @@ export type ContributorSummary = {
   Name: string
   HouseNumber: string
   Phone: string
+  CameraAccess: boolean
+  CameraEmail: string
+  CameraPhone: string
 }
 
 export type HouseDetail = House & {

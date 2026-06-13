@@ -13,6 +13,11 @@
     "house": "House",
     "selectHouse": "Select a house",
     "noHouse": "No house assigned",
+    "cameraAccess": "Camera access",
+    "cameraEmail": "Camera access email",
+    "cameraPhone": "Camera access phone",
+    "cameraEmailPlaceholder": "e.g. owner@email.com",
+    "cameraPhonePlaceholder": "e.g. 5551234567",
     "submitCreate": "Create contributor",
     "submitEdit": "Save changes",
     "submittingCreate": "Creating...",
@@ -23,7 +28,8 @@
   "table": {
     "house": "House",
     "name": "Name",
-    "phone": "Phone"
+    "phone": "Phone",
+    "camera": "Cameras"
   },
   "toast": {
     "created": "Contributor created",

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react'
+import { ArrowUp, ArrowDown, ArrowUpDown, Video, VideoOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -47,7 +47,13 @@ export function ContributorTable({ contributors, onEdit, onDelete }: Contributor
         {(sorted ?? []).map((c) => (
           <div key={c.ID} className="flex items-center justify-between py-3 gap-3">
             <div className="min-w-0">
-              <div className="font-medium">{c.HouseNumber} — {c.Name}</div>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">{c.HouseNumber} — {c.Name}</span>
+                {c.CameraAccess
+                  ? <span title={c.CameraEmail || c.CameraPhone}><Video className="h-3.5 w-3.5 text-primary shrink-0" /></span>
+                  : <VideoOff className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0" />
+                }
+              </div>
               <div className="text-sm text-muted-foreground">{c.Phone || '—'}</div>
             </div>
             <div className="flex gap-1 shrink-0">
@@ -81,6 +87,7 @@ export function ContributorTable({ contributors, onEdit, onDelete }: Contributor
               <TableHead className="cursor-pointer select-none" onClick={() => toggleSort('phone')}>
                 {t('table.phone')} <SortIcon columnKey="phone" sort={sort} />
               </TableHead>
+              <TableHead className="w-20 text-center">{t('table.camera')}</TableHead>
               <TableHead className="w-32" />
             </TableRow>
           </TableHeader>
@@ -90,6 +97,18 @@ export function ContributorTable({ contributors, onEdit, onDelete }: Contributor
                 <TableCell className="font-medium">{c.HouseNumber}</TableCell>
                 <TableCell>{c.Name}</TableCell>
                 <TableCell>{c.Phone || '—'}</TableCell>
+                <TableCell className="text-center">
+                  {c.CameraAccess ? (
+                    <span
+                      className="inline-flex"
+                      title={[c.CameraEmail, c.CameraPhone].filter(Boolean).join(' · ')}
+                    >
+                      <Video className="h-4 w-4 text-primary" />
+                    </span>
+                  ) : (
+                    <VideoOff className="h-4 w-4 text-muted-foreground/30" />
+                  )}
+                </TableCell>
                 <TableCell className="flex gap-1">
                   <Button variant="ghost" size="sm" onClick={() => onEdit(c)}>
                     {t('common:buttons.edit')}

@@ -17,17 +17,23 @@ type ContributorHandler struct {
 }
 
 type createContributorRequest struct {
-	HouseNumber string `json:"house_number"`
-	Name        string `json:"name"`
-	Phone       string `json:"phone"`
-	HouseID     *int64 `json:"house_id"`
+	HouseNumber  string `json:"house_number"`
+	Name         string `json:"name"`
+	Phone        string `json:"phone"`
+	HouseID      *int64 `json:"house_id"`
+	CameraAccess bool   `json:"camera_access"`
+	CameraEmail  string `json:"camera_email"`
+	CameraPhone  string `json:"camera_phone"`
 }
 
 type updateContributorRequest struct {
-	Name        string `json:"name"`
-	Phone       string `json:"phone"`
-	HouseNumber string `json:"house_number"`
-	HouseID     *int64 `json:"house_id"`
+	Name         string `json:"name"`
+	Phone        string `json:"phone"`
+	HouseNumber  string `json:"house_number"`
+	HouseID      *int64 `json:"house_id"`
+	CameraAccess bool   `json:"camera_access"`
+	CameraEmail  string `json:"camera_email"`
+	CameraPhone  string `json:"camera_phone"`
 }
 
 func (h *ContributorHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +49,7 @@ func (h *ContributorHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := h.svc.CreateContributor(r.Context(), claims.UserID, req.HouseNumber, req.Name, req.Phone, req.HouseID)
+	c, err := h.svc.CreateContributor(r.Context(), claims.UserID, req.HouseNumber, req.Name, req.Phone, req.HouseID, req.CameraAccess, req.CameraEmail, req.CameraPhone)
 	if err != nil {
 		if errors.Is(err, contributor.ErrDuplicate) {
 			writeError(w, http.StatusConflict, err.Error())
@@ -96,7 +102,7 @@ func (h *ContributorHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c, err := h.svc.UpdateContributor(r.Context(), id, req.HouseNumber, req.Name, req.Phone, req.HouseID)
+	c, err := h.svc.UpdateContributor(r.Context(), id, req.HouseNumber, req.Name, req.Phone, req.HouseID, req.CameraAccess, req.CameraEmail, req.CameraPhone)
 	if err != nil {
 		if errors.Is(err, contributor.ErrNotFound) {
 			writeErrorT(w, r, h.tr, http.StatusNotFound, "contributor_not_found")

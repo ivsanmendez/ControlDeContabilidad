@@ -88,7 +88,7 @@ func (r *HouseRepo) FindDetailedByID(ctx context.Context, id int64) (*house.Hous
 	}
 
 	const q = `
-		SELECT id, name, house_number, phone
+		SELECT id, name, house_number, phone, camera_access, camera_email, camera_phone
 		FROM contributors
 		WHERE house_id = $1
 		ORDER BY house_number`
@@ -102,7 +102,7 @@ func (r *HouseRepo) FindDetailedByID(ctx context.Context, id int64) (*house.Hous
 	var contributors []house.ContributorSummary
 	for rows.Next() {
 		var cs house.ContributorSummary
-		if err := rows.Scan(&cs.ID, &cs.Name, &cs.HouseNumber, &cs.Phone); err != nil {
+		if err := rows.Scan(&cs.ID, &cs.Name, &cs.HouseNumber, &cs.Phone, &cs.CameraAccess, &cs.CameraEmail, &cs.CameraPhone); err != nil {
 			return nil, fmt.Errorf("scan contributor summary: %w", err)
 		}
 		contributors = append(contributors, cs)

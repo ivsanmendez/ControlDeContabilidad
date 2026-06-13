@@ -14,8 +14,8 @@ func NewService(repo Repository) *Service {
 	return &Service{repo: repo}
 }
 
-func (s *Service) CreateContributor(ctx context.Context, callerID int64, houseNumber, name, phone string, houseID *int64) (*Contributor, error) {
-	c, err := New(callerID, houseNumber, name, phone, houseID)
+func (s *Service) CreateContributor(ctx context.Context, callerID int64, houseNumber, name, phone string, houseID *int64, cameraAccess bool, cameraEmail, cameraPhone string) (*Contributor, error) {
+	c, err := New(callerID, houseNumber, name, phone, houseID, cameraAccess, cameraEmail, cameraPhone)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func (s *Service) ListContributors(ctx context.Context) ([]Contributor, error) {
 	return s.repo.FindAll(ctx)
 }
 
-func (s *Service) UpdateContributor(ctx context.Context, id int64, houseNumber, name, phone string, houseID *int64) (*Contributor, error) {
+func (s *Service) UpdateContributor(ctx context.Context, id int64, houseNumber, name, phone string, houseID *int64, cameraAccess bool, cameraEmail, cameraPhone string) (*Contributor, error) {
 	c, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -49,6 +49,9 @@ func (s *Service) UpdateContributor(ctx context.Context, id int64, houseNumber, 
 	c.Name = name
 	c.Phone = phone
 	c.HouseID = houseID
+	c.CameraAccess = cameraAccess
+	c.CameraEmail = cameraEmail
+	c.CameraPhone = cameraPhone
 	c.UpdatedAt = time.Now()
 
 	if err := s.repo.Update(ctx, c); err != nil {

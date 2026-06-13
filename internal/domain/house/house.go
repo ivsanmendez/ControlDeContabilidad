@@ -24,10 +24,13 @@ type House struct {
 
 // ContributorSummary is a lightweight view of a contributor for house detail.
 type ContributorSummary struct {
-	ID          int64
-	Name        string
-	HouseNumber string
-	Phone       string
+	ID           int64
+	Name         string
+	HouseNumber  string
+	Phone        string
+	CameraAccess bool
+	CameraEmail  string
+	CameraPhone  string
 }
 
 // HouseDetail includes the contributors assigned to this house.

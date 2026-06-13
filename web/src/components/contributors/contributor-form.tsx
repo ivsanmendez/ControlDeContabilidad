@@ -46,6 +46,9 @@ export function ContributorForm({ contributor, onSuccess }: ContributorFormProps
 
   const [name, setName] = useState(contributor?.Name ?? '')
   const [phone, setPhone] = useState(contributor?.Phone ?? '')
+  const [cameraAccess, setCameraAccess] = useState(contributor?.CameraAccess ?? false)
+  const [cameraEmail, setCameraEmail] = useState(contributor?.CameraEmail ?? '')
+  const [cameraPhone, setCameraPhone] = useState(contributor?.CameraPhone ?? '')
   const [error, setError] = useState('')
 
   function findHouse(id: string): House | undefined {
@@ -62,11 +65,13 @@ export function ContributorForm({ contributor, onSuccess }: ContributorFormProps
         await updateContributor.mutateAsync({
           id: contributor!.ID,
           data: {
-            // house_number follows the house name; keep existing if no house selected
             house_number: house ? house.Name : contributor!.HouseNumber,
             name,
             phone,
             house_id: house ? house.ID : null,
+            camera_access: cameraAccess,
+            camera_email: cameraAccess ? cameraEmail : '',
+            camera_phone: cameraAccess ? cameraPhone : '',
           },
         })
       } else {
@@ -76,6 +81,9 @@ export function ContributorForm({ contributor, onSuccess }: ContributorFormProps
           name,
           phone,
           house_id: house.ID,
+          camera_access: cameraAccess,
+          camera_email: cameraAccess ? cameraEmail : '',
+          camera_phone: cameraAccess ? cameraPhone : '',
         })
       }
       onSuccess()
@@ -150,6 +158,44 @@ export function ContributorForm({ contributor, onSuccess }: ContributorFormProps
             onChange={(e) => setPhone(e.target.value)}
           />
         </div>
+
+        <div className="flex items-center gap-2 pt-1">
+          <input
+            id="camera-access"
+            type="checkbox"
+            className="h-4 w-4 accent-primary cursor-pointer"
+            checked={cameraAccess}
+            onChange={(e) => setCameraAccess(e.target.checked)}
+          />
+          <Label htmlFor="camera-access" className="cursor-pointer font-normal">
+            {t('form.cameraAccess')}
+          </Label>
+        </div>
+
+        {cameraAccess && (
+          <>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="camera-email">{t('form.cameraEmail')}</Label>
+              <Input
+                id="camera-email"
+                type="email"
+                value={cameraEmail}
+                onChange={(e) => setCameraEmail(e.target.value)}
+                placeholder={t('form.cameraEmailPlaceholder')}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="camera-phone">{t('form.cameraPhone')}</Label>
+              <Input
+                id="camera-phone"
+                type="tel"
+                value={cameraPhone}
+                onChange={(e) => setCameraPhone(e.target.value)}
+                placeholder={t('form.cameraPhonePlaceholder')}
+              />
+            </div>
+          </>
+        )}
 
         <Button type="submit" disabled={isPending || (!isEdit && !selectedHouseID)}>
           {isPending

@@ -3,7 +3,7 @@ import type { FormEvent } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, UserPlus, UserMinus, Plus, Pencil, Trash2, RefreshCw, Car } from 'lucide-react'
+import { ArrowLeft, UserPlus, UserMinus, Plus, Pencil, Trash2, RefreshCw, Car, Video, VideoOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -191,7 +191,20 @@ export function HouseDetailPage() {
             {contributors.map((c) => (
               <div key={c.ID} className="flex items-center justify-between px-4 py-3">
                 <div className="flex flex-col gap-0.5">
-                  <span className="font-medium">{c.Name}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{c.Name}</span>
+                    {c.CameraAccess ? (
+                      <span
+                        className="flex items-center gap-1 text-xs text-primary"
+                        title={[c.CameraEmail, c.CameraPhone].filter(Boolean).join(' · ')}
+                      >
+                        <Video className="h-3.5 w-3.5" />
+                        {c.CameraEmail || c.CameraPhone}
+                      </span>
+                    ) : (
+                      <VideoOff className="h-3.5 w-3.5 text-muted-foreground/30" />
+                    )}
+                  </div>
                   <span className="text-sm text-muted-foreground">
                     {t('detail.houseNumber')}: {c.HouseNumber}
                     {c.Phone ? ` · ${c.Phone}` : ''}

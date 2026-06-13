@@ -39,6 +39,85 @@ func (r *ReportRepo) AggregateExpensesByMonth(ctx context.Context, year int) ([]
 	return r.scanAggregates(ctx, q, year)
 }
 
+func (r *ReportRepo) GetHouseReport(ctx context.Context, houseID int64, year int) (*report.HouseReport, error) {
+	// Fetch house info
+	var rpt report.HouseReport
+	rpt.HouseID = houseID
+	rpt.Year = year
+
+	const houseQ = `SELECT name, COALESCE(address, '') FROM houses WHERE id = $1`
+	if err := r.db.QueryRowContext(ctx, houseQ, houseID).Scan(&rpt.HouseName, &rpt.HouseAddress); err != nil {
+		return nil, fmt.Errorf("get house for report: %w", err)
+	}
+
+	// Fetch contributors for the house
+	const ctQ = `
+		SELECT id, name, house_number, COALESCE(phone,''), camera_access
+		FROM contributors WHERE house_id = $1 ORDER BY house_number`
+	ctRows, err := r.db.QueryContext(ctx, ctQ, houseID)
+	if err != nil {
+		return nil, fmt.Errorf("get contributors for house report: %w", err)
+	}
+	defer ctRows.Close()
+
+	contributorIndex := map[int64]int{}
+	for ctRows.Next() {
+		var cr report.ContributorReport
+		if err := ctRows.Scan(&cr.ContributorID, &cr.Name, &cr.HouseNumber, &cr.Phone, &cr.CameraAccess); err != nil {
+			return nil, fmt.Errorf("scan contributor: %w", err)
+		}
+		contributorIndex[cr.ContributorID] = len(rpt.Contributors)
+		rpt.Contributors = append(rpt.Contributors, cr)
+	}
+	if err := ctRows.Err(); err != nil {
+		return nil, fmt.Errorf("get contributors for house report: %w", err)
+	}
+
+	// Fetch monthly payments per contributor for the given year
+	const payQ = `
+		SELECT c.contributor_id, EXTRACT(MONTH FROM c.payment_date)::int, SUM(c.amount)
+		FROM contributions c
+		JOIN contributors ct ON ct.id = c.contributor_id
+		WHERE ct.house_id = $1 AND EXTRACT(YEAR FROM c.payment_date)::int = $2
+		GROUP BY c.contributor_id, EXTRACT(MONTH FROM c.payment_date)
+		ORDER BY c.contributor_id, EXTRACT(MONTH FROM c.payment_date)`
+	payRows, err := r.db.QueryContext(ctx, payQ, houseID, year)
+	if err != nil {
+		return nil, fmt.Errorf("get payments for house report: %w", err)
+	}
+	defer payRows.Close()
+
+	monthTotals := make(map[int]float64)
+	for payRows.Next() {
+		var contributorID int64
+		var month int
+		var amount float64
+		if err := payRows.Scan(&contributorID, &month, &amount); err != nil {
+			return nil, fmt.Errorf("scan payment: %w", err)
+		}
+		if idx, ok := contributorIndex[contributorID]; ok {
+			rpt.Contributors[idx].Payments = append(rpt.Contributors[idx].Payments, report.ContributorMonthlyPayment{
+				Month:  month,
+				Amount: amount,
+			})
+			rpt.Contributors[idx].TotalPaid += amount
+		}
+		monthTotals[month] += amount
+		rpt.TotalIncome += amount
+	}
+	if err := payRows.Err(); err != nil {
+		return nil, fmt.Errorf("get payments for house report: %w", err)
+	}
+
+	// Build 12-month summary
+	rpt.Months = make([]report.HouseMonthSummary, 12)
+	for m := 1; m <= 12; m++ {
+		rpt.Months[m-1] = report.HouseMonthSummary{Month: m, Income: monthTotals[m]}
+	}
+
+	return &rpt, nil
+}
+
 func (r *ReportRepo) scanAggregates(ctx context.Context, query string, args ...any) ([]report.MonthAggregate, error) {
 	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {

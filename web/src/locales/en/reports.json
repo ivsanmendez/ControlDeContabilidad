@@ -15,5 +15,19 @@
   "toast": {
     "errorLoad": "Failed to load report"
   },
-  "empty": "No data for the selected year"
+  "empty": "No data for the selected year",
+  "house": {
+    "title": "House Report",
+    "year": "Year",
+    "contributors": "Contributors",
+    "noContributors": "No contributors assigned",
+    "noPayments": "No payments in this year",
+    "totalPaid": "Total paid",
+    "monthlyIncome": "Monthly income",
+    "cameraAccess": "Camera access",
+    "qrTitle": "Report QR code",
+    "qrDescription": "Scan to access this house report",
+    "back": "Back",
+    "total": "TOTAL"
+  }
 }

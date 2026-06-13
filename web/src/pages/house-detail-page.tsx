@@ -3,7 +3,7 @@ import type { FormEvent } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, UserPlus, UserMinus, Plus, Pencil, Trash2, RefreshCw, Car, Video, VideoOff, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, UserPlus, UserMinus, Plus, Pencil, Trash2, RefreshCw, Car, Video, VideoOff, ShieldCheck, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
@@ -162,6 +162,14 @@ export function HouseDetailPage() {
             <p className="text-sm text-muted-foreground mt-1">{detail.Notes}</p>
           )}
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate(`/houses/${houseID}/report`)}
+        >
+          <FileText className="h-4 w-4 mr-1" />
+          {t('detail.report')}
+        </Button>
       </div>
 
       {/* Contributors section */}

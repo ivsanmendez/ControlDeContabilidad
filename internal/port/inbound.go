@@ -66,6 +66,7 @@ type ReceiptFolioService interface {
 // ReportService is the driving port for report use cases.
 type ReportService interface {
 	GetMonthlyBalance(ctx context.Context, year int) (*report.MonthlyBalanceReport, error)
+	GetHouseReport(ctx context.Context, houseID int64, year int) (*report.HouseReport, error)
 }
 
 // HouseService is the driving port for house use cases.

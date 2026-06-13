@@ -15,5 +15,19 @@
   "toast": {
     "errorLoad": "Error al cargar el reporte"
   },
-  "empty": "No hay datos para el año seleccionado"
+  "empty": "No hay datos para el año seleccionado",
+  "house": {
+    "title": "Reporte de Casa",
+    "year": "Año",
+    "contributors": "Contribuyentes",
+    "noContributors": "Sin contribuyentes asignados",
+    "noPayments": "Sin pagos en este año",
+    "totalPaid": "Total pagado",
+    "monthlyIncome": "Ingresos mensuales",
+    "cameraAccess": "Acceso a cámaras",
+    "qrTitle": "Código QR del reporte",
+    "qrDescription": "Escanea para acceder al reporte de esta casa",
+    "back": "Regresar",
+    "total": "TOTAL"
+  }
 }

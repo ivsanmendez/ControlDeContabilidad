@@ -1,0 +1,184 @@
+import { useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { QRCodeSVG } from 'qrcode.react'
+import { ArrowLeft, Video } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useHouseReport } from '@/hooks/use-reports'
+import { getMonthLabel } from '@/lib/constants'
+
+function fmt(amount: number, lang: string) {
+  const locale = lang.startsWith('es') ? 'es-MX' : 'en-US'
+  return new Intl.NumberFormat(locale, { style: 'currency', currency: 'MXN' }).format(amount)
+}
+
+export function HouseReportPage() {
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const { t, i18n } = useTranslation('reports')
+  const houseID = parseInt(id ?? '0', 10)
+  const [year, setYear] = useState(() => new Date().getFullYear())
+
+  const { data: report, isLoading, isError } = useHouseReport(houseID, year)
+
+  // The QR points to the base report URL (no year) — one code per house.
+  const reportURL = `${window.location.origin}/houses/${houseID}/report`
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center py-20">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    )
+  }
+
+  if (isError || !report) {
+    return <p className="py-12 text-center text-destructive">{t('toast.errorLoad')}</p>
+  }
+
+  return (
+    <div className="mx-auto max-w-4xl p-6">
+      {/* Screen-only controls */}
+      <div className="flex items-center justify-between mb-6 print:hidden">
+        <Button variant="ghost" size="sm" onClick={() => navigate(`/houses/${houseID}`)}>
+          <ArrowLeft className="h-4 w-4 mr-1" />
+          {t('house.back')}
+        </Button>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Label htmlFor="report-year" className="text-sm">{t('house.year')}</Label>
+            <Input
+              id="report-year"
+              type="number"
+              value={year}
+              onChange={(e) => setYear(parseInt(e.target.value, 10) || new Date().getFullYear())}
+              className="w-24"
+            />
+          </div>
+          <Button variant="outline" onClick={() => window.print()}>
+            {t('common:buttons.print')}
+          </Button>
+        </div>
+      </div>
+
+      {/* Report header */}
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold">{report.house_name}</h1>
+          {report.house_address && (
+            <p className="text-muted-foreground mt-0.5">{report.house_address}</p>
+          )}
+          <p className="text-sm text-muted-foreground mt-1">{t('house.title')} — {report.year}</p>
+        </div>
+        {/* QR code — always visible, points to base URL */}
+        <div className="flex flex-col items-center gap-1 shrink-0">
+          <QRCodeSVG value={reportURL} size={80} />
+          <span className="text-xs text-muted-foreground text-center max-w-[90px]">
+            {t('house.qrDescription')}
+          </span>
+        </div>
+      </div>
+
+      {/* Contributors section */}
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-3">{t('house.contributors')}</h2>
+
+        {report.contributors.length === 0 ? (
+          <p className="text-muted-foreground text-sm">{t('house.noContributors')}</p>
+        ) : (
+          <div className="overflow-x-auto rounded-lg border">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b bg-muted/50">
+                  <th className="px-3 py-2 text-left font-medium">No.</th>
+                  <th className="px-3 py-2 text-left font-medium">Nombre</th>
+                  <th className="px-3 py-2 text-left font-medium print:hidden">Teléfono</th>
+                  <th className="px-3 py-2 text-left font-medium print:hidden">{t('house.cameraAccess')}</th>
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <th key={i + 1} className="px-2 py-2 text-right font-medium text-xs">
+                      {getMonthLabel(t, i + 1)}
+                    </th>
+                  ))}
+                  <th className="px-3 py-2 text-right font-medium">{t('house.totalPaid')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {report.contributors.map((c) => {
+                  const paymentMap = Object.fromEntries(
+                    (c.payments ?? []).map((p) => [p.month, p.amount])
+                  )
+                  return (
+                    <tr key={c.contributor_id} className="border-b last:border-b-0">
+                      <td className="px-3 py-2 text-muted-foreground">{c.house_number}</td>
+                      <td className="px-3 py-2 font-medium">{c.name}</td>
+                      <td className="px-3 py-2 text-muted-foreground print:hidden">{c.phone || '—'}</td>
+                      <td className="px-3 py-2 print:hidden">
+                        {c.camera_access
+                          ? <Video className="h-4 w-4 text-primary" />
+                          : <span className="text-muted-foreground/40">—</span>}
+                      </td>
+                      {Array.from({ length: 12 }, (_, i) => {
+                        const amt = paymentMap[i + 1]
+                        return (
+                          <td key={i + 1} className={`px-2 py-2 text-right text-xs ${amt ? '' : 'text-muted-foreground/30'}`}>
+                            {amt ? fmt(amt, i18n.language) : '—'}
+                          </td>
+                        )
+                      })}
+                      <td className="px-3 py-2 text-right font-semibold">
+                        {fmt(c.total_paid, i18n.language)}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {/* Monthly income summary */}
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-3">{t('house.monthlyIncome')}</h2>
+        <div className="overflow-x-auto rounded-lg border">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-muted/50">
+                <th className="px-3 py-2 text-left font-medium">{t('columns.month')}</th>
+                <th className="px-3 py-2 text-right font-medium">{t('columns.income')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b bg-muted/30 font-bold">
+                <td className="px-3 py-2">{t('house.total')}</td>
+                <td className="px-3 py-2 text-right">{fmt(report.total_income, i18n.language)}</td>
+              </tr>
+              {report.months.map((m) => (
+                <tr key={m.month} className="border-b last:border-b-0">
+                  <td className="px-3 py-2">{getMonthLabel(t, m.month)}</td>
+                  <td className={`px-3 py-2 text-right ${m.income === 0 ? 'text-muted-foreground/40' : ''}`}>
+                    {m.income > 0 ? fmt(m.income, i18n.language) : '—'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Print footer with QR */}
+      <div className="hidden print:flex print:items-center print:justify-between print:mt-8 print:pt-4 print:border-t">
+        <div className="text-xs text-muted-foreground">
+          <p>{report.house_name} — {report.year}</p>
+          <p>{reportURL}</p>
+        </div>
+        <div className="flex flex-col items-center gap-1">
+          <QRCodeSVG value={reportURL} size={64} />
+          <span className="text-xs">{t('house.qrTitle')}</span>
+        </div>
+      </div>
+    </div>
+  )
+}

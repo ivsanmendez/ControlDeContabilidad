@@ -25,6 +25,12 @@ type userAdminResponse struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type createUserRequest struct {
+	Email    string    `json:"email"`
+	Password string    `json:"password"`
+	Role     user.Role `json:"role"`
+}
+
 type updateRoleRequest struct {
 	Role user.Role `json:"role"`
 }
@@ -41,6 +47,32 @@ func toUserAdminResponse(u user.User) userAdminResponse {
 		CreatedAt: u.CreatedAt,
 		UpdatedAt: u.UpdatedAt,
 	}
+}
+
+func (h *UserAdminHandler) Create(w http.ResponseWriter, r *http.Request) {
+	var req createUserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_request_body")
+		return
+	}
+
+	if req.Role == "" {
+		req.Role = user.RoleUser
+	}
+
+	u, err := h.svc.CreateUser(r.Context(), req.Email, req.Password, req.Role)
+	if err != nil {
+		switch {
+		case errors.Is(err, user.ErrWeakPassword):
+			writeError(w, http.StatusUnprocessableEntity, err.Error())
+		case errors.Is(err, user.ErrEmailTaken):
+			writeErrorT(w, r, h.tr, http.StatusConflict, "email_taken")
+		default:
+			writeError(w, http.StatusUnprocessableEntity, err.Error())
+		}
+		return
+	}
+	writeJSON(w, http.StatusCreated, toUserAdminResponse(*u))
 }
 
 func (h *UserAdminHandler) List(w http.ResponseWriter, r *http.Request) {

@@ -35,6 +35,18 @@
     "success": "User deleted",
     "error": "Could not delete the user"
   },
+  "newUser": "New User",
+  "createUser": {
+    "title": "Create User",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Minimum 8 characters",
+    "roleLabel": "Role",
+    "submit": "Create",
+    "submitting": "Creating...",
+    "success": "User created",
+    "error": "Could not create the user"
+  },
   "empty": "No registered users",
   "toast": {
     "errorLoad": "Could not load users"

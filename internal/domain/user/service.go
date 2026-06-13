@@ -137,6 +137,24 @@ func (s *Service) GetUser(ctx context.Context, id int64) (*User, error) {
 	return s.repo.FindByID(ctx, id)
 }
 
+func (s *Service) CreateUser(ctx context.Context, email, password string, role Role) (*User, error) {
+	if err := ValidatePassword(password); err != nil {
+		return nil, err
+	}
+	hash, err := s.hasher.Hash(password)
+	if err != nil {
+		return nil, err
+	}
+	u, err := New(email, hash, role)
+	if err != nil {
+		return nil, err
+	}
+	if err := s.repo.Save(ctx, u); err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
 func (s *Service) ListUsers(ctx context.Context) ([]User, error) {
 	return s.repo.FindAll(ctx)
 }

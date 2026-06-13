@@ -266,6 +266,10 @@ func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc 
 	))
 
 	// User admin routes
+	mux.Handle("POST /users", Chain(
+		http.HandlerFunc(userAdminH.Create),
+		auth, RequirePermission(user.PermUserCreate, tr),
+	))
 	mux.Handle("GET /users", Chain(
 		http.HandlerFunc(userAdminH.List),
 		auth, RequirePermission(user.PermUserList, tr),

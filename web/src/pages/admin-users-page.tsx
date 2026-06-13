@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useUsers, useUpdateUserRole, useUpdateUserPassword, useDeleteUser } from '@/hooks/use-user-admin'
+import { useCreateUser, useUsers, useUpdateUserRole, useUpdateUserPassword, useDeleteUser } from '@/hooks/use-user-admin'
 import { useAuth } from '@/hooks/use-auth'
 import type { UserAdmin } from '@/types/user-admin'
 
@@ -27,6 +27,64 @@ function roleBadgeClass(role: UserAdmin['role']) {
   return role === 'admin'
     ? `${base} bg-green-100 text-green-800`
     : `${base} bg-gray-100 text-gray-700`
+}
+
+function CreateUserDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useTranslation('users')
+  const createUser = useCreateUser()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [role, setRole] = useState<'user' | 'admin'>('user')
+  const [error, setError] = useState('')
+
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault()
+    setError('')
+    createUser.mutate({ email, password, role }, {
+      onSuccess: () => {
+        toast.success(t('createUser.success'))
+        setEmail(''); setPassword(''); setRole('user')
+        onClose()
+      },
+      onError: (err) => setError((err as Error).message || t('createUser.error')),
+    })
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => { if (!o) onClose() }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t('createUser.title')}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 pt-2">
+          {error && <p className="text-sm text-destructive">{error}</p>}
+          <div className="flex flex-col gap-1.5">
+            <Label>{t('createUser.emailLabel')}</Label>
+            <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoFocus />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label>{t('createUser.passwordLabel')}</Label>
+            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('createUser.passwordPlaceholder')} required minLength={8} />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label>{t('createUser.roleLabel')}</Label>
+            <Select value={role} onValueChange={(v) => setRole(v as 'user' | 'admin')}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="user">{t('roles.user')}</SelectItem>
+                <SelectItem value="admin">{t('roles.admin')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex justify-end">
+            <Button type="submit" disabled={createUser.isPending}>
+              {createUser.isPending ? t('createUser.submitting') : t('createUser.submit')}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
 }
 
 function ChangeRoleDialog({
@@ -190,7 +248,7 @@ function DeleteUserDialog({
   )
 }
 
-type DialogType = 'role' | 'password' | 'delete'
+type DialogType = 'create' | 'role' | 'password' | 'delete'
 
 export function AdminUsersPage() {
   const { t } = useTranslation('users')
@@ -199,6 +257,11 @@ export function AdminUsersPage() {
 
   const [dialogTarget, setDialogTarget] = useState<UserAdmin | null>(null)
   const [dialogType, setDialogType] = useState<DialogType | null>(null)
+
+  function openCreate() {
+    setDialogTarget(null)
+    setDialogType('create')
+  }
 
   function openDialog(u: UserAdmin, type: DialogType) {
     setDialogTarget(u)
@@ -226,10 +289,16 @@ export function AdminUsersPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold">{t('title')}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">{t('title')}</h1>
+        <Button onClick={openCreate}>{t('newUser')}</Button>
+      </div>
 
       {items.length === 0 ? (
-        <p className="py-12 text-center text-muted-foreground">{t('empty')}</p>
+        <div className="py-12 text-center text-muted-foreground flex flex-col items-center gap-4">
+          <p>{t('empty')}</p>
+          <Button variant="outline" onClick={openCreate}>{t('newUser')}</Button>
+        </div>
       ) : (
         <div className="overflow-x-auto rounded-lg border">
           <table className="w-full text-sm">
@@ -284,6 +353,8 @@ export function AdminUsersPage() {
           </table>
         </div>
       )}
+
+      <CreateUserDialog open={dialogType === 'create'} onClose={closeDialog} />
 
       {dialogTarget && dialogType === 'role' && (
         <ChangeRoleDialog

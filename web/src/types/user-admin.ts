@@ -6,5 +6,6 @@ export type UserAdmin = {
   updated_at: string
 }
 
+export type CreateUserRequest = { email: string; password: string; role: 'user' | 'admin' }
 export type UpdateRoleRequest = { role: 'user' | 'admin' }
 export type UpdatePasswordRequest = { password: string }

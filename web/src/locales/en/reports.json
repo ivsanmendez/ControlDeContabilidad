@@ -28,6 +28,24 @@
     "qrTitle": "Report QR code",
     "qrDescription": "Scan to access this house report",
     "back": "Back",
-    "total": "TOTAL"
+    "total": "TOTAL",
+    "users": "Users with access",
+    "noUsers": "No users assigned",
+    "userEmail": "Email",
+    "userRole": "Role",
+    "accessControls": "Access Controls",
+    "noAccessControls": "No access controls",
+    "acCode": "Code",
+    "acAdminNumber": "Admin Number",
+    "acStatus": "Status",
+    "acPendingSync": "Pending sync",
+    "acSynced": "Synced",
+    "acNotes": "Notes",
+    "vehicles": "Vehicles",
+    "noVehicles": "No vehicles registered",
+    "vPlate": "Plate",
+    "vColor": "Color",
+    "vModel": "Make / Model",
+    "vControls": "Assigned controls"
   }
 }

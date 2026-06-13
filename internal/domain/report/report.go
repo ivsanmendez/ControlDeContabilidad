@@ -52,13 +52,40 @@ type HouseMonthSummary struct {
 	Income float64 `json:"income"`
 }
 
+// UserReportEntry is a user linked to the house via user_houses.
+type UserReportEntry struct {
+	Email string `json:"email"`
+	Role  string `json:"role"`
+}
+
+// AccessControlReportEntry is an access control assigned to the house.
+type AccessControlReportEntry struct {
+	Code             string  `json:"code"`
+	AdminNumber      string  `json:"admin_number"`
+	Status           string  `json:"status"`
+	PhysicalSyncedAt *string `json:"physical_synced_at"`
+	Notes            string  `json:"notes"`
+}
+
+// VehicleReportEntry is a vehicle registered to the house.
+type VehicleReportEntry struct {
+	Plate            string   `json:"plate"`
+	Color            string   `json:"color"`
+	Brand            string   `json:"brand"`
+	Model            string   `json:"model"`
+	AssignedControls []string `json:"assigned_controls"`
+}
+
 // HouseReport is the per-house yearly report.
 type HouseReport struct {
-	HouseID      int64               `json:"house_id"`
-	HouseName    string              `json:"house_name"`
-	HouseAddress string              `json:"house_address"`
-	Year         int                 `json:"year"`
-	Contributors []ContributorReport `json:"contributors"`
-	Months       []HouseMonthSummary `json:"months"`
-	TotalIncome  float64             `json:"total_income"`
+	HouseID        int64                      `json:"house_id"`
+	HouseName      string                     `json:"house_name"`
+	HouseAddress   string                     `json:"house_address"`
+	Year           int                        `json:"year"`
+	Users          []UserReportEntry          `json:"users"`
+	AccessControls []AccessControlReportEntry `json:"access_controls"`
+	Vehicles       []VehicleReportEntry       `json:"vehicles"`
+	Contributors   []ContributorReport        `json:"contributors"`
+	Months         []HouseMonthSummary        `json:"months"`
+	TotalIncome    float64                    `json:"total_income"`
 }

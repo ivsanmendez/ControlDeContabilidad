@@ -28,6 +28,24 @@
     "qrTitle": "Código QR del reporte",
     "qrDescription": "Escanea para acceder al reporte de esta casa",
     "back": "Regresar",
-    "total": "TOTAL"
+    "total": "TOTAL",
+    "users": "Usuarios con acceso",
+    "noUsers": "Sin usuarios asignados",
+    "userEmail": "Email",
+    "userRole": "Rol",
+    "accessControls": "Controles de Acceso",
+    "noAccessControls": "Sin controles de acceso",
+    "acCode": "Código",
+    "acAdminNumber": "No. Administrativo",
+    "acStatus": "Estado",
+    "acPendingSync": "Pendiente de sincronización",
+    "acSynced": "Sincronizado",
+    "acNotes": "Notas",
+    "vehicles": "Vehículos",
+    "noVehicles": "Sin vehículos registrados",
+    "vPlate": "Placa",
+    "vColor": "Color",
+    "vModel": "Marca / Modelo",
+    "vControls": "Controles asignados"
   }
 }

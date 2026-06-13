@@ -1,3 +1,24 @@
+export type UserReportEntry = {
+  email: string
+  role: string
+}
+
+export type AccessControlReportEntry = {
+  code: string
+  admin_number: string
+  status: 'active' | 'warning' | 'inactive'
+  physical_synced_at: string | null
+  notes: string
+}
+
+export type VehicleReportEntry = {
+  plate: string
+  color: string
+  brand: string
+  model: string
+  assigned_controls: string[]
+}
+
 export type ContributorMonthlyPayment = {
   month: number
   amount: number
@@ -23,6 +44,9 @@ export type HouseReport = {
   house_name: string
   house_address: string
   year: number
+  users: UserReportEntry[]
+  access_controls: AccessControlReportEntry[]
+  vehicles: VehicleReportEntry[]
   contributors: ContributorReport[]
   months: HouseMonthSummary[]
   total_income: number

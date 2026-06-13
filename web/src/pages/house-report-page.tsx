@@ -81,6 +81,116 @@ export function HouseReportPage() {
         </div>
       </div>
 
+      {/* Users section */}
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-3">{t('house.users')}</h2>
+        {(report.users ?? []).length === 0 ? (
+          <p className="text-muted-foreground text-sm">{t('house.noUsers')}</p>
+        ) : (
+          <div className="overflow-x-auto rounded-lg border">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b bg-muted/50">
+                  <th className="px-3 py-2 text-left font-medium">{t('house.userEmail')}</th>
+                  <th className="px-3 py-2 text-left font-medium">{t('house.userRole')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {report.users.map((u) => (
+                  <tr key={u.email} className="border-b last:border-b-0">
+                    <td className="px-3 py-2">{u.email}</td>
+                    <td className="px-3 py-2">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                        u.role === 'admin' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700'
+                      }`}>{u.role}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {/* Access Controls section */}
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-3">{t('house.accessControls')}</h2>
+        {(report.access_controls ?? []).length === 0 ? (
+          <p className="text-muted-foreground text-sm">{t('house.noAccessControls')}</p>
+        ) : (
+          <div className="overflow-x-auto rounded-lg border">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b bg-muted/50">
+                  <th className="px-3 py-2 text-left font-medium">{t('house.acCode')}</th>
+                  <th className="px-3 py-2 text-left font-medium">{t('house.acAdminNumber')}</th>
+                  <th className="px-3 py-2 text-left font-medium">{t('house.acStatus')}</th>
+                  <th className="px-3 py-2 text-left font-medium print:hidden">{t('house.acNotes')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {report.access_controls.map((ac, i) => (
+                  <tr key={i} className="border-b last:border-b-0">
+                    <td className="px-3 py-2 font-mono">{ac.code}</td>
+                    <td className="px-3 py-2">{ac.admin_number}</td>
+                    <td className="px-3 py-2">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                        ac.status === 'active' ? 'bg-green-100 text-green-700' :
+                        ac.status === 'warning' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-red-100 text-red-700'
+                      }`}>
+                        {ac.status}
+                      </span>
+                      {!ac.physical_synced_at && (
+                        <span className="ml-2 text-xs text-amber-600">{t('house.acPendingSync')}</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-muted-foreground print:hidden">{ac.notes || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      {/* Vehicles section */}
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-3">{t('house.vehicles')}</h2>
+        {(report.vehicles ?? []).length === 0 ? (
+          <p className="text-muted-foreground text-sm">{t('house.noVehicles')}</p>
+        ) : (
+          <div className="overflow-x-auto rounded-lg border">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b bg-muted/50">
+                  <th className="px-3 py-2 text-left font-medium">{t('house.vPlate')}</th>
+                  <th className="px-3 py-2 text-left font-medium">{t('house.vColor')}</th>
+                  <th className="px-3 py-2 text-left font-medium">{t('house.vModel')}</th>
+                  <th className="px-3 py-2 text-left font-medium">{t('house.vControls')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {report.vehicles.map((v, i) => (
+                  <tr key={i} className="border-b last:border-b-0">
+                    <td className="px-3 py-2 font-medium">{v.plate}</td>
+                    <td className="px-3 py-2">{v.color}</td>
+                    <td className="px-3 py-2 text-muted-foreground">
+                      {[v.brand, v.model].filter(Boolean).join(' ') || '—'}
+                    </td>
+                    <td className="px-3 py-2">
+                      {(v.assigned_controls ?? []).length > 0
+                        ? <span className="font-mono text-xs">{v.assigned_controls.join(', ')}</span>
+                        : <span className="text-muted-foreground/40">—</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
       {/* Contributors section */}
       <section className="mb-6">
         <h2 className="text-lg font-semibold mb-3">{t('house.contributors')}</h2>

@@ -37,6 +37,7 @@
 - Per-expense receipts with SAT digital signing (see below)
 - Vehicle access control system (#4, all phases) — AccessControls + Vehicles CRUD APIs, auto-evaluation service, pending-sync tracking (`physical_synced_at`), HouseDetailPage extended with Access Controls and Vehicles sections; migrations 017–019; PR #9 merged to main 2026-06-12
 - Camera access configuration per contributor (PR #10, merged 2026-06-13) — contributors carry `camera_access` (bool), `camera_email`, and `camera_phone` fields; contributor form shows email/phone fields conditionally when access is enabled; contributor table and house detail page display a camera icon indicator with the registered credentials
+- User administration CRUD page (#5, PR #11, merged 2026-06-13) — full admin page at `/admin/users`: list all users, create new users, change role, change password, and delete accounts; user-to-house assignment via `user_houses` many-to-many join table (migration 021); `GET /houses/{id}/users` endpoint surfaces assigned users on the house detail page; all operations gated by `PermUser*` admin-only permissions
 
 ## Previously Completed — Vehicle Access Control (#4, all phases)
 Full implementation of vehicle access control tied to houses: automatic evaluation, physical-device sync tracking, and a reworked house detail page.

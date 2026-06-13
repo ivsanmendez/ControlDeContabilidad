@@ -5,7 +5,9 @@ Feature #4 "Vehicle Access Control" (GitHub issue #4 — Control de Acceso Vehic
 
 Camera access configuration was added to contributors as a quick ad-hoc enhancement (PR #10, merged 2026-06-13): contributors now carry `camera_access`, `camera_email`, and `camera_phone` fields with conditional UI and a camera icon indicator in the contributor table and house detail page. No GitHub issue tracked.
 
-The project is in steady state — no active in-progress issues. Suggested next items from the backlog: #5 (User Admin CRUD), #6 (Filter contributors by house), #7 (House report), or #8 (Dynamic nav menu).
+Issue #5 "User Administration CRUD page" is complete. PR #11 merged into main on 2026-06-13. Delivered: full admin page at `/admin/users` (list, create, change role, change password, delete), user-to-house assignment via `user_houses` join table (migration 021), `GET /houses/{id}/users` on house detail page, all gated by `PermUser*` admin-only permissions.
+
+The project is in steady state — no active in-progress issues. Next candidates from the backlog: #6 (Filter contributors by house), #7 (House report), #8 (Dynamic nav menu).
 
 ## Recent Decisions
 - Hexagonal architecture (ports & adapters) for the Go backend
@@ -83,9 +85,10 @@ The project is in steady state — no active in-progress issues. Suggested next 
 - [x] English-only code identifiers enforced (ADR-05), `casa` → `house` rename complete
 - [x] House feature frontend wired (/houses routes, HousesPage, HouseDetailPage)
 - [x] Vehicle Access Control — all 4 phases implemented (AccessControl + Vehicle CRUD APIs, auto-evaluation service, pending-sync tracking, HouseDetailPage extended) — #4
+- [x] User Administration CRUD page — `/admin/users`, `user_houses` join table (migration 021), `GET /houses/{id}/users`, `PermUser*` gating — #5
 
 ## Next Actions
-- Pick next issue from backlog: #5 (User Admin CRUD), #6 (Filter contributors by house), #7 (House report), or #8 (Dynamic nav menu)
+- Pick next issue from backlog: #6 (Filter contributors by house), #7 (House report), or #8 (Dynamic nav menu)
 - Move chosen issue to "In Progress" on the Kanban board and create a feature branch
 
 ## Pending Improvements

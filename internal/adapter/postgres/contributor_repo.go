@@ -22,8 +22,8 @@ func NewContributorRepo(db *sql.DB) *ContributorRepo {
 
 func (r *ContributorRepo) Save(ctx context.Context, c *contributor.Contributor) error {
 	const q = `
-		INSERT INTO contributors (house_number, name, phone, user_id, house_id, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO contributors (house_number, name, phone, user_id, house_id, camera_access, camera_email, camera_phone, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 		RETURNING id`
 
 	err := r.db.QueryRowContext(ctx, q,
@@ -32,6 +32,9 @@ func (r *ContributorRepo) Save(ctx context.Context, c *contributor.Contributor) 
 		c.Phone,
 		c.UserID,
 		c.HouseID,
+		c.CameraAccess,
+		c.CameraEmail,
+		c.CameraPhone,
 		c.CreatedAt,
 		c.UpdatedAt,
 	).Scan(&c.ID)
@@ -47,7 +50,7 @@ func (r *ContributorRepo) Save(ctx context.Context, c *contributor.Contributor) 
 
 func (r *ContributorRepo) FindByID(ctx context.Context, id int64) (*contributor.Contributor, error) {
 	const q = `
-		SELECT id, house_number, name, phone, user_id, house_id, created_at, updated_at
+		SELECT id, house_number, name, phone, user_id, house_id, camera_access, camera_email, camera_phone, created_at, updated_at
 		FROM contributors
 		WHERE id = $1`
 
@@ -63,7 +66,7 @@ func (r *ContributorRepo) FindByID(ctx context.Context, id int64) (*contributor.
 
 func (r *ContributorRepo) FindAll(ctx context.Context) ([]contributor.Contributor, error) {
 	const q = `
-		SELECT id, house_number, name, phone, user_id, house_id, created_at, updated_at
+		SELECT id, house_number, name, phone, user_id, house_id, camera_access, camera_email, camera_phone, created_at, updated_at
 		FROM contributors
 		ORDER BY house_number`
 
@@ -72,10 +75,12 @@ func (r *ContributorRepo) FindAll(ctx context.Context) ([]contributor.Contributo
 
 func (r *ContributorRepo) Update(ctx context.Context, c *contributor.Contributor) error {
 	const q = `
-		UPDATE contributors SET house_number = $1, name = $2, phone = $3, house_id = $4, updated_at = $5
-		WHERE id = $6`
+		UPDATE contributors
+		SET house_number = $1, name = $2, phone = $3, house_id = $4,
+		    camera_access = $5, camera_email = $6, camera_phone = $7, updated_at = $8
+		WHERE id = $9`
 
-	result, err := r.db.ExecContext(ctx, q, c.HouseNumber, c.Name, c.Phone, c.HouseID, c.UpdatedAt, c.ID)
+	result, err := r.db.ExecContext(ctx, q, c.HouseNumber, c.Name, c.Phone, c.HouseID, c.CameraAccess, c.CameraEmail, c.CameraPhone, c.UpdatedAt, c.ID)
 	if err != nil {
 		return fmt.Errorf("update contributor %d: %w", c.ID, err)
 	}
@@ -119,6 +124,9 @@ func (r *ContributorRepo) scanOne(ctx context.Context, query string, args ...any
 		&c.Phone,
 		&c.UserID,
 		&c.HouseID,
+		&c.CameraAccess,
+		&c.CameraEmail,
+		&c.CameraPhone,
 		&c.CreatedAt,
 		&c.UpdatedAt,
 	)
@@ -145,6 +153,9 @@ func (r *ContributorRepo) scanMany(ctx context.Context, query string, args ...an
 			&c.Phone,
 			&c.UserID,
 			&c.HouseID,
+			&c.CameraAccess,
+			&c.CameraEmail,
+			&c.CameraPhone,
 			&c.CreatedAt,
 			&c.UpdatedAt,
 		); err != nil {

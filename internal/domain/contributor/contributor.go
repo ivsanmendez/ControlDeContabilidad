@@ -15,14 +15,17 @@ var (
 )
 
 type Contributor struct {
-	ID          int64
-	HouseNumber string
-	Name        string
-	Phone       string
-	UserID      int64
-	HouseID     *int64
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID           int64
+	HouseNumber  string
+	Name         string
+	Phone        string
+	UserID       int64
+	HouseID      *int64
+	CameraAccess bool
+	CameraEmail  string
+	CameraPhone  string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 // Repository is the outbound port for contributor persistence.
@@ -35,7 +38,7 @@ type Repository interface {
 }
 
 // New creates a Contributor enforcing domain invariants.
-func New(userID int64, houseNumber, name, phone string, houseID *int64) (*Contributor, error) {
+func New(userID int64, houseNumber, name, phone string, houseID *int64, cameraAccess bool, cameraEmail, cameraPhone string) (*Contributor, error) {
 	if userID <= 0 {
 		return nil, ErrInvalidUserID
 	}
@@ -48,12 +51,15 @@ func New(userID int64, houseNumber, name, phone string, houseID *int64) (*Contri
 
 	now := time.Now()
 	return &Contributor{
-		HouseNumber: houseNumber,
-		Name:        name,
-		Phone:       phone,
-		UserID:      userID,
-		HouseID:     houseID,
-		CreatedAt:   now,
-		UpdatedAt:   now,
+		HouseNumber:  houseNumber,
+		Name:         name,
+		Phone:        phone,
+		UserID:       userID,
+		HouseID:      houseID,
+		CameraAccess: cameraAccess,
+		CameraEmail:  cameraEmail,
+		CameraPhone:  cameraPhone,
+		CreatedAt:    now,
+		UpdatedAt:    now,
 	}, nil
 }

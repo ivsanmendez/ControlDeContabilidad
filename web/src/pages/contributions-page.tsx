@@ -203,6 +203,16 @@ export function ContributionsPage() {
       {filterHouseId && houseContributors.length > 0 && filterYear && (
         <div className="flex flex-wrap gap-2 items-center">
           <span className="text-sm text-muted-foreground">{t('viewReceipt')}:</span>
+          <Button
+            variant="default"
+            size="sm"
+            onClick={() => {
+              const params = new URLSearchParams({ house_id: filterHouseId, year: filterYear })
+              window.open(`/contributions/house-receipt?${params}`, '_blank')
+            }}
+          >
+            {t('filter.allContributors')}
+          </Button>
           {houseContributors.map((c) => (
             <Button
               key={c.id}

@@ -18,6 +18,7 @@ const HouseDetailPage = lazy(() => import('@/pages/house-detail-page').then(m =>
 const AccessControlsPage = lazy(() => import('@/pages/access-controls-page').then(m => ({ default: m.AccessControlsPage })))
 const HouseReportPage = lazy(() => import('@/pages/house-report-page').then(m => ({ default: m.HouseReportPage })))
 const VehicleHangTagPage = lazy(() => import('@/pages/vehicle-hangtag-page').then(m => ({ default: m.VehicleHangTagPage })))
+const HouseContributionsReceiptPage = lazy(() => import('@/pages/house-contributions-receipt-page').then(m => ({ default: m.HouseContributionsReceiptPage })))
 const AdminUsersPage = lazy(() => import('@/pages/admin-users-page').then(m => ({ default: m.AdminUsersPage })))
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
           <Route path="/admin/users" element={<AdminUsersPage />} />
         </Route>
         <Route path="/contributions/receipt" element={<ContributionReceiptPage />} />
+        <Route path="/contributions/house-receipt" element={<HouseContributionsReceiptPage />} />
         <Route path="/expenses/:id/receipt" element={<ExpenseReceiptPage />} />
       </Route>
       <Route path="/hangtag" element={<VehicleHangTagPage />} />

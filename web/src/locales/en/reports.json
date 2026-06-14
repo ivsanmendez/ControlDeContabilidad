@@ -47,6 +47,7 @@
     "vColor": "Color",
     "vModel": "Make / Model",
     "vControls": "Assigned controls",
-    "vHangTag": "Hang Tag"
+    "vHangTag": "Hang Tag",
+    "pickPosition": "Which slot to print on?"
   }
 }

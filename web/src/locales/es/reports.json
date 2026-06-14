@@ -47,6 +47,7 @@
     "vColor": "Color",
     "vModel": "Marca / Modelo",
     "vControls": "Controles asignados",
-    "vHangTag": "Marbete"
+    "vHangTag": "Marbete",
+    "pickPosition": "¿En qué posición imprimir?"
   }
 }

@@ -5,8 +5,53 @@ import { ArrowLeft, Video } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useHouseReport } from '@/hooks/use-reports'
 import { getMonthLabel } from '@/lib/constants'
+
+type HangTagTarget = { code: string; adminNumber: string }
+
+function PositionPickerDialog({
+  target,
+  houseID,
+  onClose,
+}: {
+  target: HangTagTarget
+  houseID: number
+  onClose: () => void
+}) {
+  const { t } = useTranslation('reports')
+
+  function openPrint(pos: number) {
+    const url = `/hangtag?code=${encodeURIComponent(target.code)}&admin=${encodeURIComponent(target.adminNumber)}&houseID=${houseID}&pos=${pos}`
+    window.open(url, '_blank', 'width=820,height=1160')
+    onClose()
+  }
+
+  return (
+    <Dialog open onOpenChange={(o) => { if (!o) onClose() }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t('house.pickPosition')}</DialogTitle>
+        </DialogHeader>
+        <p className="text-sm text-muted-foreground mb-3">
+          {target.adminNumber} — <span className="font-mono">{target.code}</span>
+        </p>
+        <div className="grid grid-cols-3 gap-2">
+          {Array.from({ length: 9 }, (_, i) => i + 1).map((pos) => (
+            <button
+              key={pos}
+              onClick={() => openPrint(pos)}
+              className="aspect-[7/9] border-2 border-border rounded-lg flex items-center justify-center text-3xl font-bold text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+            >
+              {pos}
+            </button>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 function fmt(amount: number, lang: string) {
   const locale = lang.startsWith('es') ? 'es-MX' : 'en-US'
@@ -19,6 +64,7 @@ export function HouseReportPage() {
   const { t, i18n } = useTranslation('reports')
   const houseID = parseInt(id ?? '0', 10)
   const [year, setYear] = useState(() => new Date().getFullYear())
+  const [hangTagTarget, setHangTagTarget] = useState<HangTagTarget | null>(null)
 
   const { data: report, isLoading, isError } = useHouseReport(houseID, year)
 
@@ -181,10 +227,7 @@ export function HouseReportPage() {
                             variant="outline"
                             size="sm"
                             className="text-xs h-7 mr-1"
-                            onClick={() => {
-                              const url = `/hangtag?code=${encodeURIComponent(ac.code)}&admin=${encodeURIComponent(ac.admin_number)}&houseID=${houseID}`
-                              window.open(url, '_blank', 'width=400,height=520')
-                            }}
+                            onClick={() => setHangTagTarget({ code: ac.code, adminNumber: ac.admin_number })}
                           >
                             {t('house.vHangTag')} {ac.code}
                           </Button>
@@ -285,6 +328,15 @@ export function HouseReportPage() {
           </table>
         </div>
       </section>
+
+      {/* Position picker dialog */}
+      {hangTagTarget && (
+        <PositionPickerDialog
+          target={hangTagTarget}
+          houseID={houseID}
+          onClose={() => setHangTagTarget(null)}
+        />
+      )}
 
       {/* Print footer — house name and year only, no QR */}
       <div className="hidden print:block print:mt-8 print:pt-4 print:border-t print:text-xs print:text-muted-foreground">

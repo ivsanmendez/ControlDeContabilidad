@@ -2,84 +2,91 @@ import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { QRCodeSVG } from 'qrcode.react'
 
+// A4: 21cm × 29.7cm — 3×3 grid → each cell 7cm × 9.9cm
+const CELL_W = '7cm'
+const CELL_H = '9.9cm'
+const QR_SIZE = '6.5cm'
+
+function HangTagContent({ adminNumber, code, qrURL }: { adminNumber: string; code: string; qrURL: string }) {
+  return (
+    <div style={{
+      width: CELL_W,
+      height: CELL_H,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0.2cm 0.25cm',
+      boxSizing: 'border-box',
+      border: '1px solid #000',
+    }}>
+      <div style={{ textAlign: 'center', paddingTop: '0.1cm' }}>
+        <div style={{ fontSize: '20pt', fontWeight: 'bold', lineHeight: 1.1, letterSpacing: '0.05em' }}>
+          {adminNumber}
+        </div>
+        <div style={{ fontSize: '10pt', color: '#555', marginTop: '0.1cm', fontFamily: 'monospace' }}>
+          {code}
+        </div>
+      </div>
+      <div style={{ width: QR_SIZE, height: QR_SIZE, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <QRCodeSVG value={qrURL} style={{ width: QR_SIZE, height: QR_SIZE }} />
+      </div>
+    </div>
+  )
+}
+
+function EmptyCell() {
+  return (
+    <div style={{
+      width: CELL_W,
+      height: CELL_H,
+      border: '1px dashed #ccc',
+      boxSizing: 'border-box',
+    }} />
+  )
+}
+
 export function VehicleHangTagPage() {
   const [params] = useSearchParams()
   const code = params.get('code') ?? ''
   const adminNumber = params.get('admin') ?? ''
   const houseID = params.get('houseID') ?? ''
+  const position = parseInt(params.get('pos') ?? '1', 10)
 
-  // URL the QR encodes — the house report page
-  const reportURL = `${window.location.origin}/houses/${houseID}/report`
+  const qrURL = `${window.location.origin}/houses/${houseID}/report`
 
-  // Auto-print when the page loads
   useEffect(() => {
     if (code && adminNumber) {
-      const timeout = setTimeout(() => window.print(), 300)
-      return () => clearTimeout(timeout)
+      const t = setTimeout(() => window.print(), 400)
+      return () => clearTimeout(t)
     }
   }, [code, adminNumber])
 
-  if (!code || !adminNumber) {
+  if (!code || !adminNumber || position < 1 || position > 9) {
     return <p style={{ padding: 16 }}>Parámetros inválidos</p>
   }
 
   return (
     <>
-      {/* Print page size */}
       <style>{`
-        @page { size: 7cm 9cm; margin: 0; }
-        body { margin: 0; padding: 0; background: white; }
+        @page { size: A4 portrait; margin: 0; }
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 0; background: white; font-family: sans-serif; }
       `}</style>
 
       <div style={{
-        width: '7cm',
-        height: '9cm',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0.3cm',
-        boxSizing: 'border-box',
-        fontFamily: 'sans-serif',
-        border: '1px solid #000',
+        width: '21cm',
+        height: '29.7cm',
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 7cm)',
+        gridTemplateRows: 'repeat(3, 9.9cm)',
       }}>
-        {/* Top: admin number and code */}
-        <div style={{
-          width: '100%',
-          textAlign: 'center',
-          paddingTop: '0.1cm',
-        }}>
-          <div style={{
-            fontSize: '18pt',
-            fontWeight: 'bold',
-            lineHeight: 1.2,
-            letterSpacing: '0.05em',
-          }}>
-            {adminNumber}
-          </div>
-          <div style={{
-            fontSize: '11pt',
-            color: '#555',
-            marginTop: '0.1cm',
-            fontFamily: 'monospace',
-          }}>
-            {code}
-          </div>
-        </div>
-
-        {/* Bottom: 6.5cm × 6.5cm QR */}
-        <div style={{
-          width: '6.5cm',
-          height: '6.5cm',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-          <QRCodeSVG
-            value={reportURL}
-            style={{ width: '6.5cm', height: '6.5cm' }}
-          />
-        </div>
+        {Array.from({ length: 9 }, (_, i) => {
+          const slot = i + 1
+          return slot === position
+            ? <HangTagContent key={slot} adminNumber={adminNumber} code={code} qrURL={qrURL} />
+            : <EmptyCell key={slot} />
+        })}
       </div>
     </>
   )

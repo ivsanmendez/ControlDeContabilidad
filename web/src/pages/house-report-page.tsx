@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { QRCodeSVG } from 'qrcode.react'
 import { ArrowLeft, Video } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,9 +21,6 @@ export function HouseReportPage() {
   const [year, setYear] = useState(() => new Date().getFullYear())
 
   const { data: report, isLoading, isError } = useHouseReport(houseID, year)
-
-  // The QR points to the base report URL (no year) — one code per house.
-  const reportURL = `${window.location.origin}/houses/${houseID}/report`
 
   if (isLoading) {
     return (
@@ -64,21 +60,12 @@ export function HouseReportPage() {
       </div>
 
       {/* Report header */}
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">{report.house_name}</h1>
-          {report.house_address && (
-            <p className="text-muted-foreground mt-0.5">{report.house_address}</p>
-          )}
-          <p className="text-sm text-muted-foreground mt-1">{t('house.title')} — {report.year}</p>
-        </div>
-        {/* QR code — always visible, points to base URL */}
-        <div className="flex flex-col items-center gap-1 shrink-0">
-          <QRCodeSVG value={reportURL} size={80} />
-          <span className="text-xs text-muted-foreground text-center max-w-[90px]">
-            {t('house.qrDescription')}
-          </span>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">{report.house_name}</h1>
+        {report.house_address && (
+          <p className="text-muted-foreground mt-0.5">{report.house_address}</p>
+        )}
+        <p className="text-sm text-muted-foreground mt-1">{t('house.title')} — {report.year}</p>
       </div>
 
       {/* Users section */}
@@ -168,6 +155,7 @@ export function HouseReportPage() {
                   <th className="px-3 py-2 text-left font-medium">{t('house.vColor')}</th>
                   <th className="px-3 py-2 text-left font-medium">{t('house.vModel')}</th>
                   <th className="px-3 py-2 text-left font-medium">{t('house.vControls')}</th>
+                  <th className="px-3 py-2 print:hidden" />
                 </tr>
               </thead>
               <tbody>
@@ -182,6 +170,26 @@ export function HouseReportPage() {
                       {(v.assigned_controls ?? []).length > 0
                         ? <span className="font-mono text-xs">{v.assigned_controls.join(', ')}</span>
                         : <span className="text-muted-foreground/40">—</span>}
+                    </td>
+                    <td className="px-3 py-2 print:hidden">
+                      {(v.assigned_controls ?? []).map((code) => {
+                        const ac = report.access_controls.find((a) => a.code === code)
+                        if (!ac) return null
+                        return (
+                          <Button
+                            key={code}
+                            variant="outline"
+                            size="sm"
+                            className="text-xs h-7 mr-1"
+                            onClick={() => {
+                              const url = `/hangtag?code=${encodeURIComponent(ac.code)}&admin=${encodeURIComponent(ac.admin_number)}&houseID=${houseID}`
+                              window.open(url, '_blank', 'width=400,height=520')
+                            }}
+                          >
+                            {t('house.marbete')} {ac.code}
+                          </Button>
+                        )
+                      })}
                     </td>
                   </tr>
                 ))}
@@ -278,16 +286,9 @@ export function HouseReportPage() {
         </div>
       </section>
 
-      {/* Print footer with QR */}
-      <div className="hidden print:flex print:items-center print:justify-between print:mt-8 print:pt-4 print:border-t">
-        <div className="text-xs text-muted-foreground">
-          <p>{report.house_name} — {report.year}</p>
-          <p>{reportURL}</p>
-        </div>
-        <div className="flex flex-col items-center gap-1">
-          <QRCodeSVG value={reportURL} size={64} />
-          <span className="text-xs">{t('house.qrTitle')}</span>
-        </div>
+      {/* Print footer — house name and year only, no QR */}
+      <div className="hidden print:block print:mt-8 print:pt-4 print:border-t print:text-xs print:text-muted-foreground">
+        {report.house_name} — {report.year}
       </div>
     </div>
   )

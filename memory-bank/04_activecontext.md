@@ -7,7 +7,9 @@ Camera access configuration was added to contributors as a quick ad-hoc enhancem
 
 Issue #5 "User Administration CRUD page" is complete. PR #11 merged into main on 2026-06-13. Delivered: full admin page at `/admin/users` (list, create, change role, change password, delete), user-to-house assignment via `user_houses` join table (migration 021), `GET /houses/{id}/users` on house detail page, all gated by `PermUser*` admin-only permissions.
 
-The project is in steady state — no active in-progress issues. Next candidates from the backlog: #6 (Filter contributors by house), #7 (House report), #8 (Dynamic nav menu).
+Issue #7 "House report page with QR code" is complete. PR #12 merged into main on 2026-06-14. Delivered: report page at `/houses/:id/report` showing all house data (users, access controls, vehicles, contributors with monthly payment history, yearly income summary), static QR code per house, and a vehicle hang tag generator with a position picker dialog (3x3 grid, slots 1-9) that opens an A4 print page with only the selected slot filled (reference image: `docs/hangtag-slot-order-A4.jpeg`).
+
+The project is in steady state — no active in-progress issues. Next candidates from the backlog: #6 (Filter contributors by house) and #8 (Dynamic nav menu).
 
 ## Recent Decisions
 - Hexagonal architecture (ports & adapters) for the Go backend
@@ -86,9 +88,10 @@ The project is in steady state — no active in-progress issues. Next candidates
 - [x] House feature frontend wired (/houses routes, HousesPage, HouseDetailPage)
 - [x] Vehicle Access Control — all 4 phases implemented (AccessControl + Vehicle CRUD APIs, auto-evaluation service, pending-sync tracking, HouseDetailPage extended) — #4
 - [x] User Administration CRUD page — `/admin/users`, `user_houses` join table (migration 021), `GET /houses/{id}/users`, `PermUser*` gating — #5
+- [x] House report page — `/houses/:id/report`, static QR code, contributors with monthly payment history, yearly income summary, vehicle hang tag generator with slot position picker — #7 (PR #12, merged 2026-06-14)
 
 ## Next Actions
-- Pick next issue from backlog: #6 (Filter contributors by house), #7 (House report), or #8 (Dynamic nav menu)
+- Pick next issue from backlog: #6 (Filter contributors by house) or #8 (Dynamic nav menu)
 - Move chosen issue to "In Progress" on the Kanban board and create a feature branch
 
 ## Pending Improvements

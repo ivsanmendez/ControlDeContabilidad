@@ -25,7 +25,6 @@
 
 ### Backlog
 - #6 feat: Filter contributors by house on contributors page [`backend`, `frontend`] — adds a house filter dropdown to `/contributors` + `GET /contributors?house_id={id}` API query param.
-- #7 feat: House report page with shareable QR access link [`backend`, `frontend`, `domain`] — depends on #6. Generates a detailed report page per house (contributors, contributions, balance) with a printable QR code that links to the protected URL `/houses/{id}/report`.
 - #8 feat: Dynamic nested navigation menu with admin CRUD management [`backend`, `frontend`, `domain`] — replaces the hardcoded flat nav in `header.tsx` with a DB-backed tree (`menu_items` table, self-referencing FK), adds `GET /menu-items/tree` API, and an admin CRUD page at `/admin/menu`.
 - Implement AI agent driving adapter [`agentic`, `backend`]
 - Replace in-memory event bus with persistent broker [`agentic`, `infrastructure`]
@@ -51,3 +50,4 @@ _(none)_
 - #4 (old) Build React expense management UI [`frontend`] — full CRUD (list, create, edit, delete) with i18n, edit dialog, Pencil icon per row
 - #4 Feature: Control de Acceso Vehicular por Casa [`backend`, `frontend`, `domain`] — all 4 phases merged to main via PR #9 (2026-06-12). AccessControls + Vehicles CRUD, auto-evaluation service, pending-sync tracking, HouseDetailPage extensions, migrations 017–019.
 - #5 feat: User Administration CRUD page [`backend`, `frontend`, `domain`] — merged via PR #11 (2026-06-13). Full admin page at `/admin/users`: list users, create, change role, change password, delete; user-to-house assignment via `user_houses` join table (migration 021); `GET /houses/{id}/users` on house detail page; all gated by `PermUser*` permissions.
+- #7 feat: House report page with QR code [`backend`, `frontend`] — merged via PR #12 (2026-06-14). Report page at `/houses/:id/report` showing all house data (users, access controls, vehicles, contributors with monthly payment history, yearly income summary). Static QR code per house. Vehicle hang tag generator with position picker dialog (3×3 grid, slots 1–9) opening an A4 print page with only the selected slot filled; reference image at `docs/hangtag-slot-order-A4.jpeg`.

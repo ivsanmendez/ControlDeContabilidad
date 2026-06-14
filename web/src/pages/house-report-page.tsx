@@ -186,7 +186,7 @@ export function HouseReportPage() {
                               window.open(url, '_blank', 'width=400,height=520')
                             }}
                           >
-                            {t('house.marbete')} {ac.code}
+                            {t('house.vHangTag')} {ac.code}
                           </Button>
                         )
                       })}

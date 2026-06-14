@@ -47,6 +47,6 @@
     "vColor": "Color",
     "vModel": "Make / Model",
     "vControls": "Assigned controls",
-    "marbete": "Hang Tag"
+    "vHangTag": "Hang Tag"
   }
 }

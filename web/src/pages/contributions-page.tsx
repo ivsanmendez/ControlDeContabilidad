@@ -64,10 +64,6 @@ export function ContributionsPage() {
   }
 
   function handleViewReceipt() {
-    if (filterHouseId) {
-      window.open(`/houses/${filterHouseId}/report`, '_blank')
-      return
-    }
     if (!filterContributorId || !filterYear) {
       toast.error(t('filter.selectContributorAndYear'))
       return
@@ -75,6 +71,18 @@ export function ContributionsPage() {
     const params = new URLSearchParams({ contributor_id: filterContributorId, year: filterYear })
     window.open(`/contributions/receipt?${params}`, '_blank')
   }
+
+  // Unique contributors visible in current house-filtered results
+  const houseContributors = filterHouseId
+    ? Array.from(
+        new Map(
+          (filteredContributions ?? []).map((c) => [
+            c.ContributorID,
+            { id: c.ContributorID, name: c.ContributorName, houseNumber: c.HouseNumber },
+          ])
+        ).values()
+      ).sort((a, b) => a.houseNumber.localeCompare(b.houseNumber))
+    : []
 
   if (isLoading) {
     return (
@@ -190,6 +198,26 @@ export function ContributionsPage() {
           </Button>
         )}
       </div>
+
+      {/* Per-contributor receipt buttons when house filter is active */}
+      {filterHouseId && houseContributors.length > 0 && filterYear && (
+        <div className="flex flex-wrap gap-2 items-center">
+          <span className="text-sm text-muted-foreground">{t('viewReceipt')}:</span>
+          {houseContributors.map((c) => (
+            <Button
+              key={c.id}
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const params = new URLSearchParams({ contributor_id: String(c.id), year: filterYear })
+                window.open(`/contributions/receipt?${params}`, '_blank')
+              }}
+            >
+              {c.houseNumber} — {c.name}
+            </Button>
+          ))}
+        </div>
+      )}
 
       {!filteredContributions || filteredContributions.length === 0 ? (
         <ContributionEmpty onAdd={() => setDialogOpen(true)} />

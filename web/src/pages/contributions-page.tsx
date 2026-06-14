@@ -64,6 +64,10 @@ export function ContributionsPage() {
   }
 
   function handleViewReceipt() {
+    if (filterHouseId) {
+      window.open(`/houses/${filterHouseId}/report`, '_blank')
+      return
+    }
     if (!filterContributorId || !filterYear) {
       toast.error(t('filter.selectContributorAndYear'))
       return

@@ -2,10 +2,12 @@ import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { QRCodeSVG } from 'qrcode.react'
 
-// A4: 21cm × 29.7cm — 3×3 grid → each cell 7cm × 9.9cm
+// A4: 21cm × 29.7cm — 3×3 grid → each cell 7cm × 9.3cm
+// Row height reduced from 9.9cm to 9.3cm (total 27.9cm) so browsers
+// with enforced minimum margins (~0.5–1cm) don't clip the bottom row.
 const CELL_W = '7cm'
-const CELL_H = '9.9cm'
-const QR_SIZE = '6.5cm'
+const CELL_H = '9.3cm'
+const QR_SIZE = '6.2cm'
 
 function HangTagContent({ adminNumber, code, qrURL }: { adminNumber: string; code: string; qrURL: string }) {
   return (
@@ -79,7 +81,7 @@ export function VehicleHangTagPage() {
         height: '29.7cm',
         display: 'grid',
         gridTemplateColumns: 'repeat(3, 7cm)',
-        gridTemplateRows: 'repeat(3, 9.9cm)',
+        gridTemplateRows: 'repeat(3, 9.3cm)',
       }}>
         {Array.from({ length: 9 }, (_, i) => {
           const slot = i + 1

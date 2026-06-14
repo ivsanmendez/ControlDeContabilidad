@@ -62,7 +62,17 @@ func (h *ContributorHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ContributorHandler) List(w http.ResponseWriter, r *http.Request) {
-	contributors, err := h.svc.ListContributors(r.Context())
+	var houseID *int64
+	if raw := r.URL.Query().Get("house_id"); raw != "" {
+		id, err := strconv.ParseInt(raw, 10, 64)
+		if err != nil {
+			writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
+			return
+		}
+		houseID = &id
+	}
+
+	contributors, err := h.svc.ListContributors(r.Context(), houseID)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return

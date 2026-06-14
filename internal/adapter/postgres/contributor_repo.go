@@ -64,13 +64,14 @@ func (r *ContributorRepo) FindByID(ctx context.Context, id int64) (*contributor.
 	return c, nil
 }
 
-func (r *ContributorRepo) FindAll(ctx context.Context) ([]contributor.Contributor, error) {
+func (r *ContributorRepo) FindAll(ctx context.Context, houseID *int64) ([]contributor.Contributor, error) {
 	const q = `
 		SELECT id, house_number, name, phone, user_id, house_id, camera_access, camera_email, camera_phone, created_at, updated_at
 		FROM contributors
+		WHERE ($1::bigint IS NULL OR house_id = $1)
 		ORDER BY house_number`
 
-	return r.scanMany(ctx, q)
+	return r.scanMany(ctx, q, houseID)
 }
 
 func (r *ContributorRepo) Update(ctx context.Context, c *contributor.Contributor) error {

@@ -191,6 +191,11 @@ func (r *ContributionRepo) FindDetailedByContributorAndYear(ctx context.Context,
 	return r.scanDetails(ctx, q, contributorID, year)
 }
 
+func (r *ContributionRepo) FindDetailedByHouse(ctx context.Context, houseID int64) ([]contribution.ContributionDetail, error) {
+	q := detailSelect + ` WHERE ct.house_id = $1 ORDER BY c.year DESC, c.month DESC, ct.house_number`
+	return r.scanDetails(ctx, q, houseID)
+}
+
 // --- Scanners ---
 
 func (r *ContributionRepo) scanOne(ctx context.Context, query string, args ...any) (*contribution.Contribution, error) {

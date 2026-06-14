@@ -25,6 +25,11 @@
     "errorCreate": "No se pudo crear el contribuyente",
     "errorUpdate": "No se pudo actualizar el contribuyente"
   },
+  "filter": {
+    "byHouse": "Filtrar por casa",
+    "allHouses": "Todas las casas",
+    "clear": "Limpiar"
+  },
   "table": {
     "house": "Casa",
     "name": "Nombre",

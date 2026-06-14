@@ -11,7 +11,9 @@
     "month": "Mes",
     "allMonths": "Todos los meses",
     "selectContributor": "Selecciona un contribuyente",
-    "selectContributorAndYear": "Selecciona un contribuyente y año para ver el recibo"
+    "selectContributorAndYear": "Selecciona un contribuyente y año para ver el recibo",
+    "house": "Casa",
+    "allHouses": "Todas las casas"
   },
   "form": {
     "title": "Nueva Contribución",

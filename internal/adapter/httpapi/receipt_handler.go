@@ -98,7 +98,7 @@ func (h *ReceiptHandler) ReceiptSignature(w http.ResponseWriter, r *http.Request
 	}
 
 	// Fetch contributions for that year
-	contributions, err := h.contribSvc.ListContributions(r.Context(), req.ContributorID, req.Year)
+	contributions, err := h.contribSvc.ListContributions(r.Context(), req.ContributorID, req.Year, nil)
 	if err != nil {
 		writeErrorT(w, r, h.tr, http.StatusInternalServerError, "failed_to_load_contributions")
 		return

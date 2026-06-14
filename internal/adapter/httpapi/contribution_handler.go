@@ -92,7 +92,17 @@ func (h *ContributionHandler) List(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	contributions, err := h.svc.ListContributions(r.Context(), contributorID, year)
+	var houseID *int64
+	if raw := r.URL.Query().Get("house_id"); raw != "" {
+		id, err := strconv.ParseInt(raw, 10, 64)
+		if err != nil {
+			writeErrorT(w, r, h.tr, http.StatusBadRequest, "invalid_id")
+			return
+		}
+		houseID = &id
+	}
+
+	contributions, err := h.svc.ListContributions(r.Context(), contributorID, year, houseID)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, err.Error())
 		return

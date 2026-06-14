@@ -29,8 +29,8 @@ func (s *Service) GetContributor(ctx context.Context, id int64) (*Contributor, e
 	return s.repo.FindByID(ctx, id)
 }
 
-func (s *Service) ListContributors(ctx context.Context) ([]Contributor, error) {
-	return s.repo.FindAll(ctx)
+func (s *Service) ListContributors(ctx context.Context, houseID *int64) ([]Contributor, error) {
+	return s.repo.FindAll(ctx, houseID)
 }
 
 func (s *Service) UpdateContributor(ctx context.Context, id int64, houseNumber, name, phone string, houseID *int64, cameraAccess bool, cameraEmail, cameraPhone string) (*Contributor, error) {

@@ -32,7 +32,7 @@ type ExpenseService interface {
 type ContributorService interface {
 	CreateContributor(ctx context.Context, callerID int64, houseNumber, name, phone string, houseID *int64, cameraAccess bool, cameraEmail, cameraPhone string) (*contributor.Contributor, error)
 	GetContributor(ctx context.Context, id int64) (*contributor.Contributor, error)
-	ListContributors(ctx context.Context) ([]contributor.Contributor, error)
+	ListContributors(ctx context.Context, houseID *int64) ([]contributor.Contributor, error)
 	UpdateContributor(ctx context.Context, id int64, houseNumber, name, phone string, houseID *int64, cameraAccess bool, cameraEmail, cameraPhone string) (*contributor.Contributor, error)
 	DeleteContributor(ctx context.Context, id int64) error
 }

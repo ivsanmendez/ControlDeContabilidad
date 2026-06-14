@@ -32,7 +32,7 @@ type Contributor struct {
 type Repository interface {
 	Save(ctx context.Context, c *Contributor) error
 	FindByID(ctx context.Context, id int64) (*Contributor, error)
-	FindAll(ctx context.Context) ([]Contributor, error)
+	FindAll(ctx context.Context, houseID *int64) ([]Contributor, error)
 	Update(ctx context.Context, c *Contributor) error
 	Delete(ctx context.Context, id int64) error
 }

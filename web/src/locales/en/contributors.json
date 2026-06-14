@@ -25,6 +25,11 @@
     "errorCreate": "Failed to create contributor",
     "errorUpdate": "Failed to update contributor"
   },
+  "filter": {
+    "byHouse": "Filter by house",
+    "allHouses": "All houses",
+    "clear": "Clear"
+  },
   "table": {
     "house": "House",
     "name": "Name",

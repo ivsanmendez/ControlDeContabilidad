@@ -6,10 +6,11 @@ import type {
   UpdateContributorRequest,
 } from '@/types/contributor'
 
-export function useContributors() {
+export function useContributors(houseID?: number) {
+  const url = houseID ? `/contributors?house_id=${houseID}` : '/contributors'
   return useQuery<Contributor[]>({
-    queryKey: ['contributors'],
-    queryFn: () => apiFetch<Contributor[]>('/contributors'),
+    queryKey: ['contributors', houseID ?? null],
+    queryFn: () => apiFetch<Contributor[]>(url),
   })
 }
 

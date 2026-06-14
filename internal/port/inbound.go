@@ -41,7 +41,7 @@ type ContributorService interface {
 type ContributionService interface {
 	CreateContribution(ctx context.Context, callerID int64, contributorID int64, categoryID int64, amount float64, month, year int, paymentDate time.Time, paymentMethod contribution.PaymentMethod) (*contribution.Contribution, error)
 	GetContribution(ctx context.Context, id int64) (*contribution.ContributionDetail, error)
-	ListContributions(ctx context.Context, contributorID int64, year int) ([]contribution.ContributionDetail, error)
+	ListContributions(ctx context.Context, contributorID int64, year int, houseID *int64) ([]contribution.ContributionDetail, error)
 	UpdateContribution(ctx context.Context, id int64, contributorID int64, categoryID int64, amount float64, month, year int, paymentDate time.Time, paymentMethod contribution.PaymentMethod) (*contribution.Contribution, error)
 	DeleteContribution(ctx context.Context, id int64) error
 }

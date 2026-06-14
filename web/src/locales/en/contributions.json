@@ -11,7 +11,9 @@
     "month": "Month",
     "allMonths": "All months",
     "selectContributor": "Select a contributor",
-    "selectContributorAndYear": "Select a contributor and year to view receipt"
+    "selectContributorAndYear": "Select a contributor and year to view receipt",
+    "house": "House",
+    "allHouses": "All houses"
   },
   "form": {
     "title": "New Contribution",

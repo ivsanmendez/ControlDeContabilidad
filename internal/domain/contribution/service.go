@@ -18,6 +18,7 @@ type Repository interface {
 	FindDetailedByID(ctx context.Context, id int64) (*ContributionDetail, error)
 	FindAllDetailed(ctx context.Context) ([]ContributionDetail, error)
 	FindDetailedByContributorAndYear(ctx context.Context, contributorID int64, year int) ([]ContributionDetail, error)
+	FindDetailedByHouse(ctx context.Context, houseID int64) ([]ContributionDetail, error)
 }
 
 // Service orchestrates contribution use cases.
@@ -54,7 +55,10 @@ func (s *Service) GetContribution(ctx context.Context, id int64) (*ContributionD
 	return s.repo.FindDetailedByID(ctx, id)
 }
 
-func (s *Service) ListContributions(ctx context.Context, contributorID int64, year int) ([]ContributionDetail, error) {
+func (s *Service) ListContributions(ctx context.Context, contributorID int64, year int, houseID *int64) ([]ContributionDetail, error) {
+	if houseID != nil {
+		return s.repo.FindDetailedByHouse(ctx, *houseID)
+	}
 	if contributorID > 0 && year > 0 {
 		return s.repo.FindDetailedByContributorAndYear(ctx, contributorID, year)
 	}

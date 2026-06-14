@@ -28,6 +28,10 @@ func (r *fakeRepo) AggregateExpensesByMonth(_ context.Context, _ int) ([]report.
 	return r.expenses, nil
 }
 
+func (r *fakeRepo) GetHouseReport(_ context.Context, _ int64, _ int) (*report.HouseReport, error) {
+	return nil, nil
+}
+
 func TestGetMonthlyBalance_InvalidYear(t *testing.T) {
 	svc := report.NewService(&fakeRepo{})
 	_, err := svc.GetMonthlyBalance(context.Background(), 1999)

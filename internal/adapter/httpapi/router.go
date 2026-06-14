@@ -166,6 +166,10 @@ func RegisterRoutes(mux *http.ServeMux, expenseSvc port.ExpenseService, authSvc 
 		http.HandlerFunc(reportH.MonthlyBalance),
 		auth, RequirePermission(user.PermReportRead, tr),
 	))
+	mux.Handle("GET /houses/{id}/report", Chain(
+		http.HandlerFunc(reportH.HouseReport),
+		auth, RequirePermission(user.PermHouseRead, tr),
+	))
 
 	// House routes
 	mux.Handle("POST /houses", Chain(

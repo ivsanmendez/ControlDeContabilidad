@@ -35,7 +35,8 @@
     "noContributors": "This house has no contributors assigned",
     "houseNumber": "House No.",
     "users": "Users with access",
-    "noUsers": "No users have access to this house"
+    "noUsers": "No users have access to this house",
+    "report": "View Report"
   },
   "assign": {
     "title": "Assign Contributor",

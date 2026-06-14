@@ -16,6 +16,8 @@ const MonthlyBalancePage = lazy(() => import('@/pages/monthly-balance-page').the
 const HousesPage = lazy(() => import('@/pages/houses-page').then(m => ({ default: m.HousesPage })))
 const HouseDetailPage = lazy(() => import('@/pages/house-detail-page').then(m => ({ default: m.HouseDetailPage })))
 const AccessControlsPage = lazy(() => import('@/pages/access-controls-page').then(m => ({ default: m.AccessControlsPage })))
+const HouseReportPage = lazy(() => import('@/pages/house-report-page').then(m => ({ default: m.HouseReportPage })))
+const VehicleHangTagPage = lazy(() => import('@/pages/vehicle-hangtag-page').then(m => ({ default: m.VehicleHangTagPage })))
 const AdminUsersPage = lazy(() => import('@/pages/admin-users-page').then(m => ({ default: m.AdminUsersPage })))
 
 function App() {
@@ -34,12 +36,14 @@ function App() {
           <Route path="/reports/monthly-balance" element={<MonthlyBalancePage />} />
           <Route path="/houses" element={<HousesPage />} />
           <Route path="/houses/:id" element={<HouseDetailPage />} />
+          <Route path="/houses/:id/report" element={<HouseReportPage />} />
           <Route path="/access-controls" element={<AccessControlsPage />} />
           <Route path="/admin/users" element={<AdminUsersPage />} />
         </Route>
         <Route path="/contributions/receipt" element={<ContributionReceiptPage />} />
         <Route path="/expenses/:id/receipt" element={<ExpenseReceiptPage />} />
       </Route>
+      <Route path="/hangtag" element={<VehicleHangTagPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
     </Suspense>

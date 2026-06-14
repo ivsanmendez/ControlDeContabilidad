@@ -6,6 +6,7 @@ import "context"
 type Repository interface {
 	AggregateIncomeByMonth(ctx context.Context, year int) ([]MonthAggregate, error)
 	AggregateExpensesByMonth(ctx context.Context, year int) ([]MonthAggregate, error)
+	GetHouseReport(ctx context.Context, houseID int64, year int) (*HouseReport, error)
 }
 
 // Service orchestrates report use cases.
@@ -15,6 +16,13 @@ type Service struct {
 
 func NewService(repo Repository) *Service {
 	return &Service{repo: repo}
+}
+
+func (s *Service) GetHouseReport(ctx context.Context, houseID int64, year int) (*HouseReport, error) {
+	if year < 2000 {
+		return nil, ErrInvalidYear
+	}
+	return s.repo.GetHouseReport(ctx, houseID, year)
 }
 
 func (s *Service) GetMonthlyBalance(ctx context.Context, year int) (*MonthlyBalanceReport, error) {

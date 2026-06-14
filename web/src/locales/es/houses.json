@@ -35,7 +35,8 @@
     "noContributors": "Esta casa no tiene contribuyentes asignados",
     "houseNumber": "No. Casa",
     "users": "Usuarios con acceso",
-    "noUsers": "Ningún usuario tiene acceso a esta casa"
+    "noUsers": "Ningún usuario tiene acceso a esta casa",
+    "report": "Ver Reporte"
   },
   "assign": {
     "title": "Asignar Contribuyente",

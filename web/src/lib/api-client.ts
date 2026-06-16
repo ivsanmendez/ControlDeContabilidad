@@ -2,6 +2,7 @@ import type { TokenPair } from '@/types/auth'
 import i18n from '@/lib/i18n'
 
 let accessToken: string | null = null
+let isRefreshingOnInit = false
 
 export function setAccessToken(token: string | null) {
   accessToken = token
@@ -17,6 +18,21 @@ export function setRefreshToken(token: string) {
 
 function getRefreshToken(): string | null {
   return localStorage.getItem('refresh_token')
+}
+
+// Initialize access token from refresh token on app load
+export async function initializeAuth(): Promise<void> {
+  if (isRefreshingOnInit || accessToken) return
+  if (!getRefreshToken()) return
+
+  isRefreshingOnInit = true
+  try {
+    await refreshAccessToken()
+  } catch {
+    clearTokens()
+  } finally {
+    isRefreshingOnInit = false
+  }
 }
 
 export function setTokens(pair: TokenPair) {

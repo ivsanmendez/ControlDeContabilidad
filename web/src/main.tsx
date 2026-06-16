@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from '@/components/ui/sonner'
 import { AuthProvider } from '@/context/auth-context'
+import { initializeAuth } from '@/lib/api-client'
 import App from './App.tsx'
 import './lib/i18n'
 import './index.css'
@@ -16,6 +17,9 @@ const queryClient = new QueryClient({
     },
   },
 })
+
+// Initialize access token from refresh token before rendering AuthProvider
+await initializeAuth()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

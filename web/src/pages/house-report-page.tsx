@@ -11,6 +11,12 @@ import { getMonthLabel } from '@/lib/constants'
 
 type HangTagTarget = { code: string; adminNumber: string }
 
+const INK_COLORS = {
+  black: { label: 'Negro', hex: '#000000' },
+  darkblue: { label: 'Azul Oscuro', hex: '#00008B' },
+  darkgray: { label: 'Gris Oscuro', hex: '#A9A9A9' },
+} as const
+
 function PositionPickerDialog({
   target,
   houseID,
@@ -21,9 +27,10 @@ function PositionPickerDialog({
   onClose: () => void
 }) {
   const { t } = useTranslation('reports')
+  const [selectedColor, setSelectedColor] = useState<keyof typeof INK_COLORS>('black')
 
   function openPrint(pos: number) {
-    const url = `/hangtag?code=${encodeURIComponent(target.code)}&admin=${encodeURIComponent(target.adminNumber)}&houseID=${houseID}&pos=${pos}`
+    const url = `/hangtag?code=${encodeURIComponent(target.code)}&admin=${encodeURIComponent(target.adminNumber)}&houseID=${houseID}&pos=${pos}&color=${selectedColor}`
     window.open(url, '_blank', 'width=820,height=1160')
     onClose()
   }
@@ -34,9 +41,30 @@ function PositionPickerDialog({
         <DialogHeader>
           <DialogTitle>{t('house.pickPosition')}</DialogTitle>
         </DialogHeader>
-        <p className="text-sm text-muted-foreground mb-3">
+        <p className="text-sm text-muted-foreground mb-4">
           {target.adminNumber} — <span className="font-mono">{target.code}</span>
         </p>
+
+        <div className="mb-4 space-y-2">
+          <Label className="text-sm">Selecciona color de tinta</Label>
+          <div className="flex gap-2">
+            {(Object.entries(INK_COLORS) as Array<[keyof typeof INK_COLORS, typeof INK_COLORS[keyof typeof INK_COLORS]]>).map(([key, { label, hex }]) => (
+              <button
+                key={key}
+                onClick={() => setSelectedColor(key)}
+                className={`flex-1 py-2 px-3 rounded-lg border-2 transition-colors flex items-center justify-center gap-2 ${
+                  selectedColor === key
+                    ? 'border-primary bg-primary/10'
+                    : 'border-border hover:border-primary'
+                }`}
+              >
+                <div className="w-4 h-4 rounded border" style={{ backgroundColor: hex }} />
+                <span className="text-sm">{label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="grid grid-cols-3 gap-2">
           {Array.from({ length: 9 }, (_, i) => i + 1).map((pos) => (
             <button
